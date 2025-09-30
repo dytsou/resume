@@ -6,7 +6,7 @@ function App() {
   }, []);
   return (
     <iframe
-      src="/converted-docs/resume.html"
+      src={`${import.meta.env.BASE_URL}converted-docs/resume.html`}
       title="Resume"
       style={{ border: 'none', width: '100vw', height: '100vh' }}
     />

@@ -363,7 +363,8 @@ function main() {
           title: result.metadata.title,
           author: result.metadata.author,
           date: result.metadata.date,
-          htmlPath: `/converted-docs/${fileBasename}.html`,
+          // Use a relative path so it works under any Vite base URL
+          htmlPath: `converted-docs/${fileBasename}.html`,
           lastConverted: new Date().toISOString()
         });
 
