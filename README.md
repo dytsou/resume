@@ -6,6 +6,7 @@ A web application that automatically converts LaTeX documents to arXiv-style HTM
 
 - **Automated LaTeX Conversion**: Converts `.tex` files to beautiful HTML with proper mathematical notation
 - **arXiv-style Rendering**: Clean, academic presentation similar to arXiv HTML papers
+- **Secret Key Authentication**: Protect your resume with a secret key to prevent unauthorized access
 - **CI/CD Pipeline**: GitHub Actions workflow that validates and deploys automatically
 - **Fail-Safe Deployment**: Blocks deployment if any LaTeX file fails to convert
 - **Document Browser**: Browse all converted documents in a clean, responsive interface
@@ -66,12 +67,13 @@ npm run build    # Convert + build entire project
 
 ### 4. Configure Secrets
 
-Add your Supabase credentials as repository secrets:
+Add your credentials as repository secrets:
 
 1. Go to **Settings** > **Secrets and variables** > **Actions**
 2. Add the following secrets:
-   - `VITE_SUPABASE_URL`: Your Supabase project URL
-   - `VITE_SUPABASE_ANON_KEY`: Your Supabase anonymous key
+   - `RESUME_SECRET_KEY`: A strong secret key for accessing the resume (generate a random string)
+   - `VITE_SUPABASE_URL`: Your Supabase project URL (optional)
+   - `VITE_SUPABASE_ANON_KEY`: Your Supabase anonymous key (optional)
 
 ### 5. Push to Deploy
 

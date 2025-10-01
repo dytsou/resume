@@ -1,0 +1,15 @@
+name = "resume-protection"
+main = "cloudflare-worker.js"
+compatibility_date = "2024-01-01"
+
+# KV Namespace for storing secret keys and configuration
+[[kv_namespaces]]
+binding = "SECRETS"
+id = "5b71388e22284c7e9676c0a459340410"
+preview_id = "5b71388e22284c7e9676c0a459340410"
+
+# Routes - configure your domain here
+routes = ["https://resume.tsou.me/*"]
+
+# For development/testing
+# routes = ["resume.d-y-tsou.workers.dev/*"]
