@@ -244,7 +244,6 @@ function convertLatexToHtml(latexContent, filename) {
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
     <style>
         body {
-            max-width: 800px;
             margin: 0 auto;
             padding: 2rem;
             font-family: "Source Sans 3", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
@@ -296,9 +295,9 @@ function convertLatexToHtml(latexContent, filename) {
         .contact-links { color: #111; white-space: nowrap; }
         .contact-right { text-align: right; white-space: nowrap; }
         .sep { margin: 0 0.35rem; color: #666; }
-        .trio { display: grid; grid-template-columns: 1fr auto auto; gap: 0.5rem; align-items: baseline; margin: 0.25rem 0; }
+        .trio { display: grid; grid-template-columns: 1fr auto auto; gap: 0.5rem; align-items: baseline; margin: 0.25rem 0; position: relative; }
         .trio-title { justify-self: start; white-space: nowrap; }
-        .trio-tech { justify-self: center; color: #374151; white-space: nowrap; }
+        .trio-tech { position: absolute; left: 50%; transform: translateX(-50%); color: #374151; white-space: nowrap; }
         .trio-link { justify-self: end; white-space: nowrap; }
         .quad, .quad-details { margin: 0.25rem 0; }
         .row { display: grid; grid-template-columns: 1fr auto; align-items: baseline; }
@@ -308,9 +307,6 @@ function convertLatexToHtml(latexContent, filename) {
         .skill-label { font-weight: 700; }
         .skill-sep { text-align: center; }
         .macro { display: none; }
-        @media (max-width: 768px) {
-            body { padding: 1rem; }
-        }
     </style>
 </head>
 <body>
