@@ -152,7 +152,9 @@ function convertLatexToHtml(latexContent, filename) {
           const label = s[1].trim();
           const sep = s[2].trim();
           const content = s[3].trim();
-          return `\n<div class=\"skill-row\">\n  <div class=\"skill-label\"><strong>${label}<\/strong><\/div>\n  <div class=\"skill-sep\">${sep}<\/div>\n  <div class=\"skill-content\">${content}<\/div>\n<\/div>`;
+          // Remove LaTeX escaping from ampersands in labels
+          const cleanLabel = label.replace(/\\&/g, '&');
+          return `\n<div class=\"skill-row\">\n  <div class=\"skill-label\"><strong>${cleanLabel}<\/strong><\/div>\n  <div class=\"skill-sep\">${sep}<\/div>\n  <div class=\"skill-content\">${content}<\/div>\n<\/div>`;
         }).join('');
         html = html.replace(/<h2>Technical Skills<\/h2>[\s\S]*?(?=<h2>)/, `<h2>Technical Skills<\/h2><div class=\"resume-heading-list\">${rows}<\/div>\n`);
       }
