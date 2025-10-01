@@ -227,6 +227,9 @@ function convertLatexToHtml(latexContent, filename) {
         .replace(/(<\/(?:div)>)\s*<\/p>/g, '$1')
         .replace(/<\/p>\s*(<div class=\"trio\">)/g, '$1')
         .replace(/(<\/div>\s*<\/div>\s*)<div class=\"trio-tech\">[\s\S]*?<\/div>\s*<div class=\"trio-link\">[\s\S]*?<\/div>/, '$1');
+
+      // Fix missing spaces after percent symbols
+      html = html.replace(/(\d+)%([a-zA-Z])/g, '$1% $2');
     }
 
 
