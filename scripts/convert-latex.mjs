@@ -244,6 +244,7 @@ function convertLatexToHtml(latexContent, filename) {
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
     <style>
         body {
+            width: 800px;
             margin: 0 auto;
             padding: 2rem;
             font-family: "Source Sans 3", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
