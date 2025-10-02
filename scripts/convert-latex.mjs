@@ -500,10 +500,29 @@ function convertLatexToHtml(latexContent, filename) {
         .skill-label { font-weight: 700; }
         .skill-sep { text-align: center; }
         .macro { display: none; }
+        .converter-footer {
+            margin-top: 3rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        .converter-footer a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+        .converter-footer a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     ${html}
+    <div class="converter-footer">
+        Generated with <a href="https://github.com/dytsou/resume" target="_blank" rel="noopener">LaTeX to HTML Converter</a><br>
+        © 2025 Tsou, Dong-You. Licensed under <a href="https://github.com/dytsou/resume/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
+    </div>
 </body>
 </html>
     `.trim();
