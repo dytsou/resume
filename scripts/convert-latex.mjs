@@ -174,11 +174,39 @@ function convertLatexToHtml(latexContent, filename) {
             return m;
           }
 
-          const [fullMatch, title, tech, link] = parsed;
+          let [fullMatch, title, tech, link] = parsed;
 
           // Debug: log the parsed data
           console.log('Trio parsed data:', { title, tech, link });
           console.log('Full match:', fullMatch);
+          console.log('Link contains href:', link.includes('\\href{'));
+          console.log('Link length:', link.length);
+
+          // Check if the link is incomplete (missing closing braces)
+          if (link.includes('\\href{') && !link.includes('}{')) {
+            console.log('Incomplete href detected, trying to fix...');
+            // Try to find the complete href in the full match
+            const completeHrefMatch = fullMatch.match(/\\href\{[^}]+\}\{[^}]+\}/);
+            if (completeHrefMatch) {
+              console.log('Found complete href:', completeHrefMatch[0]);
+              // Update the link with the complete href
+              const updatedLink = completeHrefMatch[0];
+              console.log('Updated link:', updatedLink);
+              // Use the updated link for processing
+              link = updatedLink;
+            } else {
+              // If we can't find the complete href in the full match, try to find it in the original LaTeX content
+              const originalHrefMatch = latexContent.match(/\\href\{[^}]+\}\{[^}]+\}/g);
+              if (originalHrefMatch) {
+                // Find the href that matches our incomplete link
+                const matchingHref = originalHrefMatch.find(href => href.startsWith(link));
+                if (matchingHref) {
+                  console.log('Found matching href in original content:', matchingHref);
+                  link = matchingHref;
+                }
+              }
+            }
+          }
 
           // Check if the link contains \href command (from LaTeX source)
           let anchorHtml = '';
@@ -189,14 +217,14 @@ function convertLatexToHtml(latexContent, filename) {
             if (hrefMatch) {
               const [, hrefUrl, hrefText] = hrefMatch;
               // Clean up any nested LaTeX commands in the display text
-              const cleanText = hrefText.replace(/\\uline\{([^}]+)\}/g, '$1');
+              const cleanText = hrefText.replace(/\\uline\{([^}]+)\}/g, '$1').replace(/\\uline\{([^}]*)$/g, '$1');
               anchorHtml = `<a class="href" href="${hrefUrl}">${cleanText}</a>`;
             } else {
               // Try a more complex pattern to handle deeply nested commands
               const complexMatch = link.match(/\\href\{([^}]+)\}\{([^}]+)\}/);
               if (complexMatch) {
                 const [, hrefUrl, hrefText] = complexMatch;
-                const cleanText = hrefText.replace(/\\uline\{([^}]+)\}/g, '$1');
+                const cleanText = hrefText.replace(/\\uline\{([^}]+)\}/g, '$1').replace(/\\uline\{([^}]*)$/g, '$1');
                 anchorHtml = `<a class="href" href="${hrefUrl}">${cleanText}</a>`;
               } else {
                 // Fallback if \href parsing fails
@@ -391,6 +419,9 @@ function convertLatexToHtml(latexContent, filename) {
 
       // Fix missing spaces after percent symbols
       html = html.replace(/(\d+)%([a-zA-Z])/g, '$1% $2');
+
+      // Clean up leftover macro artifacts from Trio headings
+      html = html.replace(/<span class="macro macro-uline"><\/span>Source Code<\/a>/g, '');
     }
 
 
