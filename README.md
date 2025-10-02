@@ -191,4 +191,4 @@ Check the generated files in `public/converted-docs/` and review `public/documen
 
 ## License
 
-MIT
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
