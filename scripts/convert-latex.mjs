@@ -66,9 +66,72 @@ function convertLatexToHtml(latexContent, filename) {
         latexContent.matchAll(/\\resumeTrioHeading\{([^}]*)\}\{([^}]*)\}\{([^}]*)\}/g)
       );
       let trioIdx = 0;
-      const quadDetailsMatches = Array.from(
-        latexContent.matchAll(/\\resumeQuadHeadingDetails\{([^}]*)\}\{([^}]*)\}\{([^}]*)\}/g)
-      );
+      // Parse resumeQuadHeadingDetails with robust nested braces handling
+      const quadDetailsMatches = [];
+
+      // Function to parse LaTeX macro arguments with proper brace counting
+      const parseLatexMacro = (content, macroName) => {
+        const matches = [];
+        const regex = new RegExp(`\\\\${macroName}\\{`, 'g');
+        let match;
+
+
+        while ((match = regex.exec(content)) !== null) {
+          const startPos = match.index;
+          let pos = match.index + match[0].length - 1; // Position after opening brace
+          const args = [];
+          let currentArg = '';
+          let braceCount = 1;
+          let argCount = 0;
+
+          // Parse arguments (3 for resumeQuadHeadingDetails, 4 for resumeQuadHeading)
+          const maxArgs = macroName === 'resumeQuadHeading' ? 4 : 3;
+          while (argCount < maxArgs && pos < content.length) {
+            pos++;
+            const char = content[pos];
+
+            if (char === '{') {
+              braceCount++;
+              currentArg += char;
+            } else if (char === '}') {
+              braceCount--;
+              if (braceCount === 0) {
+                // End of current argument
+                args.push(currentArg.trim());
+                argCount++;
+                currentArg = '';
+                // Look for next argument
+                while (pos < content.length && content[pos] !== '{') {
+                  pos++;
+                }
+                if (pos < content.length) {
+                  braceCount = 1; // Reset for next argument
+                }
+              } else {
+                // Still inside nested braces
+                currentArg += char;
+              }
+            } else {
+              currentArg += char;
+            }
+          }
+
+          if (args.length >= maxArgs) {
+            const fullMatch = content.substring(startPos, pos + 1);
+            matches.push([fullMatch, ...args]);
+          }
+        }
+
+        return matches;
+      };
+
+      quadDetailsMatches.push(...parseLatexMacro(latexContent, 'resumeQuadHeadingDetails'));
+
+      // Also parse resumeQuadHeading (used in Education section)
+      const quadHeadingMatches = parseLatexMacro(latexContent, 'resumeQuadHeading');
+
+      // Debug: log the trio matches
+      console.log('Trio matches:', trioMatches);
       let quadDetailsIdx = 0;
       const sectionTypeMatches = Array.from(
         latexContent.matchAll(/\\resumeSectionType\{([^}]*)\}\{([^}]*)\}\{([^}]*)\}/g)
@@ -103,12 +166,49 @@ function convertLatexToHtml(latexContent, filename) {
 
       // Convert Trio heading macro into semantic three-column row (brace-driven)
       html = html.replace(
-        /<span class="macro macro-resumeTrioHeading"><\/span>([^<]*?)(<a[^>]*>.*?<\/a>)/g,
-        (m, text, anchor) => {
+        /<span class="macro macro-resumeTrioHeading"><\/span>([\s\S]*?)(?=(<ul|<span|<\/div|<\/p))/g,
+        (m, content) => {
           const parsed = trioMatches[trioIdx++] || null;
-          const title = parsed ? parsed[1].trim() : (text || '').trim();
-          const tech = parsed ? parsed[2].trim() : '';
-          return `\n<div class="trio">\n  <div class="trio-title"><strong>${title}<\/strong><\/div>\n  <div class="trio-tech"><em>${tech}<\/em><\/div>\n  <div class="trio-link">${anchor}<\/div>\n<\/div>`;
+          if (!parsed) {
+            // Fallback to original content if parsing failed
+            return m;
+          }
+
+          const [fullMatch, title, tech, link] = parsed;
+
+          // Debug: log the parsed data
+          console.log('Trio parsed data:', { title, tech, link });
+          console.log('Full match:', fullMatch);
+
+          // Check if the link contains \href command (from LaTeX source)
+          let anchorHtml = '';
+          if (link.includes('\\href{')) {
+            // Extract URL and display text from \href{url}{text} format
+            // Handle nested commands like \href{url}{\uline{text}}
+            const hrefMatch = link.match(/\\href\{([^}]+)\}\{([^}]+)\}/);
+            if (hrefMatch) {
+              const [, hrefUrl, hrefText] = hrefMatch;
+              // Clean up any nested LaTeX commands in the display text
+              const cleanText = hrefText.replace(/\\uline\{([^}]+)\}/g, '$1');
+              anchorHtml = `<a class="href" href="${hrefUrl}">${cleanText}</a>`;
+            } else {
+              // Try a more complex pattern to handle deeply nested commands
+              const complexMatch = link.match(/\\href\{([^}]+)\}\{([^}]+)\}/);
+              if (complexMatch) {
+                const [, hrefUrl, hrefText] = complexMatch;
+                const cleanText = hrefText.replace(/\\uline\{([^}]+)\}/g, '$1');
+                anchorHtml = `<a class="href" href="${hrefUrl}">${cleanText}</a>`;
+              } else {
+                // Fallback if \href parsing fails
+                anchorHtml = link;
+              }
+            }
+          } else {
+            // If no \href, treat as plain text
+            anchorHtml = link;
+          }
+
+          return `\n<div class="trio">\n  <div class="trio-title"><strong>${title.trim()}<\/strong><\/div>\n  <div class="trio-tech"><em>${tech.trim()}<\/em><\/div>\n  <div class="trio-link">${anchorHtml}<\/div>\n<\/div>`;
         }
       );
 
@@ -123,13 +223,58 @@ function convertLatexToHtml(latexContent, filename) {
       );
 
       // Convert QuadHeadingDetails macro into 2x2 block (brace-driven)
+      // Use parsed data from LaTeX source to ensure proper structure
       html = html.replace(
-        /<span class="macro macro-resumeQuadHeadingDetails"><\/span>(<a[^>]*>.*?<\/a>)([^<]*?–[^<]*?)([^<]*?)(?=(<ul|<span|<\/div|<\/p))/g,
-        (m, anchor, daterange, role) => {
+        /<span class="macro macro-resumeQuadHeadingDetails"><\/span>([\s\S]*?)(?=(<ul|<span|<\/div|<\/p))/g,
+        (m, content) => {
           const parsed = quadDetailsMatches[quadDetailsIdx++] || null;
-          const dateText = parsed ? parsed[2].trim() : (daterange || '').replace(/\s+/g, ' ').trim();
-          const roleText = parsed ? parsed[3].trim() : (role || '').replace(/\s+/g, ' ').trim();
-          return `\n<div class="quad-details">\n  <div class="row"><div class="left"><strong>${anchor}<\/strong><\/div><div class="right"><span class="date">${dateText}<\/span><\/div><\/div>\n  <div class="row"><div class="left"><em>${roleText}<\/em><\/div><div class="right"><\/div><\/div>\n<\/div>`;
+          if (!parsed) {
+            // Fallback to original content if parsing failed
+            return m;
+          }
+
+          const [fullMatch, url, dateText, roleText] = parsed;
+
+          // Clean up date text - preserve periods in month abbreviations and fix dash formatting
+          const cleanDateText = dateText.replace(/\s*--\s*/g, ' – ')
+            .replace(/\s+/g, ' ')
+            .trim();
+
+          // Clean up role text
+          const cleanRoleText = roleText.replace(/\s+/g, ' ').trim();
+
+          // Check if the URL contains \href command (from LaTeX source)
+          let anchorHtml = '';
+          if (url.includes('\\href{')) {
+            // Extract URL and display text from \href{url}{text} format
+            const hrefMatch = url.match(/\\href\{([^}]+)\}\{([^}]+)\}/);
+            if (hrefMatch) {
+              const [, hrefUrl, hrefText] = hrefMatch;
+              // Make the link text bold while keeping it as a clickable link
+              anchorHtml = `<a class="href" href="${hrefUrl}"><strong>${hrefText}</strong></a>`;
+            } else {
+              // Fallback if \href parsing fails
+              anchorHtml = `<strong>${url}</strong>`;
+            }
+          } else {
+            // If no \href, treat as plain text and make it bold
+            anchorHtml = `<strong>${url}</strong>`;
+          }
+
+          return `\n<div class="quad-details">\n  <div class="row"><div class="left">${anchorHtml}<\/div><div class="right"><span class="date">${cleanDateText}<\/span><\/div><\/div>\n  <div class="row"><div class="left"><em>${cleanRoleText}<\/em><\/div><div class="right"><\/div><\/div>\n<\/div>`;
+        }
+      );
+
+      // Clean up any remaining duplicate content that might have been created
+      // This handles cases where the macro replacement left behind raw text
+      html = html.replace(
+        /(<a[^>]*>.*?<\/a>)([A-Z][a-z]{2,4}\.\s\d{4}\s[–-]\s[A-Z][a-z]{2,4}\.\s\d{4})\s*([^<]*?)(?=<ul|<span|<\/div|<\/p)/g,
+        (m, anchor, dateRange, role) => {
+          // Only process if this looks like a duplicate (no surrounding div structure)
+          if (!m.includes('class="quad-details"') && !m.includes('class="row"')) {
+            return ''; // Remove the duplicate
+          }
+          return m; // Keep the original if it's already properly formatted
         }
       );
 
@@ -140,11 +285,8 @@ function convertLatexToHtml(latexContent, filename) {
         (m, pre, startDash, mid, roleRest, end) => `${pre}${startDash} Present${mid}${roleRest}${end}`
       );
 
-      // Case B: "Oct 2024 –" + left em starting with "Mon YYYY Role..."
-      html = html.replace(
-        /(<div class=\"quad-details\">[\s\S]*?<span class=\"date\">)\s*([^<]*?–)\s*(<\/span>[\s\S]*?<div class=\"left\"><em>)\s*([A-Z][a-z]{2}\s\d{4})\s+([^<]*?)(<\/em>)/g,
-        (m, pre, startDash, mid, monthYear, roleRest, end) => `${pre}${startDash} ${monthYear}${mid}${roleRest}${end}`
-      );
+      // Case B: Disabled - was causing incorrect merging of complete date ranges with role text
+      // The issue is now fixed in the QuadHeadingDetails parsing above
 
       // Replace entire Technical Skills block using brace-driven rows up to the next <h2>
       {
@@ -159,26 +301,45 @@ function convertLatexToHtml(latexContent, filename) {
         html = html.replace(/<h2>Technical Skills<\/h2>[\s\S]*?(?=<h2>)/, `<h2>Technical Skills<\/h2><div class=\"resume-heading-list\">${rows}<\/div>\n`);
       }
 
-      // Convert QuadHeading macro (education) into 2x2 block using month-based dates
+      // Convert QuadHeading macro into 2x2 block using parsed data
+      let quadHeadingIdx = 0;
       html = html.replace(
-        /<span class="macro macro-resumeQuadHeading"><\/span>([^<]*?)\s*(Bachelor of[^<]*?)\s*([A-Z][a-z]{2,9}\s\d{4}\s[–-]\s[A-Z][a-z]{2,9}\s\d{4})/g,
+        /<span class="macro macro-resumeQuadHeading"><\/span>([^<]*?)\s*(Bachelor of[^<]*?)\s*([A-Z][a-z]{2,9}\.\s\d{4}\s[–-]\s[A-Z][a-z]{2,9}\.\s\d{4})/g,
         (m, pre, degreeLine, dates) => {
-          const preTrim = (pre || '').replace(/\s+/g, ' ').trim();
-          let uni = preTrim;
-          let loc = '';
-          // Case 1: Standard trailing ", City, Country"
-          const cityCountryMatch = preTrim.match(/^(.*?),\s*([A-Za-z'’\- ]+,\s*[A-Za-z'’\- ]+)$/);
-          if (cityCountryMatch) {
-            uni = cityCountryMatch[1].trim();
-            loc = cityCountryMatch[2].trim();
+          const parsed = quadHeadingMatches[quadHeadingIdx++] || null;
+          if (parsed) {
+            // Use parsed data from LaTeX source
+            const uni = parsed[1].trim();
+            const loc = parsed[2].trim();
+            const degree = parsed[3].trim();
+            let dateRange = parsed[4] ? parsed[4].trim() : dates;
+
+            // Clean up date range - preserve periods and fix dash formatting
+            dateRange = dateRange.replace(/\s*--\s*/g, ' – ')
+              .replace(/\s+/g, ' ')
+              .trim();
+
+            return `\n<div class="quad">\n  <div class="row"><div class="left"><strong>${uni}<\/strong><\/div><div class="right">${loc}<\/div><\/div>\n  <div class="row"><div class="left"><em>${degree}<\/em><\/div><div class="right"><em>${dateRange}<\/em><\/div><\/div>\n<\/div>`;
           } else {
-            const gluedMatch = preTrim.match(/^(.*?University)\s*(Hsinchu,\s*Taiwan)$/i);
-            if (gluedMatch) {
-              uni = gluedMatch[1].trim();
-              loc = gluedMatch[2].trim();
+            // Fallback to original logic if parsing failed
+            const preTrim = (pre || '').replace(/\s+/g, ' ').trim();
+            let uni = preTrim;
+            let loc = '';
+            // Case 1: Standard trailing ", City, Country"
+            const cityCountryMatch = preTrim.match(/^(.*?),\s*([A-Za-z'’\- ]+,\s*[A-Za-z'’\- ]+)$/);
+            if (cityCountryMatch) {
+              uni = cityCountryMatch[1].trim();
+              loc = cityCountryMatch[2].trim();
+            } else {
+              const gluedMatch = preTrim.match(/^(.*?University)\s*(Hsinchu,\s*Taiwan)$/i);
+              if (gluedMatch) {
+                uni = gluedMatch[1].trim();
+                loc = gluedMatch[2].trim();
+              }
             }
+            const cleanDates = dates.replace(/\s*--\s*/g, ' – ').replace(/\s+/g, ' ').trim();
+            return `\n<div class="quad">\n  <div class="row"><div class="left"><strong>${uni}<\/strong><\/div><div class="right">${loc}<\/div><\/div>\n  <div class="row"><div class="left"><em>${degreeLine}<\/em><\/div><div class="right"><em>${cleanDates}<\/em><\/div><\/div>\n<\/div>`;
           }
-          return `\n<div class="quad">\n  <div class="row"><div class="left"><strong>${uni}<\/strong><\/div><div class="right">${loc}<\/div><\/div>\n  <div class="row"><div class="left"><em>${degreeLine}<\/em><\/div><div class="right"><em>${dates}<\/em><\/div><\/div>\n<\/div>`;
         }
       );
 
