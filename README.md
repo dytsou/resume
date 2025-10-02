@@ -1,12 +1,11 @@
 # LaTeX to HTML Converter with Automated Deployment
 
-A web application that automatically converts LaTeX documents to arXiv-style HTML and deploys them to GitHub Pages. Every time you push to the repository, the system validates that all LaTeX files can be successfully converted before deploying.
+A specialized web application that converts LaTeX resume documents to clean, professional HTML and deploys them to GitHub Pages. The system automatically processes your LaTeX resume and creates a beautiful, responsive web version with proper styling and typography.
 
 ## Features
 
-- **Automated LaTeX Conversion**: Converts `.tex` files to beautiful HTML with proper mathematical notation
-- **arXiv-style Rendering**: Clean, academic presentation similar to arXiv HTML papers
-- **Secret Key Authentication**: Protect your resume with a secret key to prevent unauthorized access
+- **Automated LaTeX Resume Conversion**: Converts `.tex` resume files to professional HTML with proper formatting
+- **Resume-Specific Styling**: Clean, professional presentation optimized for resume content
 - **CI/CD Pipeline**: GitHub Actions workflow that validates and deploys automatically
 - **Fail-Safe Deployment**: Blocks deployment if any LaTeX file fails to convert
 - **Document Browser**: Browse all converted documents in a clean, responsive interface
@@ -16,20 +15,23 @@ A web application that automatically converts LaTeX documents to arXiv-style HTM
 ## Project Structure
 
 ```
-project/
-├── latex/                  # Store your LaTeX documents here
-│   └── sample-paper.tex    # Example LaTeX document
+resume/
+├── latex/                  # Store your LaTeX resume files here
+│   └── resume.tex          # Main LaTeX resume document
 ├── scripts/
 │   └── convert-latex.mjs   # LaTeX to HTML conversion script
 ├── src/
-│   ├── components/
-│   │   └── DocumentBrowser.tsx  # Document listing UI
 │   ├── lib/
 │   │   └── supabase.ts     # Database client
-│   └── App.tsx             # Main application
+│   ├── App.tsx             # Main application
+│   ├── main.tsx           # React entry point
+│   └── index.css          # Global styles
+├── supabase/
+│   └── migrations/         # Database migration files
 ├── public/
 │   ├── converted-docs/     # Generated HTML files (created during build)
 │   └── documents-manifest.json  # Document metadata (created during build)
+├── dist/                   # Production build output
 └── .github/
     └── workflows/
         └── deploy.yml      # CI/CD pipeline configuration
@@ -178,12 +180,14 @@ Check the generated files in `public/converted-docs/` and review `public/documen
 
 - **React + TypeScript**: Frontend framework
 - **Vite**: Build tool and dev server
-- **Tailwind CSS**: Styling
+- **Tailwind CSS**: Styling framework
 - **@unified-latex**: LaTeX parsing and conversion
 - **MathJax**: Mathematical notation rendering
 - **Supabase**: Database for tracking conversions
 - **GitHub Actions**: CI/CD automation
 - **GitHub Pages**: Static site hosting
+- **Lucide React**: Icon library
+- **Source Sans Pro**: Typography
 
 ## License
 
