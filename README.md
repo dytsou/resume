@@ -10,7 +10,6 @@ A specialized web application that converts LaTeX resume documents to clean, pro
 - **Fail-Safe Deployment**: Blocks deployment if any LaTeX file fails to convert
 - **Document Browser**: Browse all converted documents in a clean, responsive interface
 - **MathJax Integration**: Proper rendering of mathematical formulas
-- **Supabase Database**: Track conversion history and document metadata
 
 ## Project Structure
 
@@ -21,13 +20,9 @@ resume/
 ├── scripts/
 │   └── convert-latex.mjs   # LaTeX to HTML conversion script
 ├── src/
-│   ├── lib/
-│   │   └── supabase.ts     # Database client
 │   ├── App.tsx             # Main application
 │   ├── main.tsx           # React entry point
 │   └── index.css          # Global styles
-├── supabase/
-│   └── migrations/         # Database migration files
 ├── public/
 │   ├── converted-docs/     # Generated HTML files (created during build)
 │   └── documents-manifest.json  # Document metadata (created during build)
