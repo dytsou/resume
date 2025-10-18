@@ -61,14 +61,6 @@ function convertLatexToHtml(latexContent, filename) {
 
     // 4) Resume-specific post-processing to approximate LaTeX packages/macros (always resume)
     {
-      // Pre-parse macro arguments from LaTeX source so we can align by {}
-      const trioMatches = Array.from(
-        latexContent.matchAll(/\\resumeTrioHeading\{([^}]*)\}\{([^}]*)\}\{([^}]*)\}/g)
-      );
-      let trioIdx = 0;
-      // Parse resumeQuadHeadingDetails with robust nested braces handling
-      const quadDetailsMatches = [];
-
       // Function to parse LaTeX macro arguments with proper brace counting
       const parseLatexMacro = (content, macroName) => {
         const matches = [];
@@ -84,7 +76,7 @@ function convertLatexToHtml(latexContent, filename) {
           let braceCount = 1;
           let argCount = 0;
 
-          // Parse arguments (3 for resumeQuadHeadingDetails, 4 for resumeQuadHeading)
+          // Parse arguments (3 for resumeQuadHeadingDetails and resumeTrioHeading, 4 for resumeQuadHeading)
           const maxArgs = macroName === 'resumeQuadHeading' ? 4 : 3;
           while (argCount < maxArgs && pos < content.length) {
             pos++;
@@ -125,6 +117,13 @@ function convertLatexToHtml(latexContent, filename) {
         return matches;
       };
 
+      // Pre-parse macro arguments from LaTeX source so we can align by {}
+      // Use the parseLatexMacro function to properly handle nested braces
+      const trioMatches = parseLatexMacro(latexContent, 'resumeTrioHeading');
+      let trioIdx = 0;
+      // Parse resumeQuadHeadingDetails with robust nested braces handling
+      const quadDetailsMatches = [];
+
       quadDetailsMatches.push(...parseLatexMacro(latexContent, 'resumeQuadHeadingDetails'));
 
       // Also parse resumeQuadHeading (used in Education section)
@@ -158,6 +157,10 @@ function convertLatexToHtml(latexContent, filename) {
           // Clean linebreaks and ensure typographic separators
           left = left.replace(/<br class="linebreak">/g, ' ').replace(/<span class="inline-math">\|<\/span>/g, '<span class="sep">·<\/span>').trim();
           right = right.replace(/<br class="linebreak">/g, ' ').replace(/<span class="inline-math">\|<\/span>/g, '<span class="sep">·<\/span>').trim();
+
+          // Remove any remaining class="href" attributes from contact links
+          left = left.replace(/class="href"/g, '');
+          right = right.replace(/class="href"/g, '');
           // Clean leading punctuation artifacts on right
           right = right.replace(/^\s*[;:,\-–]\s*/, '');
           return `\n<div class="contact">\n  <div class="contact-left">\n    <div class="contact-name">${name}<\/div>\n    <div class="contact-links">${left}<\/div>\n  <\/div>\n  <div class="contact-right">${right}<\/div>\n<\/div>`;
@@ -218,14 +221,14 @@ function convertLatexToHtml(latexContent, filename) {
               const [, hrefUrl, hrefText] = hrefMatch;
               // Clean up any nested LaTeX commands in the display text
               const cleanText = hrefText.replace(/\\uline\{([^}]+)\}/g, '$1').replace(/\\uline\{([^}]*)$/g, '$1');
-              anchorHtml = `<a class="href" href="${hrefUrl}">${cleanText}</a>`;
+              anchorHtml = `<a href="${hrefUrl}" target="_blank" rel="noopener noreferrer">${cleanText}</a>`;
             } else {
               // Try a more complex pattern to handle deeply nested commands
               const complexMatch = link.match(/\\href\{([^}]+)\}\{([^}]+)\}/);
               if (complexMatch) {
                 const [, hrefUrl, hrefText] = complexMatch;
                 const cleanText = hrefText.replace(/\\uline\{([^}]+)\}/g, '$1').replace(/\\uline\{([^}]*)$/g, '$1');
-                anchorHtml = `<a class="href" href="${hrefUrl}">${cleanText}</a>`;
+                anchorHtml = `<a href="${hrefUrl}" target="_blank" rel="noopener noreferrer">${cleanText}</a>`;
               } else {
                 // Fallback if \href parsing fails
                 anchorHtml = link;
@@ -279,7 +282,7 @@ function convertLatexToHtml(latexContent, filename) {
             if (hrefMatch) {
               const [, hrefUrl, hrefText] = hrefMatch;
               // Make the link text bold while keeping it as a clickable link
-              anchorHtml = `<a class="href" href="${hrefUrl}"><strong>${hrefText}</strong></a>`;
+              anchorHtml = `<a href="${hrefUrl}" target="_blank" rel="noopener noreferrer"><strong>${hrefText}</strong></a>`;
             } else {
               // Fallback if \href parsing fails
               anchorHtml = `<strong>${url}</strong>`;
@@ -422,6 +425,18 @@ function convertLatexToHtml(latexContent, filename) {
 
       // Clean up leftover macro artifacts from Trio headings
       html = html.replace(/<span class="macro macro-uline"><\/span>Source Code<\/a>/g, '');
+
+      // Remove any remaining class="href" attributes that might have been missed
+      html = html.replace(/class="href"/g, '');
+
+      // Fix any double spaces in href attributes
+      html = html.replace(/<a  href=/g, '<a href=');
+
+      // Add target="_blank" to all external links (not mailto or relative links)
+      html = html.replace(/<a href="(https?:\/\/[^"]+)"/g, '<a href="$1" target="_blank" rel="noopener noreferrer"');
+
+      // Clean up duplicate target="_blank" attributes
+      html = html.replace(/target="_blank" rel="noopener noreferrer" target="_blank" rel="noopener noreferrer"/g, 'target="_blank" rel="noopener noreferrer"');
     }
 
 
@@ -478,8 +493,9 @@ function convertLatexToHtml(latexContent, filename) {
             margin: 1em 0;
             overflow-x: auto;
         }
-        a { color: #0066cc; text-decoration: none; }
-        a:hover { text-decoration: underline; }
+        a { color: #0066cc; text-decoration: none; cursor: pointer; }
+        a:hover { color: #004499; text-decoration: none; }
+        a:visited { color: #551a8b; text-decoration: none; }
         .resume-items { margin: 0.25rem 0 1rem 1.25rem; }
         .resume-items li { margin: 0.25rem 0; }
         .resume-heading-list { margin: 0.25rem 0 0.5rem 0; }
