@@ -51,9 +51,9 @@ latex/
 Convert and build the project:
 
 ```bash
-npm install
-npm run convert  # Convert LaTeX files only
-npm run build    # Convert + build entire project
+pnpm install
+pnpm run convert  # Convert LaTeX files only
+pnpm run build    # Convert + build entire project
 ```
 
 ### 3. Set Up GitHub Pages
@@ -115,11 +115,11 @@ The Supabase database stores:
 
 ## Available Scripts
 
-- `npm run dev` - Start development server
-- `npm run convert` - Convert LaTeX files to HTML
-- `npm run build` - Convert LaTeX + build production bundle
-- `npm run preview` - Preview production build locally
-- `npm run lint` - Run ESLint
+- `pnpm run dev` - Start development server
+- `pnpm run convert` - Convert LaTeX files to HTML
+- `pnpm run build` - Convert LaTeX + build production bundle
+- `pnpm run preview` - Preview production build locally
+- `pnpm run lint` - Run ESLint
 
 ## Customization
 
@@ -166,7 +166,7 @@ If deployment is blocked, the CI/CD pipeline detected conversion failures. Fix t
 
 Run the conversion locally to debug issues:
 ```bash
-npm run convert
+pnpm run convert
 ```
 
 Check the generated files in `public/converted-docs/` and review `public/documents-manifest.json`.
