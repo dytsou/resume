@@ -27,6 +27,8 @@
 
 \usepackage[hidelinks]{hyperref} % removes color and shadow of hyperlinks
 
+\usepackage{fontawesome5}
+
 \usepackage[normalem]{ulem} % provides "\ul" (uline) command which will break at line breaks
 
 \usepackage[english]{babel} % provides culturally determined typographical rules for wide range of languages
@@ -166,14 +168,18 @@
 %-----------CONTACT DETAILS------------------
 % Make sure all the details are correct, you can add more links in the first row of second column if needed
 
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-  \textbf{\Huge Tsou, Dong-You \vspace{2pt}}  \\ % row = 1, col = 2
-  \href{https://www.linkedin.com/in/dytsou/}{\uline{LinkedIn}} $|$ % row = 2, col = 1
-  \href{https://github.com/dytsou/}{\uline{GitHub}}  % row = 2, col = 1
-   &
-  Email: \href{mailto:contact@dy.tsou.me}{\uline{contact@dy.tsou.me}} $|$ % row = 2, col = 2
-  Mobile: +886971618820 \\ % row = 2, col = 2
-\end{tabular*}
+\begin{tabularx}{\textwidth}{>{\centering\arraybackslash}X >{\centering\arraybackslash}X}
+  \textbf{\Huge Tsou, Dong-You} \\[10pt]
+  \href{https://www.linkedin.com/in/dytsou/}{\faLinkedin~ \uline{linkedin.com/in/dytsou}}
+  \hspace{8pt}
+  \href{https://github.com/dytsou/}{\faGithub~ \uline{github.com/dytsou}}
+  \hspace{8pt}
+  \href{mailto:contact@dy.tsou.me}{\faEnvelope~ \uline{contact@dy.tsou.me}}
+  \hspace{8pt}
+  \faMobile~ +886-971-618-820 \\
+\end{tabularx}
+
+
 %--------------------------------------------
 
 %-----------EDUCATION-------------------------
