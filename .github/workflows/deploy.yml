@@ -36,6 +36,7 @@ jobs:
         run: pnpm run build
         env:
           GITHUB_PAGES: 'true'
+          VITE_GOOGLE_DRIVE_RESUME_LINK: ${{ vars.VITE_GOOGLE_DRIVE_RESUME_LINK }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4

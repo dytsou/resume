@@ -62,15 +62,14 @@ pnpm run build    # Convert + build entire project
 2. Navigate to **Pages** section
 3. Under **Source**, select "GitHub Actions"
 
-### 4. Configure Secrets
+### 4. Configure Environment Variables
 
-Add your credentials as repository secrets:
+Add your credentials as repository variables for GitHub Actions:
 
-1. Go to **Settings** > **Secrets and variables** > **Actions**
-2. Add the following secrets:
-   - `RESUME_SECRET_KEY`: A strong secret key for accessing the resume (generate a random string)
-   - `VITE_SUPABASE_URL`: Your Supabase project URL (optional)
-   - `VITE_SUPABASE_ANON_KEY`: Your Supabase anonymous key (optional)
+1. Go to **Settings** > **Variables** > **Variables** tab
+2. Click **New repository variable**
+3. Add the following variables:
+   - `VITE_GOOGLE_DRIVE_RESUME_LINK`: Your Google Drive share link for the resume (optional)
 
 ### 5. Push to Deploy
 

@@ -8,3 +8,115 @@
 body {
   font-family: system-ui, -apple-system, sans-serif;
 }
+
+/* Download button wrapper - positioned bottom-right */
+.download-button-wrapper {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+/* Download from Drive button styles */
+.download-drive-button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.download-drive-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #333;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.download-drive-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px) scale(1.05);
+}
+
+.download-drive-button:active:not(:disabled) {
+  transform: translateY(0) scale(1);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.1);
+}
+
+.download-drive-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.button-icon,
+.button-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.button-icon svg,
+.button-spinner svg {
+  width: 100%;
+  height: 100%;
+}
+
+.button-spinner svg {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.download-error {
+  padding: 8px 12px;
+  background-color: #fee;
+  color: #c33;
+  border: 1px solid #fcc;
+  border-radius: 4px;
+  font-size: 12px;
+  max-width: 300px;
+  text-align: center;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .download-button-wrapper {
+    bottom: 16px;
+    right: 16px;
+  }
+
+  .download-drive-button {
+    width: 48px;
+    height: 48px;
+  }
+
+  .button-icon,
+  .button-spinner {
+    width: 20px;
+    height: 20px;
+  }
+}
