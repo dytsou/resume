@@ -139,31 +139,63 @@ function convertLatexToHtml(latexContent, filename) {
       // Replace math pipes with typographic separators
       html = html.replace(/<span class="inline-math">\|<\/span>/g, '<span class="sep">·<\/span>');
 
-      // Convert first tabular* (contact header) into a two-column grid up to next section
+      // Convert first tabular (tabular* or tabularx) contact header into a two-column grid up to next section
       html = html.replace(
-        /<div class="environment tabular\*">([\s\S]*?)<\/div>(?=\s*<h2>)/,
+        /<div class="environment tabular(?:\*|x)">([\s\S]*?)<\/div>(?=\s*<h2>)/,
         (match, inner) => {
-          const innerClean = inner.replace(/\n/g, ' ');
+          const iconMap = {
+            faLinkedin: 'fab fa-linkedin',
+            faGithub: 'fab fa-github',
+            faEnvelope: 'fas fa-envelope',
+            faMobile: 'fas fa-mobile'
+          };
+
+          const replaceIcons = text =>
+            text.replace(/<span class="macro macro-(fa\w+)"><\/span>/g, (_, macro) => {
+              const cls = iconMap[macro] || 'fas fa-circle';
+              return `<i class="${cls}"></i>`;
+            });
+
+          const innerClean = replaceIcons(
+            inner
+              .replace(/\n/g, ' ')
+              .replace(/>\s*[Xlcrp@{}]+(?=\s|<)/g, ' ')
+              .replace(/<span class="vspace"[^>]*><\/span>/g, ' ')
+              .replace(/<span class="macro macro-uline"><\/span>/g, '')
+              .replace(/\s{2,}/g, ' ')
+              .trim()
+          );
+
           const nameMatch = innerClean.match(/<span class="textsize-Huge">([\s\S]*?)<\/span>/);
           const name = nameMatch ? nameMatch[1].trim() : '';
           const afterName = innerClean.replace(/^[\s\S]*?<br class="linebreak">\s*/, '');
           const ampIdx = afterName.indexOf('&#x26;');
-          let left = afterName;
-          let right = '';
+          let primary = afterName;
+          let secondary = '';
           if (ampIdx !== -1) {
-            left = afterName.slice(0, ampIdx).trim();
-            right = afterName.slice(ampIdx + 5).trim();
+            primary = afterName.slice(0, ampIdx).trim();
+            secondary = afterName.slice(ampIdx + 5).trim();
           }
-          // Clean linebreaks and ensure typographic separators
-          left = left.replace(/<br class="linebreak">/g, ' ').replace(/<span class="inline-math">\|<\/span>/g, '<span class="sep">·<\/span>').trim();
-          right = right.replace(/<br class="linebreak">/g, ' ').replace(/<span class="inline-math">\|<\/span>/g, '<span class="sep">·<\/span>').trim();
 
-          // Remove any remaining class="href" attributes from contact links
-          left = left.replace(/class="href"/g, '');
-          right = right.replace(/class="href"/g, '');
-          // Clean leading punctuation artifacts on right
-          right = right.replace(/^\s*[;:,\-–]\s*/, '');
-          return `\n<div class="contact">\n  <div class="contact-left">\n    <div class="contact-name">${name}<\/div>\n    <div class="contact-links">${left}<\/div>\n  <\/div>\n  <div class="contact-right">${right}<\/div>\n<\/div>`;
+          const clean = text =>
+            text
+              .replace(/<br class="linebreak">/g, ' ')
+              .replace(/<span class="inline-math">\|<\/span>/g, '<span class="sep">·<\/span>')
+              .replace(/class="href"/g, '')
+              .trim();
+
+          // Process contact links: wrap mobile icon with phone number
+          let primaryClean = clean(primary);
+
+          // Wrap mobile icon and phone number together (handle fa-mobile, fa-mobile-alt, and fa-phone)
+          primaryClean = primaryClean.replace(/(<i class="fas fa-(?:mobile|mobile-alt|phone)"><\/i>)\s*([+\d\s\-]+)/g, '<span class="contact-mobile">$1 $2</span>');
+
+          const secondaryClean = clean(secondary).replace(/^\s*[;:,\-–]\s*/, '');
+
+          const alignmentClass = secondaryClean ? 'contact dual' : 'contact centered';
+          const rightColumn = secondaryClean ? `<div class="contact-right">${secondaryClean}</div>` : '';
+
+          return `\n<div class="${alignmentClass}">\n  <div class="contact-left">\n    <div class="contact-name">${name}<\/div>\n    <div class="contact-links">${primaryClean}<\/div>\n  <\/div>\n  ${rightColumn}\n<\/div>`;
         }
       );
 
@@ -426,6 +458,18 @@ function convertLatexToHtml(latexContent, filename) {
       // Clean up leftover macro artifacts from Trio headings
       html = html.replace(/<span class="macro macro-uline"><\/span>Source Code<\/a>/g, '');
 
+      // Global FontAwesome icon replacement - ensure all icon macros are converted
+      const iconMap = {
+        faLinkedin: 'fab fa-linkedin',
+        faGithub: 'fab fa-github',
+        faEnvelope: 'fas fa-envelope',
+        faMobile: 'fas fa-mobile'
+      };
+      html = html.replace(/<span class="macro macro-(fa\w+)"><\/span>/g, (_, macro) => {
+        const cls = iconMap[macro] || 'fas fa-circle';
+        return `<i class="${cls}"></i>`;
+      });
+
       // Remove any remaining class="href" attributes that might have been missed
       html = html.replace(/class="href"/g, '');
 
@@ -449,16 +493,28 @@ function convertLatexToHtml(latexContent, filename) {
     <title>${metadata.title}</title>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6.5.2 - Primary CDN -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.5.2/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous" />
+    <!-- Font Awesome Fallback CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
+        html, body {
+            background: #fff;
+            margin: 0;
+            padding: 0;
+        }
         body {
-            width: 800px;
+            max-width: 950px;
+            width: 100%;
             margin: 0 auto;
             padding: 2rem;
             font-family: "Source Sans 3", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
             line-height: 1.6;
             color: #000;
             background: #fff;
+            box-sizing: border-box;
         }
+        * { box-sizing: border-box; }
         h1, h2, h3, h4, h5, h6 {
             margin-top: 1.5em;
             margin-bottom: 0.5em;
@@ -500,8 +556,26 @@ function convertLatexToHtml(latexContent, filename) {
         .resume-items li { margin: 0.25rem 0; }
         .resume-heading-list { margin: 0.25rem 0 0.5rem 0; }
         .contact { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
-        .contact-name { font-size: 1.75rem; font-weight: 700; white-space: nowrap; }
-        .contact-links { color: #111; white-space: nowrap; }
+        .contact.centered { grid-template-columns: 1fr; text-align: center; }
+        .contact.centered .contact-name { justify-self: center; }
+        .contact.centered .contact-links { justify-self: center; }
+        .contact-name { font-size: 1.75rem; font-weight: 700; }
+        .contact-links { color: #111; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; align-items: center; }
+        .contact-links a { display: inline-flex; align-items: center; gap: 0.25rem; }
+        .contact-links i { 
+            color: #1e3a8a; 
+            font-style: normal; 
+            font-variant: normal; 
+            text-rendering: auto; 
+            -webkit-font-smoothing: antialiased; 
+            display: inline-block;
+            font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands", "Font Awesome 6 Pro";
+            font-weight: 900;
+        }
+        .contact-links i.fab { font-family: "Font Awesome 6 Brands"; font-weight: 400; }
+        .contact-links > i { display: inline-flex; align-items: center; gap: 0.25rem; }
+        .contact-sep { color: #666; margin: 0 0.25rem; }
+        .contact-mobile { display: inline-flex; align-items: center; gap: 0.25rem; }
         .contact-right { text-align: right; white-space: nowrap; }
         .sep { margin: 0 0.35rem; color: #666; }
         .trio { display: grid; grid-template-columns: 1fr auto auto; gap: 0.5rem; align-items: baseline; margin: 0.25rem 0; position: relative; }
@@ -512,7 +586,7 @@ function convertLatexToHtml(latexContent, filename) {
         .row { display: grid; grid-template-columns: 1fr auto; align-items: baseline; }
         .row .left, .row .right { white-space: nowrap; }
         .row .right { text-align: right; color: #374151; }
-        .skill-row { display: grid; grid-template-columns: 0.23fr 0.01fr 0.76fr; align-items: start; gap: 0.5rem; }
+        .skill-row { display: grid; grid-template-columns: 0.28fr 0.01fr 0.71fr; align-items: start; gap: 0.5rem; }
         .skill-label { font-weight: 700; }
         .skill-sep { text-align: center; }
         .macro { display: none; }
@@ -530,6 +604,82 @@ function convertLatexToHtml(latexContent, filename) {
         }
         .converter-footer a:hover {
             text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            h1 { font-size: 1.75em; }
+            h2 { font-size: 1.25em; margin-top: 1em; }
+            .contact-name { font-size: 1.5rem; }
+            .contact-links { font-size: 0.9rem; gap: 0.4rem; }
+            .trio {
+                grid-template-columns: 1fr;
+                gap: 0.25rem;
+                margin: 0.5rem 0;
+            }
+            .trio-title {
+                justify-self: start;
+                white-space: normal;
+            }
+            .trio-tech {
+                position: static;
+                transform: none;
+                left: auto;
+                justify-self: start;
+                white-space: normal;
+            }
+            .trio-link {
+                justify-self: start;
+                white-space: normal;
+            }
+            .row {
+                grid-template-columns: 1fr;
+                gap: 0.25rem;
+            }
+            .row .left, .row .right {
+                white-space: normal;
+            }
+            .row .right {
+                text-align: left;
+            }
+            .skill-row {
+                grid-template-columns: 1fr;
+                gap: 0.25rem;
+            }
+            .skill-label {
+                margin-bottom: 0.25rem;
+            }
+            .skill-sep {
+                display: none;
+            }
+            .skill-content {
+                margin-left: 0;
+            }
+            .contact {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            .contact-right {
+                text-align: left;
+                white-space: normal;
+            }
+        }
+        @media (max-width: 480px) {
+            body {
+                padding: 0.75rem;
+            }
+            h1 { font-size: 1.5em; }
+            h2 { font-size: 1.1em; }
+            .contact-name { font-size: 1.25rem; }
+            .contact-links {
+                font-size: 0.85rem;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .resume-items {
+                margin-left: 1rem;
+            }
         }
     </style>
 </head>
