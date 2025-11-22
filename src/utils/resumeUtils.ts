@@ -24,4 +24,3 @@ export function getResumeUrl(): string {
 export function getGoogleDriveResumeLink(): string {
   return import.meta.env.VITE_GOOGLE_DRIVE_RESUME_LINK || '';
 }
-
