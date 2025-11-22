@@ -520,7 +520,7 @@ function convertLatexToHtml(latexContent, filename) {
             margin-bottom: 0.5em;
             font-weight: bold;
         }
-        h1 { font-size: 2em; text-align: center; }
+        h1 { font-size: 5em; text-align: center; }
         h2 { font-size: 1.5em; font-variant: small-caps; color: #1e3a8a; border-bottom: 1px solid #1e3a8a; padding-bottom: 0.25rem; margin-top: 1.2em; }
         h3 { font-size: 1.2em; }
         .author { text-align: center; font-style: italic; margin: 1em 0; }
@@ -609,7 +609,7 @@ function convertLatexToHtml(latexContent, filename) {
             body {
                 padding: 1rem;
             }
-            h1 { font-size: 1.75em; }
+            h1 { font-size: 5em; }
             h2 { font-size: 1.25em; margin-top: 1em; }
             .contact-name { font-size: 1.5rem; }
             .contact-links { font-size: 0.9rem; gap: 0.4rem; }
@@ -669,7 +669,7 @@ function convertLatexToHtml(latexContent, filename) {
             body {
                 padding: 0.75rem;
             }
-            h1 { font-size: 1.5em; }
+            h1 { font-size: 5em; }
             h2 { font-size: 1.1em; }
             .contact-name { font-size: 1.25rem; }
             .contact-links {
