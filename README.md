@@ -175,13 +175,11 @@ Check the generated files in `public/converted-docs/` and review `public/documen
 
 - **React + TypeScript**: Frontend framework
 - **Vite**: Build tool and dev server
-- **Tailwind CSS**: Styling framework
 - **@unified-latex**: LaTeX parsing and conversion
 - **MathJax**: Mathematical notation rendering
 - **Supabase**: Database for tracking conversions
 - **GitHub Actions**: CI/CD automation
 - **GitHub Pages**: Static site hosting
-- **Lucide React**: Icon library
 - **Source Sans Pro**: Typography
 
 ## License
