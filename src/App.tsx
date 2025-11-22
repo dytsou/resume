@@ -1,30 +1,46 @@
 import { useEffect } from 'react';
+import { DownloadFromDriveButton } from './components/DownloadFromDriveButton';
+import { getResumeUrl, getGoogleDriveResumeLink } from './utils/resumeUtils';
 
+/**
+ * Main application component
+ * Displays the resume in an iframe and optionally provides a download button
+ */
 function App() {
   useEffect(() => {
     document.title = 'Resume';
   }, []);
 
-  // Try different approaches to load the resume
-  const getResumeUrl = () => {
-    const baseUrl = import.meta.env.BASE_URL;
+  const resumeUrl = getResumeUrl();
+  const googleDriveLink = getGoogleDriveResumeLink();
 
-    // For GitHub Pages, use absolute path
-    if (baseUrl === '/resume/') {
-      return '/resume/converted-docs/resume.html';
-    }
-    // For local development
-    return `${baseUrl}converted-docs/resume.html`;
+  const handleIframeLoad = () => {
+    console.log('Iframe loaded successfully');
+  };
+
+  const handleIframeError = (e: React.SyntheticEvent<HTMLIFrameElement, Event>) => {
+    console.error('Iframe error:', e);
   };
 
   return (
-    <iframe
-      src={getResumeUrl()}
-      title="Resume"
-      style={{ border: 'none', width: '100vw', height: '100vh' }}
-      onLoad={() => console.log('Iframe loaded successfully')}
-      onError={(e) => console.error('Iframe error:', e)}
-    />
+    <>
+      {googleDriveLink && (
+        <div className="download-button-wrapper">
+          <DownloadFromDriveButton
+            driveLink={googleDriveLink}
+            filename="resume.pdf"
+            buttonText="Download Resume"
+          />
+        </div>
+      )}
+      <iframe
+        src={resumeUrl}
+        title="Resume"
+        style={{ border: 'none', width: '100vw', height: '100vh' }}
+        onLoad={handleIframeLoad}
+        onError={handleIframeError}
+      />
+    </>
   );
 }
 
