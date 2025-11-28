@@ -9,7 +9,9 @@
     "convert": "node scripts/convert-latex.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit -p tsconfig.app.json"
+    "typecheck": "tsc --noEmit -p tsconfig.app.json",
+    "release": "pnpm run convert && pnpm run build && pnpm run publish",
+    "publish": "pnpm publish --access public"
   },
   "dependencies": {
     "@unified-latex/unified-latex-to-hast": "^1.8.3",
