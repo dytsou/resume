@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
     "release": "pnpm run convert && pnpm run build && pnpm run publish",
-    "publish": "pnpm publish --access public"
+    "publish:npmjs": "pnpm publish --access public --registry https://registry.npmjs.org"
   },
   "dependencies": {
     "@unified-latex/unified-latex-to-hast": "^1.8.3",
