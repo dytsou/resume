@@ -1,6 +1,6 @@
 {
   "name": "@dytsou/resume-converter",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "type": "module",
   "packageManager": "pnpm@9.12.2",
   "scripts": {
