@@ -1,0 +1,57 @@
+name: Update Year in LICENSE and Footer
+
+on:
+  schedule:
+    # Run on January 1st at 00:00 UTC each year
+    - cron: '0 0 1 1 *'
+  workflow_dispatch: # Allow manual trigger
+  push:
+    branches: [main]
+    paths:
+      - 'LICENSE'
+      - 'scripts/html-template.mjs'
+
+permissions:
+  contents: write
+
+jobs:
+  update-year:
+    name: Update Year
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Get current year
+        id: get_year
+        run: echo "year=$(date +%Y)" >> $GITHUB_OUTPUT
+
+      - name: Update LICENSE year
+        run: |
+          CURRENT_YEAR="${{ steps.get_year.outputs.year }}"
+          # Update the year in LICENSE file (format: Copyright (c) YYYY)
+          # Use sed to replace the 4-digit year while preserving the rest of the line
+          sed -i "s/Copyright (c) [0-9]\{4\}/Copyright (c) ${CURRENT_YEAR}/" LICENSE
+          echo "Updated LICENSE year to ${CURRENT_YEAR}"
+
+      - name: Check for changes
+        id: git_check
+        run: |
+          if git diff --quiet LICENSE; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Changes detected in LICENSE"
+            git diff LICENSE
+          fi
+
+      - name: Commit and push changes
+        if: steps.git_check.outputs.changed == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add LICENSE
+          git commit -m "chore: update copyright year to ${{ steps.get_year.outputs.year }}"
+          git push
