@@ -138,6 +138,7 @@ export function getStyles() {
  * Wraps content in full HTML document template
  */
 export function wrapInHtmlTemplate(content, metadata) {
+  const currentYear = new Date().getFullYear();
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -158,7 +159,7 @@ export function wrapInHtmlTemplate(content, metadata) {
     ${content}
     <div class="converter-footer">
         Generated with <a href="https://github.com/dytsou/resume" target="_blank" rel="noopener">LaTeX to HTML Converter</a><br>
-        © 2025 Tsou, Dong-You. Licensed under <a href="https://github.com/dytsou/resume/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
+        © ${currentYear} Tsou, Dong-You. Licensed under <a href="https://github.com/dytsou/resume/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
     </div>
 </body>
 </html>`;
