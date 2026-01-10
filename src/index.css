@@ -6,7 +6,10 @@
 }
 
 body {
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 /* Download button wrapper - positioned bottom-right */
@@ -41,7 +44,10 @@ body {
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 .download-drive-button:hover:not(:disabled) {

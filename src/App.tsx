@@ -18,7 +18,9 @@ function App() {
     console.log('Iframe loaded successfully');
   };
 
-  const handleIframeError = (e: React.SyntheticEvent<HTMLIFrameElement, Event>) => {
+  const handleIframeError = (
+    e: React.SyntheticEvent<HTMLIFrameElement, Event>
+  ) => {
     console.error('Iframe error:', e);
   };
 

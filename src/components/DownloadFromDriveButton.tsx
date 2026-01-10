@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { convertToDirectDownloadLink, downloadFile } from '../utils/googleDriveUtils';
+import {
+  convertToDirectDownloadLink,
+  downloadFile,
+} from '../utils/googleDriveUtils';
 
 interface DownloadFromDriveButtonProps {
   /** Google Drive share link */
@@ -42,7 +45,8 @@ export function DownloadFromDriveButton({
         setIsLoading(false);
       }, 500);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to download file';
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to download file';
       setError(errorMessage);
       setIsLoading(false);
     }
@@ -100,5 +104,3 @@ export function DownloadFromDriveButton({
     </div>
   );
 }
-
-
