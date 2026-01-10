@@ -3,13 +3,13 @@ name: Update Year in LICENSE and Footer
 on:
   schedule:
     # Run on January 1st at 00:00 UTC each year
-    - cron: '0 0 1 1 *'
+    - cron: "0 0 1 1 *"
   workflow_dispatch: # Allow manual trigger
   push:
     branches: [main]
     paths:
-      - 'LICENSE'
-      - 'scripts/html-template.mjs'
+      - "LICENSE"
+      - "scripts/html-template.mjs"
 
 permissions:
   contents: write
