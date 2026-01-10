@@ -763,10 +763,10 @@ function main() {
   console.log(`Successfully converted: ${manifest.length}/${files.length} files`);
 
   if (hasErrors) {
-    console.error('\n❌ Some files failed to convert. Fix errors before deployment.');
+    console.error('\nSome files failed to convert. Fix errors before deployment.');
     process.exit(1);
   } else {
-    console.log('\n✅ All LaTeX files converted successfully!');
+    console.log('\nAll LaTeX files converted successfully!');
     process.exit(0);
   }
 }
