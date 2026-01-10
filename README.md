@@ -39,6 +39,7 @@ resume/
 Place your `.tex` files in the `latex/` directory. The converter will automatically process all files with a `.tex` extension.
 
 Example structure:
+
 ```
 latex/
 ├── my-research-paper.tex
@@ -80,6 +81,7 @@ git push origin main
 ```
 
 The GitHub Actions workflow will:
+
 1. Install dependencies
 2. Convert all LaTeX files
 3. Validate conversion success
@@ -137,6 +139,7 @@ Modify the CSS in `scripts/convert-latex.mjs` to customize the HTML output appea
 ### Document Metadata
 
 The converter extracts metadata from LaTeX commands:
+
 - `\title{...}` - Document title
 - `\author{...}` - Author names
 - `\date{...}` - Publication date
@@ -144,6 +147,7 @@ The converter extracts metadata from LaTeX commands:
 ## Deployment
 
 Your site will be available at:
+
 ```
 https://<username>.github.io/<repository-name>/
 ```
@@ -153,6 +157,7 @@ https://<username>.github.io/<repository-name>/
 ### Conversion Fails
 
 Check the GitHub Actions logs to see which LaTeX file failed and why. Common issues:
+
 - Unsupported LaTeX packages
 - Syntax errors in LaTeX source
 - Missing closing braces
@@ -164,6 +169,7 @@ If deployment is blocked, the CI/CD pipeline detected conversion failures. Fix t
 ### Local Testing
 
 Run the conversion locally to debug issues:
+
 ```bash
 pnpm run convert
 ```
