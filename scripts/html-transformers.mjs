@@ -223,40 +223,19 @@ export function processQuadHeadings(html, quadHeadingMatches) {
   let idx = 0;
 
   return html.replace(
-    /<span class="macro macro-resumeQuadHeading"><\/span>([^<]*?)\s*(Bachelor of[^<]*?)\s*([A-Z][a-z]{2,9}\.\s\d{4}\s[–-]\s[A-Z][a-z]{2,9}\.\s\d{4})/g,
-    (m, pre, degreeLine, dates) => {
+    /<span class="macro macro-resumeQuadHeading"><\/span>([\s\S]*?)(?=(<ul|<span|<\/div|<\/p|$))/g,
+    (m, content) => {
       const parsed = quadHeadingMatches[idx++];
-
-      if (parsed) {
-        const uni = parsed[1].trim();
-        const loc = parsed[2].trim();
-        const degree = parsed[3].trim();
-        const dateRange = (parsed[4] || dates)
-          .replace(/\s*--\s*/g, ' – ')
-          .replace(/\s+/g, ' ')
-          .trim();
-
-        return `
-<div class="quad">
-  <div class="row"><div class="left"><strong>${uni}</strong></div><div class="right">${loc}</div></div>
-  <div class="row"><div class="left"><em>${degree}</em></div><div class="right"><em>${dateRange}</em></div></div>
-</div>`;
+      
+      if (!parsed || parsed.length < 5) {
+        // If we don't have parsed arguments, return original
+        return m;
       }
 
-      // Fallback parsing
-      const preTrim = (pre || '').replace(/\s+/g, ' ').trim();
-      let uni = preTrim;
-      let loc = '';
-
-      const cityCountryMatch = preTrim.match(
-        /^(.*?),\s*([A-Za-z''\- ]+,\s*[A-Za-z''\- ]+)$/
-      );
-      if (cityCountryMatch) {
-        uni = cityCountryMatch[1].trim();
-        loc = cityCountryMatch[2].trim();
-      }
-
-      const cleanDates = dates
+      const uni = parsed[1].trim();
+      const loc = parsed[2].trim();
+      const degree = parsed[3].trim();
+      const dateRange = parsed[4]
         .replace(/\s*--\s*/g, ' – ')
         .replace(/\s+/g, ' ')
         .trim();
@@ -264,7 +243,7 @@ export function processQuadHeadings(html, quadHeadingMatches) {
       return `
 <div class="quad">
   <div class="row"><div class="left"><strong>${uni}</strong></div><div class="right">${loc}</div></div>
-  <div class="row"><div class="left"><em>${degreeLine}</em></div><div class="right"><em>${cleanDates}</em></div></div>
+  <div class="row"><div class="left"><em>${degree}</em></div><div class="right"><em>${dateRange}</em></div></div>
 </div>`;
     }
   );

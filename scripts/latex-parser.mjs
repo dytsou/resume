@@ -33,12 +33,30 @@ export function parseLatexMacro(content, macroName, argCount) {
           args.push(currentArg.trim());
           parsedArgs++;
           currentArg = '';
-          // Look for next argument
-          while (pos < content.length && content[pos] !== '{') {
+          // Look for next argument, skipping whitespace, newlines, and comments
+          while (pos < content.length) {
             pos++;
-          }
-          if (pos < content.length) {
-            braceCount = 1;
+            const nextChar = content[pos];
+            // Skip whitespace and newlines
+            if (nextChar === ' ' || nextChar === '\t' || nextChar === '\n' || nextChar === '\r') {
+              continue;
+            }
+            // Skip LaTeX comments (lines starting with %)
+            if (nextChar === '%') {
+              while (pos < content.length && content[pos] !== '\n' && content[pos] !== '\r') {
+                pos++;
+              }
+              continue;
+            }
+            // Found the opening brace for next argument
+            if (nextChar === '{') {
+              braceCount = 1;
+              break;
+            }
+            // If we hit something else before finding {, we might be done
+            if (nextChar && nextChar.match(/[a-zA-Z\\]/)) {
+              break;
+            }
           }
         } else {
           currentArg += char;
