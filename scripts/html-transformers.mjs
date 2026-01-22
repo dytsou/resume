@@ -226,7 +226,7 @@ export function processQuadHeadings(html, quadHeadingMatches) {
     /<span class="macro macro-resumeQuadHeading"><\/span>([\s\S]*?)(?=(<ul|<span|<\/div|<\/p|$))/g,
     (m, content) => {
       const parsed = quadHeadingMatches[idx++];
-      
+
       if (!parsed || parsed.length < 5) {
         // If we don't have parsed arguments, return original
         return m;
