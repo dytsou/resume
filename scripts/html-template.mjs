@@ -13,8 +13,8 @@ export function getStyles() {
       padding: 0;
     }
     body {
-      max-width: 950px;
-      width: 100%;
+      max-width: 1000px;
+      width: 95%;
       margin: 0 auto;
       padding: 2rem;
       font-family: "Source Sans 3", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
