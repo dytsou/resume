@@ -39,7 +39,7 @@ jobs:
           VITE_GOOGLE_DRIVE_RESUME_LINK: ${{ vars.VITE_GOOGLE_DRIVE_RESUME_LINK }}
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
