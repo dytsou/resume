@@ -21,8 +21,8 @@
     "@unified-latex/unified-latex-util-parse": "^1.8.4",
     "hast-util-to-html": "^9.0.5",
     "mathjax-full": "^3.2.2",
-    "react": "^19.2.5",
-    "react-dom": "^19.2.5",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
     "rehype-stringify": "^10.0.1",
     "unified": "^11.0.5"
   },
