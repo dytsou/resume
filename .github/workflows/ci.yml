@@ -4,8 +4,8 @@ permissions:
   pull-requests: read
 
 on:
-  push:  # Runs on push to any branch
-  pull_request:  # Also runs on PRs to any branch
+  push: # Runs on push to any branch
+  pull_request: # Also runs on PRs to any branch
 
 jobs:
   lint:
@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Enable Corepack
         run: corepack enable
@@ -39,7 +39,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Enable Corepack
         run: corepack enable
@@ -60,7 +60,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Enable Corepack
         run: corepack enable
@@ -70,4 +70,3 @@ jobs:
 
       - name: Build project
         run: pnpm run build
-

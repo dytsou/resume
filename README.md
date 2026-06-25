@@ -34,6 +34,11 @@ resume/
 
 ## Getting Started
 
+### Prerequisites
+
+- **Node.js** >= 24.0.0 (Active LTS; required by Vite 8 and `@cloudflare/vite-plugin`)
+- **pnpm** 11.x (enabled via Corepack: `corepack enable`)
+
 ### 1. Add Your LaTeX Documents
 
 Place your `.tex` files in the `latex/` directory. The converter will automatically process all files with a `.tex` extension.
@@ -168,7 +173,7 @@ If deployment is blocked, the CI/CD pipeline detected conversion failures. Fix t
 
 ### Local Testing
 
-Run the conversion locally to debug issues:
+Requires Node.js >= 24.0.0. Run the conversion locally to debug issues:
 
 ```bash
 pnpm run convert
@@ -179,7 +184,7 @@ Check the generated files in `public/converted-docs/` and review `public/documen
 ## Technologies Used
 
 - **React + TypeScript**: Frontend framework
-- **Vite**: Build tool and dev server
+- **Vite 8**: Build tool and dev server
 - **@unified-latex**: LaTeX parsing and conversion
 - **MathJax**: Mathematical notation rendering
 - **Supabase**: Database for tracking conversions
