@@ -2,7 +2,7 @@
   "name": "@dytsou/resume-converter",
   "version": "2.3.4",
   "type": "module",
-  "packageManager": "pnpm@9.12.2",
+  "packageManager": "pnpm@11.9.0",
   "scripts": {
     "dev": "vite",
     "build": "pnpm run convert && vite build",
@@ -45,6 +45,9 @@
     "vite": "^8.0.16",
     "wrangler": "^4.104.0"
   },
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "license": "MIT",
   "files": [
     "dist",
@@ -59,10 +62,5 @@
   ],
   "publishConfig": {
     "access": "public"
-  },
-  "pnpm": {
-    "overrides": {
-      "mdast-util-to-hast": "13.2.1"
-    }
   }
 }
