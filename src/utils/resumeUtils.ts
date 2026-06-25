@@ -4,18 +4,9 @@
 
 /**
  * Gets the resume HTML file URL based on the current environment
- * Handles both GitHub Pages deployment and local development
  */
 export function getResumeUrl(): string {
-  const baseUrl = import.meta.env.BASE_URL;
-
-  // For GitHub Pages, use absolute path
-  if (baseUrl === '/resume/') {
-    return '/resume/converted-docs/resume.html';
-  }
-
-  // For local development
-  return `${baseUrl}converted-docs/resume.html`;
+  return `${import.meta.env.BASE_URL}converted-docs/resume.html`;
 }
 
 /**

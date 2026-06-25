@@ -1,14 +1,37 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "resume",
+  "account_id": "c457ded6af8937c1aa9032b5396f2f05",
   "compatibility_date": "2026-06-25",
   "observability": {
     "enabled": true
   },
   "assets": {
-    "not_found_handling": "single-page-application"
+    "directory": "./dist",
+    "not_found_handling": "single-page-application",
+    "html_handling": "auto-trailing-slash"
   },
-  "compatibility_flags": [
-    "nodejs_compat"
-  ]
+  "compatibility_flags": ["nodejs_compat"],
+  "routes": [
+    {
+      "pattern": "resume.tsou.me",
+      "custom_domain": true
+    }
+  ],
+  "env": {
+    "subpath": {
+      "name": "resume-subpath",
+      "assets": {
+        "directory": "./dist",
+        "not_found_handling": "single-page-application",
+        "html_handling": "auto-trailing-slash"
+      },
+      "routes": [
+        {
+          "pattern": "dy.tsou.me/resume*",
+          "zone_name": "tsou.me"
+        }
+      ]
+    }
+  }
 }
