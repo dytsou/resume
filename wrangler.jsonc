@@ -17,21 +17,5 @@
       "pattern": "resume.tsou.me",
       "custom_domain": true
     }
-  ],
-  "env": {
-    "subpath": {
-      "name": "resume-subpath",
-      "assets": {
-        "directory": "./dist",
-        "not_found_handling": "single-page-application",
-        "html_handling": "auto-trailing-slash"
-      },
-      "routes": [
-        {
-          "pattern": "dy.tsou.me/resume*",
-          "zone_name": "tsou.me"
-        }
-      ]
-    }
-  }
+  ]
 }
