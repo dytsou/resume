@@ -5,5 +5,5 @@
   "previewUrl": "https://resume.tsou.me",
   "pagesProject": "dy-tsou-resume",
   "outputDir": "dist",
-  "basePath": "/resume/"
+  "basePath": "/"
 }
