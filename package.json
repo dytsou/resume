@@ -15,8 +15,7 @@
     "release": "pnpm run convert && pnpm run build && pnpm run publish",
     "publish:npmjs": "pnpm publish --access public --registry https://registry.npmjs.org",
     "prepare": "command -v husky >/dev/null 2>&1 && husky || true",
-    "deploy": "pnpm run build && wrangler deploy --config wrangler.jsonc --env=\"\"",
-    "deploy:subpath": "WORKER_SUBPATH=true BASE_PATH=/resume/ pnpm run build && wrangler deploy --config wrangler.jsonc --env subpath"
+    "deploy": "pnpm run build && wrangler deploy --config wrangler.jsonc --env=\"\""
   },
   "dependencies": {
     "@unified-latex/unified-latex-to-hast": "^1.8.4",
