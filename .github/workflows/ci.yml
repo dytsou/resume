@@ -71,11 +71,18 @@ jobs:
       - name: Build project
         run: pnpm run build
         env:
+          # Served under the front door at dy.tsou.me/resume/, so assets must be prefixed.
+          BASE_PATH: /resume/
           VITE_GOOGLE_DRIVE_RESUME_LINK: ${{ vars.VITE_GOOGLE_DRIVE_RESUME_LINK }}
 
       - name: Verify build output
         if: github.ref == 'refs/heads/main'
-        run: test -f dist/index.html
+        run: |
+          test -f dist/index.html
+          # Assets must be prefixed for the front-door mount at /resume/.
+          grep -q '"/resume/assets/' dist/index.html \
+            || grep -q "'/resume/assets/" dist/index.html \
+            || grep -q '/resume/assets/' dist/index.html
 
       - name: Verify deploy contract
         if: github.ref == 'refs/heads/main'
