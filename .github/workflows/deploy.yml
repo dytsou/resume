@@ -33,10 +33,15 @@ jobs:
       - name: Build
         run: pnpm build
         env:
+          # Served under the front door at dy.tsou.me/resume/, so assets must be prefixed.
+          BASE_PATH: /resume/
           VITE_GOOGLE_DRIVE_RESUME_LINK: ${{ vars.VITE_GOOGLE_DRIVE_RESUME_LINK }}
 
       - name: Verify build output
-        run: test -f dist/index.html
+        run: |
+          test -f dist/index.html
+          # Assets must be prefixed for the front-door mount at /resume/.
+          grep -q '/resume/assets/' dist/index.html
 
       - name: Upload build artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
