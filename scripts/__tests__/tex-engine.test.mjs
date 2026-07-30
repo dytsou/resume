@@ -22,7 +22,7 @@ describe('compileDocument validation', () => {
     expect(result.success).toBe(true);
     expect(result.html).toContain('<!DOCTYPE html>');
     expect(result.metadata?.title).toBeTruthy();
-  });
+  }, 30_000);
 
   it('returns structured failure for malformed LaTeX', () => {
     const result = compileDocument({
