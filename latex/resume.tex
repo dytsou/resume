@@ -110,6 +110,8 @@
 \newcommand{\resumeItemListStart}{\begin{itemize}[rightmargin=0.1in]}
 \newcommand{\resumeItemListEnd}{\end{itemize}}
 
+\StartDefiningTabulars
+
 % resumeSectionType renders a bolded type to be used under a section, used as skill type here, middle element is used to keep ":"s in the same vertical line
 \newcommand{\resumeSectionType}[3]{
   \item\begin{tabular*}{0.95\textwidth}[t]{
@@ -156,6 +158,8 @@
     \textbf{\small#1} & {\small#2} \\
   \end{tabular*}
 }
+
+\StopDefiningTabulars
 
 % commands to start and end itemization of resumeQuadHeading, lefmargin for left indent of 0.15in for resumeItems
 \newcommand{\resumeHeadingListStart}{
