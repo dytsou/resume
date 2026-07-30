@@ -10,6 +10,7 @@ collection-fontsrecommended
 lwarp
 verifycommand
 ifptex
+catchfile
 fontawesome5
 titlesec
 enumitem
