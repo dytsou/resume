@@ -41,7 +41,9 @@
 
 %----------FONT OPTIONS-------------------
 \usepackage[default]{sourcesanspro} % uses the font source sans pro
-\urlstyle{same} % changes url font from default urlfont to font being used by the document
+\ifdefined\urlstyle
+  \urlstyle{same} % lwarp's HTML hyperref shim does not define \urlstyle
+\fi
 %-----------------------------------------
 
 
