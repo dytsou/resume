@@ -8,6 +8,7 @@ collection-latex
 collection-latexrecommended
 collection-fontsrecommended
 lwarp
+ifptex
 fontawesome5
 titlesec
 enumitem

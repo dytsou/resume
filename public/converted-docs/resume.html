@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untitled Document</title>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6.5.2 - Primary CDN -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.5.2/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous" />
+    <!-- Font Awesome Fallback CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+    html, body {
+      background: #fff;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      max-width: 1000px;
+      width: 95%;
+      margin: 0 auto;
+      padding: 2rem;
+      font-family: "Source Sans 3", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      line-height: 1.6;
+      color: #000;
+      background: #fff;
+      box-sizing: border-box;
+    }
+    * { box-sizing: border-box; }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+      font-weight: bold;
+    }
+    h1 { font-size: 5em; text-align: center; }
+    h2 { font-size: 1.5em; font-variant: small-caps; color: #1e3a8a; border-bottom: 1px solid #1e3a8a; padding-bottom: 0.25rem; margin-top: 1.2em; }
+    h3 { font-size: 1.2em; }
+    .author { text-align: center; font-style: italic; margin: 1em 0; }
+    .date { text-align: center; margin-bottom: 2em; }
+    .title { margin-top: 0.5em; }
+    p { margin: 1em 0; text-align: left; }
+    .theorem, .lemma, .proposition, .corollary {
+      font-style: italic;
+      margin: 1em 0;
+      padding: 0.5em;
+      border-left: 3px solid #333;
+    }
+    .proof { margin: 1em 0 1em 2em; }
+    code, pre {
+      font-family: "Courier New", monospace;
+      background: #f5f5f5;
+      padding: 0.2em 0.4em;
+    }
+    pre { padding: 1em; overflow-x: auto; }
+    .equation { margin: 1em 0; overflow-x: auto; }
+    a { color: #0066cc; text-decoration: none; cursor: pointer; }
+    a:hover { color: #004499; text-decoration: none; }
+    a:visited { color: #551a8b; text-decoration: none; }
+    .resume-items { margin: 0.25rem 0 1rem 1.25rem; }
+    .resume-items li { margin: 0.25rem 0; }
+    .resume-heading-list { margin: 0.25rem 0 0.5rem 0; }
+    .contact { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .contact.centered { grid-template-columns: 1fr; text-align: center; }
+    .contact.centered .contact-name { justify-self: center; }
+    .contact.centered .contact-links { justify-self: center; }
+    .contact-name { font-size: 1.75rem; font-weight: 700; }
+    .contact-links { color: #111; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; align-items: center; }
+    .contact-links a { display: inline-flex; align-items: center; gap: 0.25rem; }
+    .contact-links i { 
+      color: #1e3a8a; 
+      font-style: normal; 
+      font-variant: normal; 
+      text-rendering: auto; 
+      -webkit-font-smoothing: antialiased; 
+      display: inline-block;
+      font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands", "Font Awesome 6 Pro";
+      font-weight: 900;
+    }
+    .contact-links i.fab { font-family: "Font Awesome 6 Brands"; font-weight: 400; }
+    .contact-links > i { display: inline-flex; align-items: center; gap: 0.25rem; }
+    .contact-sep { color: #666; margin: 0 0.25rem; }
+    .contact-mobile { display: inline-flex; align-items: center; gap: 0.25rem; }
+    .contact-right { text-align: right; white-space: nowrap; }
+    .sep { margin: 0 0.35rem; color: #666; }
+    .trio { display: grid; grid-template-columns: 1fr auto auto; gap: 0.5rem; align-items: baseline; margin: 0.25rem 0; position: relative; }
+    .trio-title { justify-self: start; white-space: nowrap; }
+    .trio-tech { position: absolute; left: 50%; transform: translateX(-50%); color: #374151; white-space: nowrap; }
+    .trio-link { justify-self: end; white-space: nowrap; }
+    .quad, .quad-details { margin: 0.25rem 0; }
+    .row { display: grid; grid-template-columns: 1fr auto; align-items: baseline; }
+    .row .left, .row .right { white-space: nowrap; }
+    .row .right { text-align: right; color: #374151; }
+    .skill-row { display: grid; grid-template-columns: 0.28fr 0.01fr 0.71fr; align-items: start; gap: 0.5rem; }
+    .skill-label { font-weight: 700; }
+    .skill-sep { text-align: center; }
+    .macro { display: none; }
+    .converter-footer {
+      margin-top: 3rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e5e7eb;
+      text-align: center;
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+    .converter-footer a { color: #3b82f6; text-decoration: none; }
+    .converter-footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 768px) {
+      body { padding: 1rem; }
+      h1 { font-size: 5em; }
+      h2 { font-size: 1.25em; margin-top: 1em; }
+      .contact-name { font-size: 1.5rem; }
+      .contact-links { font-size: 0.9rem; gap: 0.4rem; }
+      .trio { grid-template-columns: 1fr; gap: 0.25rem; margin: 0.5rem 0; }
+      .trio-title { justify-self: start; white-space: normal; }
+      .trio-tech { position: static; transform: none; left: auto; justify-self: start; white-space: normal; }
+      .trio-link { justify-self: start; white-space: normal; }
+      .row { grid-template-columns: 1fr; gap: 0.25rem; }
+      .row .left, .row .right { white-space: normal; }
+      .row .right { text-align: left; }
+      .skill-row { grid-template-columns: 1fr; gap: 0.25rem; }
+      .skill-label { margin-bottom: 0.25rem; }
+      .skill-sep { display: none; }
+      .skill-content { margin-left: 0; }
+      .contact { grid-template-columns: 1fr; gap: 0.5rem; }
+      .contact-right { text-align: left; white-space: normal; }
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 0.75rem; }
+      h1 { font-size: 5em; }
+      h2 { font-size: 1.1em; }
+      .contact-name { font-size: 1.25rem; }
+      .contact-links { font-size: 0.85rem; flex-direction: column; align-items: flex-start; }
+      .resume-items { margin-left: 1rem; }
+    }
+  </style>
+</head>
+<body>
+    
+<div class="contact centered">
+  <div class="contact-left">
+    <div class="contact-name">Tsou, Dong-You</div>
+    <div class="contact-links"><a href="https://www.linkedin.com/in/dytsou/" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i> linkedin.com/in/dytsou</a> <a href="https://github.com/dytsou/" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i> github.com/dytsou</a> <a href="mailto:contact@dy.tsou.me"><i class="fas fa-envelope"></i> contact@dy.tsou.me</a> <span class="contact-mobile"><i class="fas fa-mobile"></i> +886-971-618-820</span></div>
+  </div>
+  
+</div><h2>Education</h2><div class="resume-heading-list"> 
+<div class="quad">
+  <div class="row"><div class="left"><strong>National Yang Ming Chiao Tung University</strong></div><div class="right">Hsinchu, Taiwan</div></div>
+  <div class="row"><div class="left"><em>Bachelor of Science in Computer Science</em></div><div class="right"><em>Sept. 2022 – Present</em></div></div>
+</div></div><h2>Technical Skills</h2><div class="resume-heading-list">
+<div class="skill-row">
+  <div class="skill-label"><strong>Languages</strong></div>
+  <div class="skill-sep"></div>
+  <div class="skill-content">Python, C++, Go, JavaScript, TypeScript, Java, Dart, HTML, CSS, Verilog, LabVIEW</div>
+</div>
+<div class="skill-row">
+  <div class="skill-label"><strong>Frameworks & Libraries</strong></div>
+  <div class="skill-sep"></div>
+  <div class="skill-content">React.js, Node.js, React Native (Expo), Tailwind CSS, Spring Boot, Flutter, Flask, FastAPI, OpenGL</div>
+</div>
+<div class="skill-row">
+  <div class="skill-label"><strong>Tools & Technologies</strong></div>
+  <div class="skill-sep"></div>
+  <div class="skill-content">Git, PostgreSQL, Docker, Linux, Postman, Yaak, Playwright, Vitest, Grafana, Mermaid Chart</div>
+</div>
+<div class="skill-row">
+  <div class="skill-label"><strong>Specialized Skills</strong></div>
+  <div class="skill-sep"></div>
+  <div class="skill-content">Web Development: Full-stack development with React frontend and backend APIs</div>
+</div>
+<div class="skill-row">
+  <div class="skill-label"><strong></strong></div>
+  <div class="skill-sep"></div>
+  <div class="skill-content">Game Development: OpenGL-based 3D graphics and LabVIEW multiplayer systems</div>
+</div>
+<div class="skill-row">
+  <div class="skill-label"><strong></strong></div>
+  <div class="skill-sep"></div>
+  <div class="skill-content">Bot Development: LINE bot applications with Python</div>
+</div>
+<div class="skill-row">
+  <div class="skill-label"><strong></strong></div>
+  <div class="skill-sep"></div>
+  <div class="skill-content">Computer Vision: Real-time 3D object classification in ground (AV) and aerial (UAV) scenarios</div>
+</div></div>
+<h2>Laboratory Experiences</h2><div class="resume-heading-list"> 
+<div class="quad-details">
+  <div class="row"><div class="left"><a href="https://sqlab.web.nycu.edu.tw" target="_blank" rel="noopener noreferrer"><strong>Software Quality Lab</strong></a></div><div class="right"><span class="date">Sept. 2025 – Present</span></div></div>
+  <div class="row"><div class="left"><em>Context-Aware Prompt Design for Go Codebase Testing: Harnessing Insights from Industry Needs</em></div><div class="right"></div></div>
+</div><ul class="resume-items"><li>Integrated <b class="textbf">AI-assisted test generation into development workflows</b> to achieve measurable gains in efficiency and coverage.</li><li><b class="textbf">Researched the impact of AI-generated testing</b> on developer productivity and software quality, with a focus on quantitative results.</li></ul><div class="quad-details">
+  <div class="row"><div class="left"><a href="http://acm.cs.nycu.edu.tw/" target="_blank" rel="noopener noreferrer"><strong>Applied Computing and Multimedia Lab</strong></a></div><div class="right"><span class="date">Sept. 2024 – Aug. 2025</span></div></div>
+  <div class="row"><div class="left"><em>Video-based 3D Object Detection with Vision Foundation Models</em></div><div class="right"></div></div>
+</div><ul class="resume-items"><li>Built a <b class="textbf">monocular video 3D detector with <a href="https://ai.meta.com/sam2/" target="_blank" rel="noopener noreferrer">SAM 2</a></b> for temporally consistent segmentation and depth-aware boxes</li><li>Applied <b class="textbf">LoRA</b> and <b class="textbf">BEVDepth-style depth-context fusion</b> for efficient training and temporal box refinement</li></ul> </div><h2>Projects</h2><div class="resume-heading-list"><div class="trio">
+  <div class="trio-title"><strong>SDC Core System</strong></div>
+  <div class="trio-tech"><em>Go, RESTful API, Docker, PostgerSQL</em></div>
+  <div class="trio-link"><a href="https://github.com/NYCU-SDC/core-system-backend" target="_blank" rel="noopener noreferrer">Source Code</a></div>
+</div> <ul class="resume-items"><li>Designed and implemented a robust backend infrastructure for NYCU Software Development Club, facilitating cross-unit operations and continuous service availability</li><li>Designed modular <b class="textbf">RESTful APIs</b> and robust authentication, with <b class="textbf">over 500 code commits</b></li><li>Streamlined CI/CD pipeline using <b class="textbf">Docker</b>, reducing deployment time</li><li>Integrated PostgreSQL databases and multi-environment configs for scalable, maintainable infrastructure</li></ul><div class="trio">
+  <div class="trio-title"><strong>CAIender</strong></div>
+  <div class="trio-tech"><em>React.js, Vite, GraphQL, DynamoDB, LLM</em></div>
+  <div class="trio-link"><a href="https://github.com/orgs/MCHackathon2025/repositories" target="_blank" rel="noopener noreferrer">Source Code</a></div>
+</div> <ul class="resume-items"><li>Independently designed and developed a prototype for an AI calendar platform based on <b class="textbf">React</b> architecture</li><li>Integrated <b class="textbf">GraphQL</b> and <b class="textbf">DynamoDB</b>, leveraging LLM to enable <b class="textbf">context-aware recommendations and AI scheduling</b></li><li>Implemented Google Map redirection and GPS-based location search to improve user activity discovery</li><li>Adopted Vite for build optimization, resulting in faster frontend compilation and enhanced modular scalability</li></ul><p></div><h2>Extracurricular Experiences</h2><div class="resume-heading-list"> 
+<div class="quad-details">
+  <div class="row"><div class="left"><a href="https://sdc.nycu.club" target="_blank" rel="noopener noreferrer"><strong>NYCU Software Development Club</strong></a></div><div class="right"><span class="date">Oct. 2023 – Present</span></div></div>
+  <div class="row"><div class="left"><em>Vice President</em></div><div class="right"></div></div>
+</div><ul class="resume-items"><li>Coordinated 18 programs across two semesters, <b class="textbf">supporting a community of 163 members from 42 academic departments</b> and enhancing event quality.</li><li><b class="textbf">Developed and maintained SDC <a href="https://github.com/NYCU-SDC/core-system-backend" target="_blank" rel="noopener noreferrer">Core System</a> for program and event management</b>, support of member tracking, team matching, form workflows and data analytics to streamline operations and improve user experience.</li></ul> 
+<div class="quad-details">
+  <div class="row"><div class="left"><a href="https://sitcon.org/2025/" target="_blank" rel="noopener noreferrer"><strong>SITCON, Students' Information Technology Conference</strong></a></div><div class="right"><span class="date">Oct. 2024 – Mar. 2025</span></div></div>
+  <div class="row"><div class="left"><em>Agenda Committee</em></div><div class="right"></div></div>
+</div><ul class="resume-items"><li>Organizing 28 sessions and coordinating over 2,180 minutes of student rehearsals for <b class="textbf">1,400+ participants at Taiwan’s leading student tech conference</b>.</li></ul> </div>
+    <div class="converter-footer">
+        Generated with <a href="https://github.com/dytsou/resume" target="_blank" rel="noopener">LaTeX to HTML Converter</a><br>
+        © 2026 Tsou, Dong-You. Licensed under <a href="https://github.com/dytsou/resume/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
+    </div>
+</body>
+</html>

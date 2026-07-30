@@ -24,6 +24,11 @@ dist-ssr
 
 public/
 
+# Track converted artifacts for Cloudflare build (convert runs in GitHub CI with TeX Live).
+!public/converted-docs/
+!public/converted-docs/**
+!public/documents-manifest.json
+
 # wrangler files
 .wrangler
 .dev.vars*

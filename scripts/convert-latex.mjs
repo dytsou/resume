@@ -8,6 +8,17 @@ import { join, basename, extname } from 'path';
 import { CONFIG } from './config.mjs';
 import { ensureDirectoryExists } from './utils.mjs';
 import { compileDocument } from './compile/tex-engine.mjs';
+import { isTexAvailable } from './compile/tex-available.mjs';
+
+/**
+ * @param {string[]} texFiles
+ */
+function hasPrebuiltArtifacts(texFiles) {
+  return texFiles.every((file) => {
+    const base = basename(file, '.tex');
+    return existsSync(join(CONFIG.outputDir, `${base}.html`));
+  });
+}
 
 /**
  * Main function - processes all LaTeX files and generates HTML + PDF
@@ -33,6 +44,19 @@ export function main() {
   }
 
   console.log(`Found ${files.length} LaTeX file(s) to convert.`);
+
+  if (!isTexAvailable()) {
+    if (hasPrebuiltArtifacts(files)) {
+      console.warn(
+        'TeX unavailable; skipping convert and using public/converted-docs/ (ponytail: Cloudflare Workers Builds has no TeX Live).'
+      );
+      process.exit(0);
+    }
+    console.error(
+      'TeX Live not found and no prebuilt HTML in public/converted-docs/. Install TeX Live or commit converted artifacts.'
+    );
+    process.exit(1);
+  }
 
   const manifest = [];
   let hasErrors = false;
