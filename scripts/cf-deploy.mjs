@@ -33,11 +33,10 @@ export function resolveReleaseMode({
 
 /** @param {string} name */
 export function previewAlias(name) {
-  const alias = name
-    .toLowerCase()
-    .replace(/[^a-z0-9-]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 63);
+  let alias = name.toLowerCase().replace(/[^a-z0-9-]+/g, '-');
+  while (alias.startsWith('-')) alias = alias.slice(1);
+  while (alias.endsWith('-')) alias = alias.slice(0, -1);
+  alias = alias.slice(0, 63);
   return alias || 'preview';
 }
 

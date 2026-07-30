@@ -11,13 +11,12 @@ on:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 jobs:
   reject-non-main-dispatch:
     if: github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Refuse non-main production deploy
         run: |
@@ -27,6 +26,8 @@ jobs:
   checks:
     if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
