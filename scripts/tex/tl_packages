@@ -8,6 +8,17 @@ collection-latex
 collection-latexrecommended
 collection-fontsrecommended
 lwarp
+# lwarp.sty hard deps (see lwarp.dtx \RequirePackage block)
+comment
+microtype
+gettitlestring
+xifthen
+refcount
+newfloat
+xstring
+environ
+printlen
+upquote
 verifycommand
 ifptex
 catchfile
