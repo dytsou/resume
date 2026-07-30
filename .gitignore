@@ -22,9 +22,7 @@ dist-ssr
 *.sw?
 .env
 
-public/
-
-# Track converted artifacts for Cloudflare build (convert runs in GitHub CI with TeX Live).
+public/*
 !public/converted-docs/
 !public/converted-docs/**
 !public/documents-manifest.json
