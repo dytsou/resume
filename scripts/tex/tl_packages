@@ -1,4 +1,8 @@
 # Minimal TeX Live set for lwarp resume + beamer fixture (CI: zauguin/install-texlive)
+# Use tlmgr package names only (not \usepackage names). Examples:
+#   preprint  -> fullpage.sty
+#   sourcesans -> sourcesanspro.sty
+#   tools (via collection-latex) -> tabularx.sty
 collection-basic
 collection-latex
 collection-latexrecommended
@@ -8,7 +12,6 @@ fontawesome5
 titlesec
 enumitem
 fancyhdr
-tabularx
 marvosym
 preprint
 hyperref
