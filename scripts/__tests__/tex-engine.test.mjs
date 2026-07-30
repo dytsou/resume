@@ -48,14 +48,32 @@ describe('compileDocument validation', () => {
     expect(result.success).toBe(false);
     expect(result.error).toContain('totallyunknown');
   });
+
+  it('rejects path traversal in filename', () => {
+    const source = readFileSync(resumePath, 'utf8');
+    const result = compileDocument({
+      source,
+      filename: '../../tmp/evil.tex',
+    });
+    expect(result.success).toBe(false);
+    expect(result.error).toMatch(/Invalid filename/);
+  });
 });
 
-describe('validatePreamble beamer', () => {
-  it('allows beamer document class', () => {
+describe('validatePreamble beamerarticle', () => {
+  it('allows article class with beamerarticle package', () => {
     const fixture = readFileSync(
       join(process.cwd(), 'tests/fixtures/beamer-minimal.tex'),
       'utf8'
     );
     expect(validatePreamble(fixture).ok).toBe(true);
+  });
+
+  it('rejects unsupported beamer document class', () => {
+    expect(
+      validatePreamble(
+        '\\documentclass{beamer}\\begin{document}\\end{document}'
+      ).ok
+    ).toBe(false);
   });
 });

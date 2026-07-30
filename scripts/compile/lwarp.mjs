@@ -8,9 +8,24 @@ import {
   rmSync,
   writeFileSync,
 } from 'node:fs';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 
 import { postprocessHtml } from './postprocess-html.mjs';
+
+/**
+ * @param {string} filename
+ * @returns {string} basename without .tex
+ */
+function safeTexBasename(filename) {
+  if (/[/\\]|\.\./.test(filename)) {
+    throw new Error(`Invalid filename: ${filename}`);
+  }
+  const stem = basename(filename).replace(/\.tex$/i, '') || 'document';
+  if (!/^[A-Za-z0-9_-]+$/.test(stem)) {
+    throw new Error(`Invalid filename: ${filename}`);
+  }
+  return stem;
+}
 
 /**
  * @param {string} cmd
@@ -95,7 +110,7 @@ function copyLwarpAssets(workDir, outputDir) {
  */
 export function compileWithLwarp({ source, filename, workDir, outputDir }) {
   mkdirSync(workDir, { recursive: true });
-  const texBasename = filename.replace(/\.tex$/, '') || filename;
+  const texBasename = safeTexBasename(filename);
   const texFile = `${texBasename}.tex`;
   const texPath = join(workDir, texFile);
   writeFileSync(texPath, source, 'utf8');

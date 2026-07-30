@@ -8,6 +8,7 @@ const PORT = Number(process.env.COMPILE_PORT) || 5174;
 const LATEX_DIR = join(process.cwd(), 'latex');
 const ID_RE = /^[a-zA-Z0-9_-]+$/;
 const DOC_PATH_RE = /^\/api\/documents\/([^/]+)$/;
+const MAX_BODY_BYTES = 2 * 1024 * 1024;
 
 /**
  * @param {string} id
@@ -38,7 +39,16 @@ function sendJson(res, status, body) {
 function readJsonBody(req) {
   return new Promise((resolve, reject) => {
     const chunks = [];
-    req.on('data', (chunk) => chunks.push(chunk));
+    let size = 0;
+    req.on('data', (chunk) => {
+      size += chunk.length;
+      if (size > MAX_BODY_BYTES) {
+        reject(new Error('Request body too large'));
+        req.destroy();
+        return;
+      }
+      chunks.push(chunk);
+    });
     req.on('end', () => {
       try {
         resolve(JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}'));

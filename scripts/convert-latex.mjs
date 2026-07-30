@@ -9,7 +9,7 @@ import {
   existsSync,
   copyFileSync,
 } from 'node:fs';
-import { join, basename, extname } from 'node:path';
+import { join, basename, extname, resolve } from 'node:path';
 
 import { CONFIG } from './config.mjs';
 import { ensureDirectoryExists } from './utils.mjs';
@@ -75,7 +75,11 @@ function convertOneFile(file) {
     }
 
     writeFileSync(htmlOutputPath, result.html);
-    if (result.pdfPath && existsSync(result.pdfPath)) {
+    if (
+      result.pdfPath &&
+      existsSync(result.pdfPath) &&
+      resolve(result.pdfPath) !== resolve(pdfOutputPath)
+    ) {
       copyFileSync(result.pdfPath, pdfOutputPath);
     }
 

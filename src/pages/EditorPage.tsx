@@ -116,7 +116,12 @@ export function EditorPage() {
       editor={<LatexEditor value={source} onChange={setSource} />}
       preview={
         html ? (
-          <iframe title="Preview" className="preview-frame" srcDoc={html} />
+          <iframe
+            title="Preview"
+            className="preview-frame"
+            srcDoc={html}
+            sandbox="allow-scripts allow-forms allow-popups"
+          />
         ) : (
           <p className="muted preview-placeholder">
             {compiling
