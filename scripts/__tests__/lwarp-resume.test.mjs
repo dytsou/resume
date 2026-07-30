@@ -4,8 +4,9 @@ import { validatePreamble } from '../compile/validate-preamble.mjs';
 import { isTexAvailable } from '../compile/tex-available.mjs';
 import { compileDocument } from '../compile/tex-engine.mjs';
 import { pdfNonEmpty } from '../compile/lwarp.mjs';
-import { readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 
 const resumePath = join(process.cwd(), 'latex', 'resume.tex');
 const resumeSource = readFileSync(resumePath, 'utf8');
@@ -26,14 +27,20 @@ describe('validatePreamble', () => {
 
 describe.skipIf(!isTexAvailable())('lwarp resume compile', () => {
   it('produces HTML with title and PDF', () => {
+    const outputDir = mkdtempSync(join(tmpdir(), 'resume-lwarp-output-'));
     const result = compileDocument({
       source: resumeSource,
       filename: 'resume.tex',
       id: 'resume',
+      outputDir,
     });
-    expect(result.success).toBe(true);
-    expect(result.html).toContain('<!DOCTYPE html>');
-    expect(result.html?.toLowerCase()).toMatch(/experience|education|skills/);
-    expect(result.pdfPath && pdfNonEmpty(result.pdfPath)).toBe(true);
-  });
+    try {
+      expect(result.success, result.log).toBe(true);
+      expect(result.html).toContain('<!DOCTYPE html>');
+      expect(result.html?.toLowerCase()).toMatch(/experience|education|skills/);
+      expect(result.pdfPath && pdfNonEmpty(result.pdfPath)).toBe(true);
+    } finally {
+      rmSync(outputDir, { recursive: true, force: true });
+    }
+  }, 30_000);
 });
