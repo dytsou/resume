@@ -57,6 +57,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Install Poppler
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+
+      - name: Install TeX Live
+        uses: zauguin/install-texlive@v4
+        with:
+          package_file: scripts/tex/tl_packages
+          cache_version: 1
+
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
@@ -78,6 +87,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Install Poppler
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+
+      - name: Install TeX Live
+        uses: zauguin/install-texlive@v4
+        with:
+          package_file: scripts/tex/tl_packages
+          cache_version: 1
+
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
@@ -94,7 +112,6 @@ jobs:
         env:
           # Served under the front door at dy.tsou.me/resume/, so assets must be prefixed.
           BASE_PATH: /resume/
-          VITE_GOOGLE_DRIVE_RESUME_LINK: ${{ vars.VITE_GOOGLE_DRIVE_RESUME_LINK }}
 
       - name: Verify build output
         if: github.ref == 'refs/heads/main'

@@ -1,15 +1,16 @@
-/**
- * TeX compile abstraction — batch convert and dev preview share this module.
- * U1: delegates to unified-latex until lwarp lands in U2/U3.
- */
-
-import { convertLatexToHtml } from '../converter.mjs';
+import { extractMetadata } from '../utils.mjs';
+import { compileWithLwarp, cleanWorkDir } from './lwarp.mjs';
+import { isTexAvailable } from './tex-available.mjs';
+import { validatePreamble } from './validate-preamble.mjs';
+import { mkdtempSync } from 'node:fs';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 
 /**
  * @param {string} source
  * @returns {{ ok: true } | { ok: false, error: string }}
  */
-function validateLatexSource(source) {
+export function validateLatexSource(source) {
   const trimmed = source?.trim() ?? '';
   if (!trimmed) {
     return { ok: false, error: 'Empty LaTeX source' };
@@ -24,36 +25,64 @@ function validateLatexSource(source) {
 }
 
 /**
- * @param {{ source: string, filename: string, id?: string, engine?: string }} options
- * @returns {{ success: boolean, html?: string, pdfPath?: string, metadata?: object, error?: string, log?: string }}
+ * @param {{ source: string, filename: string, id?: string, outputDir?: string }} options
  */
-export function compileDocument({ source, filename }) {
-  const validation = validateLatexSource(source);
-  if (!validation.ok) {
+export function compileDocument({ source, filename, id, outputDir }) {
+  const sourceOk = validateLatexSource(source);
+  if (!sourceOk.ok) {
     return {
       success: false,
-      error: validation.error,
-      log: validation.error,
+      error: sourceOk.error,
+      log: sourceOk.error,
     };
   }
 
-  const result = convertLatexToHtml(source, filename);
-
-  if (!result.success) {
+  const preambleOk = validatePreamble(source);
+  if (!preambleOk.ok) {
     return {
       success: false,
-      error: result.error ?? 'Conversion failed',
-      log: result.error ?? '',
+      error: preambleOk.error,
+      log: preambleOk.error,
     };
   }
 
-  return {
-    success: true,
-    html: result.html,
-    metadata: result.metadata,
-    error: null,
-    log: '',
-  };
+  if (!isTexAvailable()) {
+    return {
+      success: false,
+      error:
+        'TeX Live not found (need xelatex + lwarpmk). Install TeX Live or run in CI.',
+      log: 'TeX unavailable',
+    };
+  }
+
+  const workDir = mkdtempSync(join(tmpdir(), 'resume-lwarp-'));
+  try {
+    const result = compileWithLwarp({
+      source,
+      filename: filename.endsWith('.tex') ? filename : `${filename}.tex`,
+      workDir,
+      outputDir,
+    });
+    const metadata = extractMetadata(source);
+    if (!result.success) {
+      return {
+        success: false,
+        error: result.error,
+        log: result.log,
+        metadata,
+      };
+    }
+    return {
+      success: true,
+      html: result.html,
+      pdfPath: result.pdfPath,
+      metadata,
+      error: null,
+      log: result.log,
+    };
+  } finally {
+    cleanWorkDir(workDir);
+  }
 }
 
 /** @deprecated Use compileDocument */
