@@ -6,14 +6,14 @@ collection-fontsrecommended
 lwarp
 fontawesome5
 titlesec
-sourcesanspro
 enumitem
 fancyhdr
 tabularx
 marvosym
-fullpage
+preprint
 hyperref
 babel
 xetex
 latexmk
 beamer
+sourcesans
