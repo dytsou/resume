@@ -54,9 +54,9 @@ src/pages/              # List, view, edit UI
 
 ## Deploy
 
-| Path | When | What |
-|------|------|------|
-| **Production** | `main` only | GitHub `Deploy to Cloudflare` (Pages + front-door) and Workers Builds `wrangler deploy` |
+| Path                   | When                  | What                                                                                          |
+| ---------------------- | --------------------- | --------------------------------------------------------------------------------------------- |
+| **Production**         | `main` only           | GitHub `Deploy to Cloudflare` (Pages + front-door) and Workers Builds `wrangler deploy`       |
 | **Snapshot / preview** | any other branch / PR | Workers Builds runs `wrangler versions upload` (preview URL; does **not** promote production) |
 
 Local commands:
