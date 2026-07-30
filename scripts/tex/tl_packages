@@ -11,6 +11,7 @@ lwarp
 verifycommand
 ifptex
 catchfile
+newunicodechar
 fontawesome5
 titlesec
 enumitem
@@ -19,6 +20,8 @@ marvosym
 preprint
 hyperref
 babel
+ulem
+graphics
 xetex
 latexmk
 beamer
