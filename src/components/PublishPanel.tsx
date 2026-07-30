@@ -1,8 +1,8 @@
 interface PublishPanelProps {
-  canSave: boolean;
-  saving: boolean;
-  saveMessage: string | null;
-  onSave: () => void;
+  readonly canSave: boolean;
+  readonly saving: boolean;
+  readonly saveMessage: string | null;
+  readonly onSave: () => void;
 }
 
 export function PublishPanel({

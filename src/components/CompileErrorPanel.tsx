@@ -1,6 +1,6 @@
 interface CompileErrorPanelProps {
-  error: string | null;
-  log: string | null;
+  readonly error: string | null;
+  readonly log: string | null;
 }
 
 export function CompileErrorPanel({ error, log }: CompileErrorPanelProps) {

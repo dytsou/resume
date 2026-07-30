@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react';
 
 interface EditorLayoutProps {
-  toolbar: ReactNode;
-  editor: ReactNode;
-  preview: ReactNode;
-  sidebar?: ReactNode;
+  readonly toolbar: ReactNode;
+  readonly editor: ReactNode;
+  readonly preview: ReactNode;
+  readonly sidebar?: ReactNode;
 }
 
 export function EditorLayout({

@@ -3,8 +3,8 @@ import { StreamLanguage } from '@codemirror/language';
 import { stex } from '@codemirror/legacy-modes/mode/stex';
 
 interface LatexEditorProps {
-  value: string;
-  onChange: (value: string) => void;
+  readonly value: string;
+  readonly onChange: (value: string) => void;
 }
 
 export function LatexEditor({ value, onChange }: LatexEditorProps) {
