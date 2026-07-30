@@ -13,6 +13,7 @@ comment
 microtype
 gettitlestring
 xifthen
+ifmtarg
 refcount
 newfloat
 xstring

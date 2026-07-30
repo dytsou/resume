@@ -8,13 +8,7 @@ export function postprocessHtml(html, { baseHref = './' } = {}) {
     if (css.startsWith('http')) return `href="${css}"`;
     return `href="${baseHref}${css.replace(/^\.\//, '')}"`;
   });
-  // ponytail: drop CDN assets without SRI (Sonar Web:S5725) and fix icon font stacks (css:S4649)
-  out = out.replace(/<script\b[^>]*src="https?:\/\/[^"]+"[^>]*>\s*<\/script>\s*/gi, (tag) =>
-    /\bintegrity=/.test(tag) ? tag : '',
-  );
-  out = out.replace(/<link\b[^>]*href="https?:\/\/[^"]+"[^>]*>\s*/gi, (tag) =>
-    /\bintegrity=/.test(tag) ? tag : '',
-  );
+  // ponytail: css:S4649 — icon stacks need a generic family
   out = out.replace(
     /font-family:\s*"Font Awesome 6 Brands"(?!,\s*sans-serif)/g,
     'font-family: "Font Awesome 6 Brands", sans-serif',
