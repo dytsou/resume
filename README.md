@@ -54,4 +54,24 @@ src/pages/              # List, view, edit UI
 
 ## Deploy
 
-Production remains static-only. `pnpm run deploy` builds and deploys via Wrangler. Subpath hosting uses `BASE_PATH=/resume/` (see `vite.config.ts`).
+| Path | When | What |
+|------|------|------|
+| **Production** | `main` only | GitHub `Deploy to Cloudflare` (Pages + front-door) and Workers Builds `wrangler deploy` |
+| **Snapshot / preview** | any other branch / PR | Workers Builds runs `wrangler versions upload` (preview URL; does **not** promote production) |
+
+Local commands:
+
+```bash
+pnpm run deploy            # build + production deploy (explicit --production)
+pnpm run deploy:snapshot   # build + versions upload only
+pnpm run deploy:ci         # branch-aware (used by Workers Builds after its build step)
+```
+
+Workers Builds dashboard (Settings → Build):
+
+- **Production branch**: `main`
+- **Deploy command** (production): `pnpm run deploy:ci`
+- **Non-production branch builds**: enabled
+- **Non-production deploy command**: `pnpm run deploy:ci`
+
+`deploy:ci` reads `WORKERS_CI_BRANCH` and only calls `wrangler deploy` on `main`; otherwise it uploads a version snapshot with a branch preview alias. Subpath hosting uses `BASE_PATH=/resume/` (see `vite.config.ts`).

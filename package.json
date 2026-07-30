@@ -18,7 +18,9 @@
     "release": "pnpm run convert && pnpm run build && pnpm run publish",
     "publish:npmjs": "pnpm publish --access public --registry https://registry.npmjs.org",
     "prepare": "command -v husky >/dev/null 2>&1 && husky || true",
-    "deploy": "pnpm run build && wrangler deploy --config wrangler.jsonc --env=\"\""
+    "deploy": "pnpm run build && node scripts/cf-deploy.mjs --production",
+    "deploy:snapshot": "pnpm run build && node scripts/cf-deploy.mjs --snapshot",
+    "deploy:ci": "node scripts/cf-deploy.mjs"
   },
   "dependencies": {
     "@codemirror/language": "^6.11.3",
