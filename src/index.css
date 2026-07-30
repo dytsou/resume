@@ -10,119 +10,207 @@ body {
     system-ui,
     -apple-system,
     sans-serif;
+  color: #1a1a1a;
+  background: #f8f9fb;
 }
 
-/* Download button wrapper - positioned bottom-right */
-.download-button-wrapper {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1000;
+a {
+  color: #2563eb;
+  text-decoration: none;
 }
 
-/* Download from Drive button styles */
-.download-drive-button-container {
+a:hover {
+  text-decoration: underline;
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+}
+
+.page-shell {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.muted {
+  color: #64748b;
+}
+
+.error-text {
+  color: #b91c1c;
+}
+
+.doc-list {
+  list-style: none;
+  margin-top: 1.5rem;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
+  gap: 0.75rem;
 }
 
-.download-drive-button {
+.doc-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.doc-list-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.view-toolbar {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 56px;
-  height: 56px;
-  padding: 0;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: #333;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
-  font-family:
-    system-ui,
-    -apple-system,
-    sans-serif;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.download-drive-button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px) scale(1.05);
+.view-title {
+  flex: 1;
+  font-weight: 600;
 }
 
-.download-drive-button:active:not(:disabled) {
-  transform: translateY(0) scale(1);
-  background: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.1);
+.view-toolbar-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
 }
 
-.download-drive-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.pdf-download-link {
+  padding: 0.35rem 0.75rem;
+  background: #2563eb;
+  color: #fff !important;
+  border-radius: 6px;
+  text-decoration: none !important;
+  font-size: 0.875rem;
 }
 
-.button-icon,
-.button-spinner {
+.pdf-download-link:hover {
+  background: #1d4ed8;
+}
+
+.view-frame {
+  border: none;
+  width: 100vw;
+  height: calc(100vh - 49px);
+  background: #fff;
+}
+
+.editor-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.editor-toolbar {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.button-icon svg,
-.button-spinner svg {
+.editor-panes {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 0;
+}
+
+.editor-pane {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.editor-pane--source {
+  border-right: 1px solid #e2e8f0;
+}
+
+.editor-pane--preview {
+  background: #fff;
+}
+
+.latex-editor,
+.latex-editor .cm-editor {
+  height: 100%;
+}
+
+.preview-frame {
+  border: none;
   width: 100%;
   height: 100%;
 }
 
-.button-spinner svg {
-  animation: spin 1s linear infinite;
+.preview-placeholder {
+  padding: 2rem;
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
+.compile-error-panel {
+  padding: 1rem;
+  background: #fef2f2;
+  border-top: 1px solid #fecaca;
+  color: #991b1b;
 }
 
-.download-error {
-  padding: 8px 12px;
-  background-color: #fee;
-  color: #c33;
-  border: 1px solid #fcc;
-  border-radius: 4px;
-  font-size: 12px;
-  max-width: 300px;
-  text-align: center;
+.compile-log {
+  margin-top: 0.5rem;
+  max-height: 160px;
+  overflow: auto;
+  font-size: 0.75rem;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-  .download-button-wrapper {
-    bottom: 16px;
-    right: 16px;
+.publish-panel {
+  padding: 1rem 1.25rem;
+  background: #fff;
+  border-top: 1px solid #e2e8f0;
+}
+
+.publish-panel h2 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.publish-steps {
+  margin: 0 0 1rem 1.25rem;
+  font-size: 0.875rem;
+  color: #475569;
+}
+
+.primary-button {
+  padding: 0.5rem 1rem;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.primary-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 1280px) {
+  .editor-panes {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
   }
 
-  .download-drive-button {
-    width: 48px;
-    height: 48px;
-  }
-
-  .button-icon,
-  .button-spinner {
-    width: 20px;
-    height: 20px;
+  .editor-pane--source {
+    border-right: none;
+    border-bottom: 1px solid #e2e8f0;
   }
 }
