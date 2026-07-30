@@ -11,14 +11,16 @@ const allowedClasses = JSON.parse(
   readFileSync(join(texDir, 'allowed-document-classes.json'), 'utf8')
 );
 
+const DOCUMENT_CLASS_RE = /\\documentclass(?:\[[^\]]*\])?\{([^}]+)\}/;
+
 /**
  * @param {string} source
  * @returns {{ ok: true } | { ok: false, error: string }}
  */
 export function validatePreamble(source) {
-  const classMatch = source.match(/\\documentclass(?:\[[^\]]*\])?\{([^}]+)\}/);
+  const classMatch = DOCUMENT_CLASS_RE.exec(source);
   if (!classMatch) {
-    return { ok: false, error: 'Missing \\documentclass' };
+    return { ok: false, error: String.raw`Missing \documentclass` };
   }
   const docClass = classMatch[1].trim();
   if (!allowedClasses.includes(docClass)) {

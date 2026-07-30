@@ -6,6 +6,9 @@ import { mkdtempSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 
+const BEGIN_DOCUMENT = String.raw`\begin{document}`;
+const END_DOCUMENT = String.raw`\end{document}`;
+
 /**
  * @param {string} source
  * @returns {{ ok: true } | { ok: false, error: string }}
@@ -15,11 +18,11 @@ export function validateLatexSource(source) {
   if (!trimmed) {
     return { ok: false, error: 'Empty LaTeX source' };
   }
-  if (!trimmed.includes('\\begin{document}')) {
-    return { ok: false, error: 'Missing \\begin{document}' };
+  if (!trimmed.includes(BEGIN_DOCUMENT)) {
+    return { ok: false, error: `Missing ${BEGIN_DOCUMENT}` };
   }
-  if (!trimmed.includes('\\end{document}')) {
-    return { ok: false, error: 'Missing \\end{document}' };
+  if (!trimmed.includes(END_DOCUMENT)) {
+    return { ok: false, error: `Missing ${END_DOCUMENT}` };
   }
   return { ok: true };
 }
