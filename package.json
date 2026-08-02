@@ -4,7 +4,9 @@
   "type": "module",
   "packageManager": "pnpm@11.9.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "node scripts/run-dev.mjs",
+    "dev:compile": "node scripts/dev-compile-server.mjs",
+    "dev:vite": "vite",
     "build": "pnpm run convert && vite build",
     "convert": "node scripts/convert-latex.mjs",
     "lint": "eslint .",
@@ -12,20 +14,21 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "preview": "pnpm run build && wrangler dev",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
+    "test": "vitest run",
     "release": "pnpm run convert && pnpm run build && pnpm run publish",
     "publish:npmjs": "pnpm publish --access public --registry https://registry.npmjs.org",
     "prepare": "command -v husky >/dev/null 2>&1 && husky || true",
-    "deploy": "pnpm run build && wrangler deploy --config wrangler.jsonc --env=\"\""
+    "deploy": "pnpm run build && node scripts/cf-deploy.mjs --production",
+    "deploy:snapshot": "pnpm run build && node scripts/cf-deploy.mjs --snapshot",
+    "deploy:ci": "node scripts/cf-deploy.mjs"
   },
   "dependencies": {
-    "@unified-latex/unified-latex-to-hast": "^1.8.4",
-    "@unified-latex/unified-latex-util-parse": "^1.8.4",
-    "hast-util-to-html": "^9.0.5",
-    "mathjax-full": "^3.2.2",
+    "@codemirror/language": "^6.11.3",
+    "@codemirror/legacy-modes": "^6.5.1",
+    "@uiw/react-codemirror": "^4.25.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "rehype-stringify": "^10.0.1",
-    "unified": "^11.0.5"
+    "react-router-dom": "^7.9.1"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.47.0",
@@ -44,6 +47,7 @@
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "typescript-eslint": "^8.65.0",
     "vite": "^8.1.5",
+    "vitest": "^3.2.4",
     "wrangler": "^4.114.0"
   },
   "engines": {

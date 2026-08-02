@@ -1,0 +1,28 @@
+# TeX Live set for lwarp resume + beamer fixture (CI: zauguin/install-texlive)
+# Use tlmgr package names only (not \usepackage names). Examples:
+#   preprint  -> fullpage.sty
+#   sourcesans -> sourcesanspro.sty
+#   tools (via collection-latex) -> tabularx.sty
+# latexextra covers lwarp hard deps (comment, capt-of, ifmtarg, xstring, …)
+collection-basic
+collection-latex
+collection-latexrecommended
+collection-latexextra
+collection-fontsrecommended
+lwarp
+verifycommand
+ifptex
+fontawesome5
+titlesec
+enumitem
+fancyhdr
+marvosym
+preprint
+hyperref
+babel
+ulem
+graphics
+xetex
+latexmk
+beamer
+sourcesans

@@ -7,6 +7,8 @@
 %------------PACKAGES----------------
 \documentclass[a4paper,10.5pt]{article}
 
+\usepackage[lwarpmk,mathjax]{lwarp}
+
 \usepackage{verbatim} % reimplements the "verbatim" and "verbatim*" environments
 
 \usepackage{titlesec} % provides an interface to sectioning commands i.e. custom elements
@@ -39,7 +41,9 @@
 
 %----------FONT OPTIONS-------------------
 \usepackage[default]{sourcesanspro} % uses the font source sans pro
-\urlstyle{same} % changes url font from default urlfont to font being used by the document
+\ifdefined\urlstyle
+  \urlstyle{same} % lwarp's HTML hyperref shim does not define \urlstyle
+\fi
 %-----------------------------------------
 
 
@@ -106,6 +110,8 @@
 \newcommand{\resumeItemListStart}{\begin{itemize}[rightmargin=0.1in]}
 \newcommand{\resumeItemListEnd}{\end{itemize}}
 
+\StartDefiningTabulars
+
 % resumeSectionType renders a bolded type to be used under a section, used as skill type here, middle element is used to keep ":"s in the same vertical line
 \newcommand{\resumeSectionType}[3]{
   \item\begin{tabular*}{0.95\textwidth}[t]{
@@ -152,6 +158,8 @@
     \textbf{\small#1} & {\small#2} \\
   \end{tabular*}
 }
+
+\StopDefiningTabulars
 
 % commands to start and end itemization of resumeQuadHeading, lefmargin for left indent of 0.15in for resumeItems
 \newcommand{\resumeHeadingListStart}{

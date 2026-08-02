@@ -6,12 +6,16 @@
   "observability": {
     "enabled": true
   },
+  "preview_urls": true,
   "assets": {
     "directory": "./dist",
     "not_found_handling": "single-page-application",
     "html_handling": "auto-trailing-slash"
   },
   "compatibility_flags": ["nodejs_compat"],
+  "build": {
+    "command": "BASE_PATH=/resume/ pnpm run build"
+  },
   "routes": [
     {
       "pattern": "resume.tsou.me",

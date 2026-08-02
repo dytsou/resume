@@ -18,5 +18,13 @@ export default defineConfig({
   build: {
     outDir: workerSubpath ? 'dist/resume' : 'dist',
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:5174',
+        changeOrigin: true,
+      },
+    },
+  },
   optimizeDeps: {},
 });

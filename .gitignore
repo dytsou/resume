@@ -22,7 +22,10 @@ dist-ssr
 *.sw?
 .env
 
-public/
+public/*
+!public/converted-docs/
+!public/converted-docs/**
+!public/documents-manifest.json
 
 # wrangler files
 .wrangler

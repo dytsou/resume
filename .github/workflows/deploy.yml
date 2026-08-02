@@ -1,5 +1,8 @@
-name: Deploy to Cloudflare Pages
+name: Deploy to Cloudflare
 
+# Production (Pages + front-door manifest) only from main after CI succeeds.
+# Worker preview snapshots for other branches are handled by Workers Builds
+# via `pnpm run deploy:ci` (wrangler versions upload) — not this workflow.
 on:
   workflow_run:
     workflows: [CI Checks]
@@ -8,13 +11,23 @@ on:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 jobs:
-  checks:
-    if: github.event_name != 'workflow_run'
+  reject-non-main-dispatch:
+    if: github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Refuse non-main production deploy
+        run: |
+          echo "Production deploy is main-only. Use Workers Builds snapshot (versions upload) on feature branches."
+          exit 1
+
+  checks:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
@@ -28,14 +41,22 @@ jobs:
         run: corepack enable
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Install Poppler
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+
+      - name: Install TeX Live
+        uses: zauguin/install-texlive@f5e7d0b117035fff797d4392ea94131747e03d60 # v4
+        with:
+          package_file: scripts/tex/tl_packages
+          cache_version: 9
 
       - name: Build
         run: pnpm build
         env:
           # Served under the front door at dy.tsou.me/resume/, so assets must be prefixed.
           BASE_PATH: /resume/
-          VITE_GOOGLE_DRIVE_RESUME_LINK: ${{ vars.VITE_GOOGLE_DRIVE_RESUME_LINK }}
 
       - name: Verify build output
         run: |
@@ -56,15 +77,19 @@ jobs:
     if: |
       always() &&
       (
-        (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
-        (github.event_name == 'workflow_dispatch' && needs.checks.result == 'success')
+        (github.event_name == 'workflow_run' &&
+          github.event.workflow_run.conclusion == 'success' &&
+          github.event.workflow_run.head_branch == 'main') ||
+        (github.event_name == 'workflow_dispatch' &&
+          github.ref == 'refs/heads/main' &&
+          needs.checks.result == 'success')
       )
     runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
     concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
+      group: ${{ github.workflow }}-main
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7

@@ -1,197 +1,77 @@
-# LaTeX to HTML Converter with Automated Deployment
+# LaTeX Resume — HTML, PDF, and Authoring
 
-A specialized web application that converts LaTeX resume documents to clean, professional HTML and deploys them to GitHub Pages. The system automatically processes your LaTeX resume and creates a beautiful, responsive web version with proper styling and typography.
+Converts LaTeX documents in `latex/` to HTML and PDF via TeX Live (lwarp + XeLaTeX), serves them as a static Cloudflare site, and provides a dev-only authoring app with live preview.
 
 ## Features
 
-- **Automated LaTeX Resume Conversion**: Converts `.tex` resume files to professional HTML with proper formatting
-- **Resume-Specific Styling**: Clean, professional presentation optimized for resume content
-- **CI/CD Pipeline**: GitHub Actions workflow that validates and deploys automatically
-- **Fail-Safe Deployment**: Blocks deployment if any LaTeX file fails to convert
-- **Document Browser**: Browse all converted documents in a clean, responsive interface
-- **MathJax Integration**: Proper rendering of mathematical formulas
+- **lwarp + XeLaTeX**: Real TeX engine for HTML (`lwarpmk html`) and PDF (`lwarpmk print`)
+- **Batch convert**: `pnpm run convert` writes `public/converted-docs/` and updates `documents-manifest.json`
+- **Authoring (dev)**: Document list, view, and split-pane editor with debounced live preview
+- **Built PDF**: Published alongside HTML; no external Google Drive link
+- **CI**: TeX Live (cached), Vitest, lint, typecheck, and build on every PR
 
-## Project Structure
+## Prerequisites
 
-```
-resume/
-├── latex/                  # Store your LaTeX resume files here
-│   └── resume.tex          # Main LaTeX resume document
-├── scripts/
-│   └── convert-latex.mjs   # LaTeX to HTML conversion script
-├── src/
-│   ├── App.tsx             # Main application
-│   ├── main.tsx           # React entry point
-│   └── index.css          # Global styles
-├── public/
-│   ├── converted-docs/     # Generated HTML files (created during build)
-│   └── documents-manifest.json  # Document metadata (created during build)
-├── dist/                   # Production build output
-└── .github/
-    └── workflows/
-        └── deploy.yml      # CI/CD pipeline configuration
-```
+- **Node.js** >= 24
+- **pnpm** 11.x (`corepack enable`)
+- **TeX Live** with packages listed in `scripts/tex/tl_packages` (required for convert/build/tests locally; CI installs automatically)
 
-## Getting Started
-
-### Prerequisites
-
-- **Node.js** >= 24.0.0 (Active LTS; required by Vite 8 and `@cloudflare/vite-plugin`)
-- **pnpm** 11.x (enabled via Corepack: `corepack enable`)
-
-### 1. Add Your LaTeX Documents
-
-Place your `.tex` files in the `latex/` directory. The converter will automatically process all files with a `.tex` extension.
-
-Example structure:
-
-```
-latex/
-├── my-research-paper.tex
-├── math-notes.tex
-└── thesis.tex
-```
-
-### 2. Test Locally
-
-Convert and build the project:
+## Quick start
 
 ```bash
 pnpm install
-pnpm run convert  # Convert LaTeX files only
-pnpm run build    # Convert + build entire project
+pnpm run convert   # HTML + PDF under public/converted-docs/
+pnpm run build     # convert + Vite production build
+pnpm dev           # Vite + local compile server (live preview + save API)
 ```
 
-### 3. Set Up GitHub Pages
+Authoring routes (with `pnpm dev`):
 
-1. Go to your GitHub repository settings
-2. Navigate to **Pages** section
-3. Under **Source**, select "GitHub Actions"
+| Route       | Purpose                               |
+| ----------- | ------------------------------------- |
+| `/`         | Document list from manifest           |
+| `/view/:id` | Published HTML preview + PDF download |
+| `/edit/:id` | CodeMirror editor + live preview      |
 
-### 4. Configure Environment Variables
+Save in the editor writes `latex/{id}.tex` via dev-only `PUT /api/documents/:id`. Run `pnpm run build` to refresh published artifacts.
 
-Add your credentials as repository variables for GitHub Actions:
+## Project layout
 
-1. Go to **Settings** > **Variables** > **Variables** tab
-2. Click **New repository variable**
-3. Add the following variables:
-   - `VITE_GOOGLE_DRIVE_RESUME_LINK`: Your Google Drive share link for the resume (optional)
+```
+latex/                  # Source .tex files
+scripts/compile/        # tex-engine, lwarp, validation
+scripts/tex/            # CI package list + allowlists
+public/converted-docs/  # Generated HTML/PDF (gitignored output from convert)
+src/pages/              # List, view, edit UI
+```
 
-### 5. Push to Deploy
+## How conversion works
+
+1. **Preamble validation** — `\documentclass` and `\usepackage` checked against allowlists
+2. **lwarp** — XeLaTeX + `lwarpmk html` / `lwarpmk print` in a temp workdir
+3. **Post-process** — HTML asset paths normalized for static hosting
+4. **Manifest** — `documents-manifest.json` lists `htmlPath` and `pdfPath` per document
+
+## Deploy
+
+| Path                   | When                  | What                                                                                          |
+| ---------------------- | --------------------- | --------------------------------------------------------------------------------------------- |
+| **Production**         | `main` only           | GitHub `Deploy to Cloudflare` (Pages + front-door) and Workers Builds `wrangler deploy`       |
+| **Snapshot / preview** | any other branch / PR | Workers Builds runs `wrangler versions upload` (preview URL; does **not** promote production) |
+
+Local commands:
 
 ```bash
-git add .
-git commit -m "Add LaTeX documents"
-git push origin main
+pnpm run deploy            # build + production deploy (explicit --production)
+pnpm run deploy:snapshot   # build + versions upload only
+pnpm run deploy:ci         # branch-aware (used by Workers Builds after its build step)
 ```
 
-The GitHub Actions workflow will:
+Workers Builds dashboard (Settings → Build):
 
-1. Install dependencies
-2. Convert all LaTeX files
-3. Validate conversion success
-4. Build the React application
-5. Deploy to GitHub Pages (only if all conversions succeed)
+- **Production branch**: `main`
+- **Deploy command** (production): `pnpm run deploy:ci`
+- **Non-production branch builds**: enabled
+- **Non-production deploy command**: `pnpm run deploy:ci`
 
-## How It Works
-
-### Conversion Process
-
-1. **LaTeX Parsing**: Uses `@unified-latex` to parse LaTeX source
-2. **HTML Generation**: Converts LaTeX AST to HTML with proper structure
-3. **MathJax Integration**: Mathematical formulas are rendered client-side
-4. **Styling**: Applies arXiv-inspired CSS for clean academic presentation
-5. **Manifest Creation**: Generates a JSON file with document metadata
-
-### CI/CD Pipeline
-
-The GitHub Actions workflow (`.github/workflows/deploy.yml`) ensures:
-
-- All LaTeX files convert successfully before deployment
-- Build fails if any conversion errors occur
-- Only successfully built sites are deployed to GitHub Pages
-- Environment variables are properly injected during build
-
-### Database Tracking
-
-The Supabase database stores:
-
-- **Documents Table**: Metadata about each LaTeX file (title, author, date)
-- **Conversion Logs**: History of conversion attempts and errors
-
-## Available Scripts
-
-- `pnpm run dev` - Start development server
-- `pnpm run convert` - Convert LaTeX files to HTML
-- `pnpm run build` - Convert LaTeX + build production bundle
-- `pnpm run preview` - Preview production build locally
-- `pnpm run lint` - Run ESLint
-
-## Customization
-
-### Changing Base Path
-
-If your repository name is different, update `vite.config.ts`:
-
-```typescript
-base: process.env.GITHUB_PAGES === 'true' ? '/your-repo-name/' : '/',
-```
-
-### Styling
-
-Modify the CSS in `scripts/convert-latex.mjs` to customize the HTML output appearance.
-
-### Document Metadata
-
-The converter extracts metadata from LaTeX commands:
-
-- `\title{...}` - Document title
-- `\author{...}` - Author names
-- `\date{...}` - Publication date
-
-## Deployment
-
-Your site will be available at:
-
-```
-https://<username>.github.io/<repository-name>/
-```
-
-## Troubleshooting
-
-### Conversion Fails
-
-Check the GitHub Actions logs to see which LaTeX file failed and why. Common issues:
-
-- Unsupported LaTeX packages
-- Syntax errors in LaTeX source
-- Missing closing braces
-
-### Deployment Blocked
-
-If deployment is blocked, the CI/CD pipeline detected conversion failures. Fix the LaTeX files and push again.
-
-### Local Testing
-
-Requires Node.js >= 24.0.0. Run the conversion locally to debug issues:
-
-```bash
-pnpm run convert
-```
-
-Check the generated files in `public/converted-docs/` and review `public/documents-manifest.json`.
-
-## Technologies Used
-
-- **React + TypeScript**: Frontend framework
-- **Vite 8**: Build tool and dev server
-- **@unified-latex**: LaTeX parsing and conversion
-- **MathJax**: Mathematical notation rendering
-- **Supabase**: Database for tracking conversions
-- **GitHub Actions**: CI/CD automation
-- **GitHub Pages**: Static site hosting
-- **Source Sans Pro**: Typography
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+`deploy:ci` reads `WORKERS_CI_BRANCH` and only calls `wrangler deploy` on `main`; otherwise it uploads a version snapshot with a branch preview alias. Subpath hosting uses `BASE_PATH=/resume/` (see `vite.config.ts`).

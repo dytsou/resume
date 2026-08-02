@@ -50,12 +50,21 @@ jobs:
       - name: Run TypeScript type check
         run: pnpm run typecheck
 
-  build:
-    name: Build
+  test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+
+      - name: Install Poppler
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+
+      - name: Install TeX Live
+        uses: zauguin/install-texlive@f5e7d0b117035fff797d4392ea94131747e03d60 # v4
+        with:
+          package_file: scripts/tex/tl_packages
+          cache_version: 9
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
@@ -66,14 +75,43 @@ jobs:
         run: corepack enable
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Run tests
+        run: pnpm test
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install Poppler
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+
+      - name: Install TeX Live
+        uses: zauguin/install-texlive@f5e7d0b117035fff797d4392ea94131747e03d60 # v4
+        with:
+          package_file: scripts/tex/tl_packages
+          cache_version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
       - name: Build project
         run: pnpm run build
         env:
           # Served under the front door at dy.tsou.me/resume/, so assets must be prefixed.
           BASE_PATH: /resume/
-          VITE_GOOGLE_DRIVE_RESUME_LINK: ${{ vars.VITE_GOOGLE_DRIVE_RESUME_LINK }}
 
       - name: Verify build output
         if: github.ref == 'refs/heads/main'
