@@ -29,12 +29,12 @@ export function promoteHeadings(html) {
   // Promote h4 to h3 first to avoid double promotion
   let result = html
     .replace(/<h4(\b[^>]*)>/g, '<h3$1>')
-    .replace(/<\/h4>/g, '</h3>');
+    .replaceAll('</h4>', '</h3>');
 
   // Then promote h3 to h2
   result = result
     .replace(/<h3(\b[^>]*)>/g, '<h2$1>')
-    .replace(/<\/h3>/g, '</h2>');
+    .replaceAll('</h3>', '</h2>');
 
   return result;
 }
@@ -53,8 +53,8 @@ export function processAbstract(html) {
  * Replaces math pipe separators with typographic dots
  */
 export function replaceMathPipes(html) {
-  return html.replace(
-    /<span class="inline-math">\|<\/span>/g,
+  return html.replaceAll(
+    '<span class="inline-math">|</span>',
     '<span class="sep">·</span>'
   );
 }
@@ -217,7 +217,7 @@ export function mergeDateRanges(html) {
 export function processTechnicalSkills(html, sectionTypeMatches) {
   const rows = sectionTypeMatches
     .map((s) => {
-      const label = s[1].trim().replaceAll('\\&', '&');
+      const label = s[1].trim().replaceAll(String.raw`\&`, '&');
       const sep = s[2].trim();
       const content = s[3].trim();
 
@@ -286,7 +286,7 @@ export function processListMacros(html) {
 
     const parts = inner.split(LIST_MARKERS.item).map((s) => s.trim());
     const items = parts
-      .filter((part) => part)
+      .filter(Boolean)
       .map((part) => `<li>${part}</li>`)
       .join('');
 
@@ -394,5 +394,5 @@ function normalizeWhitespace(text) {
 }
 
 function normalizeDateText(text) {
-  return normalizeWhitespace(text.split('--').join(' – '));
+  return normalizeWhitespace(text.replaceAll('--', ' – '));
 }
