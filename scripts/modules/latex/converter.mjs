@@ -8,9 +8,9 @@ import { unified } from 'unified';
 import { unifiedLatexToHast } from '@unified-latex/unified-latex-to-hast';
 import { toHtml } from 'hast-util-to-html';
 
-import { extractMetadata } from './utils.mjs';
-import { extractMacroMatches } from './latex-parser.mjs';
-import { replaceIconMacros } from './html-helpers.mjs';
+import { extractMetadata } from '../../shared/utils.mjs';
+import { extractMacroMatches } from './parser.mjs';
+import { replaceIconMacros } from '../html/helpers.mjs';
 import {
   processTitleBlock,
   promoteHeadings,
@@ -26,8 +26,8 @@ import {
   processHeadingListMacros,
   cleanupParagraphWrappers,
   applyFinalCleanups,
-} from './html-transformers.mjs';
-import { wrapInHtmlTemplate } from './html-template.mjs';
+} from '../html/transformers.mjs';
+import { wrapInHtmlTemplate } from '../html/template.mjs';
 
 /**
  * Converts LaTeX content to styled HTML

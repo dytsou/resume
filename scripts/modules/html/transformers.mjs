@@ -3,8 +3,8 @@
  * Each function applies a specific transformation to the HTML
  */
 
-import { LIST_MARKERS } from './config.mjs';
-import { replaceIconMacros, cleanText, hrefToAnchor } from './html-helpers.mjs';
+import { LIST_MARKERS } from '../../shared/config.mjs';
+import { replaceIconMacros, cleanText, hrefToAnchor } from './helpers.mjs';
 
 /**
  * Replaces \maketitle placeholder with proper title block

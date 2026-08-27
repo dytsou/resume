@@ -1,0 +1,32 @@
+# After main advances or a release is published, asks Dependabot to rebase all open Dependabot PRs
+# (same as commenting @dependabot rebase). Uses the Dependabot integration, not a local git rebase.
+#
+# Required: repository secret GH_PA_TOKEN — a fine-grained or classic PAT that can comment on pull
+# requests. The default GITHUB_TOKEN is read-only for workflows triggered from Dependabot PRs and is
+# not sufficient for this action.
+name: Rebase Dependabot PRs
+
+on:
+  push:
+    branches: [main]
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  auto-rebase:
+    name: Rebase Dependabot PRs
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Rebase
+        uses: bbeesley/gha-auto-dependabot-rebase@613e88f74cd43f750c7a3a70ee051225dfa13fe8 # v1.5.225
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PA_TOKEN }}
+        with:
+          task: rebase

@@ -2,7 +2,7 @@
  * HTML transformation helper functions
  */
 
-import { ICON_MAP } from './config.mjs';
+import { ICON_MAP } from '../../shared/config.mjs';
 
 /**
  * Replaces FontAwesome icon macros with proper HTML elements
