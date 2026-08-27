@@ -55,7 +55,7 @@ export function convertLatexToHtml(latexContent, filename) {
     html = processAbstract(html);
     html = replaceMathPipes(html);
     html = processContactHeader(html);
-    html = processTrioHeadings(html, macros.trio);
+    html = processTrioHeadings(html, macros.trioTitle);
     html = processQuadDetails(html, macros.quadDetails);
     html = mergeDateRanges(html);
     html = processTechnicalSkills(html, macros.sectionType);

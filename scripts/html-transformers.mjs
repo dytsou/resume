@@ -124,18 +124,18 @@ export function processContactHeader(html) {
 }
 
 /**
- * Processes resumeTrioHeading macros
+ * Processes resumeTrioHeadingTitle macros (4-argument version)
  */
 export function processTrioHeadings(html, trioMatches) {
   let trioIdx = 0;
 
   return html.replace(
-    /<span class="macro macro-resumeTrioHeading"><\/span>([\s\S]*?)(?=(<ul|<span|<\/div|<\/p))/g,
+    /<span class="macro macro-resumeTrioHeadingTitle"><\/span>([\s\S]*?)(?=(<ul|<span|<\/div|<\/p))/g,
     (m) => {
       const parsed = trioMatches[trioIdx++];
       if (!parsed) return m;
 
-      const [, title, tech, linkRaw] = parsed;
+      const [, title, tech, linkRaw, role] = parsed;
       const anchorHtml = hrefToAnchor(linkRaw);
 
       return `
@@ -143,7 +143,8 @@ export function processTrioHeadings(html, trioMatches) {
   <div class="trio-title"><strong>${title.trim()}</strong></div>
   <div class="trio-tech"><em>${tech.trim()}</em></div>
   <div class="trio-link">${anchorHtml}</div>
-</div>`;
+</div>
+<div class="role"><em>${role.trim()}</em></div>`;
     }
   );
 }
@@ -173,7 +174,7 @@ export function processQuadDetails(html, quadDetailsMatches) {
       return `
 <div class="quad-details">
   <div class="row"><div class="left">${anchorHtml}</div><div class="right"><span class="date">${cleanDateText}</span></div></div>
-  <div class="row"><div class="left"><em>${cleanRoleText}</em></div><div class="right"></div></div>
+  <div class="row"><div class="left role"><em>${cleanRoleText}</em></div><div class="right"></div></div>
 </div>`;
     }
   );
@@ -211,7 +212,7 @@ export function processTechnicalSkills(html, sectionTypeMatches) {
     .join('');
 
   return html.replace(
-    /<h2>Technical Skills<\/h2>[\s\S]*?(?=<h2>)/,
+    /<h2>Technical Skills<\/h2>[\s\S]*?(?=<h2>|$)/,
     `<h2>Technical Skills</h2><div class="resume-heading-list">${rows}</div>\n`
   );
 }
@@ -301,6 +302,8 @@ export function processHeadingListMacros(html) {
  */
 export function cleanupParagraphWrappers(html) {
   return html
+    .replace(/<p>\s*(?=<div class="(?:resume-heading-list|contact|trio|quad|quad-details)">)/g, '')
+    .replace(/<\/p>\s*(?=<div class="(?:resume-heading-list|contact|trio|quad|quad-details)">)/g, '')
     .replace(/<p>\s*(<ul class="resume-items">)/g, '$1')
     .replace(/(<\/ul>)\s*<\/p>/g, '$1')
     .replace(/<p>\s*(<div class="resume-heading-list">)/g, '$1')
@@ -314,7 +317,15 @@ export function cleanupParagraphWrappers(html) {
     .replace(
       /(<\/div>\s*<\/div>\s*)<div class="trio-tech">[\s\S]*?<\/div>\s*<div class="trio-link">[\s\S]*?<\/div>/,
       '$1'
-    );
+    )
+    .replace(
+      /<p><small>([^<]*)<\/small><\/p>\s*([^<]*?)\s*(?=<ul class="resume-items">)/g,
+      (match, role, duplicate) =>
+        role.trim() === duplicate.trim()
+          ? `<p><small>${role}</small></p>`
+          : match
+    )
+    .replace(/<p>\s*<\/div>/g, '</div>');
 }
 
 /**
@@ -331,6 +342,15 @@ export function applyFinalCleanups(html) {
       .replace(/class="href"/g, '')
       // Fix double spaces in href attributes
       .replace(/<a  href=/g, '<a href=')
+      // Remove the plain-text role emitted after project role paragraphs
+      .replace(
+        /(<p><small>([^<]+)<\/small><\/p>)\s*\2\s*(?=<ul class="resume-items">)/g,
+        '$1'
+      )
+      .replace(
+        /(<div class="role"><em>([^<]+)<\/em><\/div>)\s*\2\s*(?=<ul class="resume-items">)/g,
+        '$1'
+      )
       // Add target="_blank" to external links
       .replace(
         /<a href="(https?:\/\/[^"]+)"/g,

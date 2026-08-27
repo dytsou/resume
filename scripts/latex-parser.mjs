@@ -81,6 +81,7 @@ export function parseLatexMacro(content, macroName, argCount) {
 export function extractMacroMatches(latexContent) {
   return {
     trio: parseLatexMacro(latexContent, 'resumeTrioHeading', 3),
+    trioTitle: parseLatexMacro(latexContent, 'resumeTrioHeadingTitle', 4),
     quadDetails: parseLatexMacro(latexContent, 'resumeQuadHeadingDetails', 3),
     quadHeading: parseLatexMacro(latexContent, 'resumeQuadHeading', 4),
     sectionType: Array.from(

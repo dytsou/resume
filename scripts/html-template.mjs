@@ -13,15 +13,16 @@ export function getStyles() {
       padding: 0;
     }
     body {
-      max-width: 1000px;
-      width: 95%;
+      width: 100%;
       margin: 0 auto;
-      padding: 2rem;
+      padding: 2.75rem 1.7rem 1.7rem;
       font-family: "Source Sans 3", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      line-height: 1.6;
+      font-size: 14px;
+      line-height: 1.3;
       color: #000;
       background: #fff;
       box-sizing: border-box;
+      border-top: 2px solid #1f2937;
     }
     * { box-sizing: border-box; }
     h1, h2, h3, h4, h5, h6 {
@@ -29,13 +30,23 @@ export function getStyles() {
       margin-bottom: 0.5em;
       font-weight: bold;
     }
-    h1 { font-size: 5em; text-align: center; }
-    h2 { font-size: 1.5em; font-variant: small-caps; color: #1e3a8a; border-bottom: 1px solid #1e3a8a; padding-bottom: 0.25rem; margin-top: 1.2em; }
+    h1 { font-size: 2.2rem; line-height: 1.1; text-align: center; }
+    h2 {
+      font-size: 1rem;
+      line-height: 1.2;
+      font-variant: small-caps;
+      text-transform: uppercase;
+      color: #0000ff;
+      border-bottom: 1px solid #222;
+      padding-bottom: 0.2rem;
+      margin-top: 1.35rem;
+      margin-bottom: 0.55rem;
+    }
     h3 { font-size: 1.2em; }
     .author { text-align: center; font-style: italic; margin: 1em 0; }
     .date { text-align: center; margin-bottom: 2em; }
-    .title { margin-top: 0.5em; }
-    p { margin: 1em 0; text-align: left; }
+    .title { margin: 0; }
+    p { margin: 0.35rem 0; text-align: left; }
     .theorem, .lemma, .proposition, .corollary {
       font-style: italic;
       margin: 1em 0;
@@ -50,21 +61,21 @@ export function getStyles() {
     }
     pre { padding: 1em; overflow-x: auto; }
     .equation { margin: 1em 0; overflow-x: auto; }
-    a { color: #0066cc; text-decoration: none; cursor: pointer; }
-    a:hover { color: #004499; text-decoration: none; }
-    a:visited { color: #551a8b; text-decoration: none; }
-    .resume-items { margin: 0.25rem 0 1rem 1.25rem; }
-    .resume-items li { margin: 0.25rem 0; }
-    .resume-heading-list { margin: 0.25rem 0 0.5rem 0; }
-    .contact { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    a { color: #000; text-decoration: none; cursor: pointer; }
+    a:hover, a:visited { color: #000; }
+    .resume-items { margin: 0.35rem 0 0.55rem 2.35rem; padding-left: 0.65rem; }
+    .resume-items li { margin: 0.2rem 0; padding-left: 0.05rem; }
+    .resume-heading-list { margin: 0.25rem 0 0.5rem 0.95rem; }
+    .contact { display: block; text-align: center; margin-bottom: 0.8rem; }
     .contact.centered { grid-template-columns: 1fr; text-align: center; }
     .contact.centered .contact-name { justify-self: center; }
     .contact.centered .contact-links { justify-self: center; }
-    .contact-name { font-size: 1.75rem; font-weight: 700; }
-    .contact-links { color: #111; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; align-items: center; }
+    .contact-name { font-size: 2.2rem; line-height: 1.1; font-weight: 700; }
+    .contact-links { color: #111; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; align-items: center; margin-top: 0.8rem; }
     .contact-links a { display: inline-flex; align-items: center; gap: 0.25rem; }
-    .contact-links i { 
-      color: #1e3a8a; 
+    .contact-links a, .trio-link a { text-decoration: underline; }
+    .contact-links i {
+      color: #000;
       font-style: normal; 
       font-variant: normal; 
       text-rendering: auto; 
@@ -83,28 +94,23 @@ export function getStyles() {
     .trio-title { justify-self: start; white-space: nowrap; }
     .trio-tech { position: absolute; left: 50%; transform: translateX(-50%); color: #374151; white-space: nowrap; }
     .trio-link { justify-self: end; white-space: nowrap; }
+    .role { font-size: 0.85rem; line-height: 1.25; }
+    .role em { font-style: italic; }
     .quad, .quad-details { margin: 0.25rem 0; }
     .row { display: grid; grid-template-columns: 1fr auto; align-items: baseline; }
     .row .left, .row .right { white-space: nowrap; }
-    .row .right { text-align: right; color: #374151; }
+    .row .right { text-align: right; color: #000; }
     .skill-row { display: grid; grid-template-columns: 0.28fr 0.01fr 0.71fr; align-items: start; gap: 0.5rem; }
     .skill-label { font-weight: 700; }
     .skill-sep { text-align: center; }
     .macro { display: none; }
-    .converter-footer {
-      margin-top: 3rem;
-      padding-top: 1rem;
-      border-top: 1px solid #e5e7eb;
-      text-align: center;
-      font-size: 0.875rem;
-      color: #6b7280;
-    }
+    .converter-footer { display: none; }
     .converter-footer a { color: #3b82f6; text-decoration: none; }
     .converter-footer a:hover { text-decoration: underline; }
 
     @media (max-width: 768px) {
-      body { padding: 1rem; }
-      h1 { font-size: 5em; }
+      body { padding: 2rem 1rem 1rem; }
+      h1 { font-size: 2rem; }
       h2 { font-size: 1.25em; margin-top: 1em; }
       .contact-name { font-size: 1.5rem; }
       .contact-links { font-size: 0.9rem; gap: 0.4rem; }
@@ -125,7 +131,7 @@ export function getStyles() {
 
     @media (max-width: 480px) {
       body { padding: 0.75rem; }
-      h1 { font-size: 5em; }
+      h1 { font-size: 1.8rem; }
       h2 { font-size: 1.1em; }
       .contact-name { font-size: 1.25rem; }
       .contact-links { font-size: 0.85rem; flex-direction: column; align-items: flex-start; }
