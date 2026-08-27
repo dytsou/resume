@@ -2,7 +2,7 @@
  * HTML transformation helper functions
  */
 
-import { ICON_MAP } from './config.mjs';
+import { ICON_MAP } from '../../shared/config.mjs';
 
 /**
  * Replaces FontAwesome icon macros with proper HTML elements
@@ -22,12 +22,12 @@ export function replaceIconMacros(html) {
  */
 export function cleanText(text) {
   return text
-    .replace(/<br class="linebreak">/g, ' ')
-    .replace(
-      /<span class="inline-math">\|<\/span>/g,
+    .replaceAll('<br class="linebreak">', ' ')
+    .replaceAll(
+      '<span class="inline-math">|</span>',
       '<span class="sep">·</span>'
     )
-    .replace(/class="href"/g, '')
+    .replaceAll('class="href"', '')
     .trim();
 }
 
@@ -40,7 +40,7 @@ export function parseHrefCommand(hrefString) {
 
   const [, url, text] = match;
   const cleanedText = text
-    .replace(/\\uline\{([^}]+)\}/g, '$1')
+    .replaceAll(/\\uline\{([^}]+)\}/g, '$1')
     .replace(/\\uline\{([^}]*)$/g, '$1');
 
   return { url, text: cleanedText };
@@ -50,7 +50,7 @@ export function parseHrefCommand(hrefString) {
  * Converts href command to HTML anchor element
  */
 export function hrefToAnchor(hrefString, makeBold = false) {
-  if (!hrefString.includes('\\href{')) {
+  if (!hrefString.includes(String.raw`\href{`)) {
     return makeBold ? `<strong>${hrefString}</strong>` : hrefString;
   }
 

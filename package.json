@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "pnpm run convert && vite build",
-    "convert": "node scripts/convert-latex.mjs",
+    "convert": "pnpm run convert:latex",
+    "convert:latex": "node scripts/modules/latex/convert.mjs",
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\"",

@@ -3,8 +3,8 @@
  * Each function applies a specific transformation to the HTML
  */
 
-import { LIST_MARKERS } from './config.mjs';
-import { replaceIconMacros, cleanText, hrefToAnchor } from './html-helpers.mjs';
+import { LIST_MARKERS } from '../../shared/config.mjs';
+import { replaceIconMacros, cleanText, hrefToAnchor } from './helpers.mjs';
 
 /**
  * Replaces \maketitle placeholder with proper title block
@@ -29,12 +29,12 @@ export function promoteHeadings(html) {
   // Promote h4 to h3 first to avoid double promotion
   let result = html
     .replace(/<h4(\b[^>]*)>/g, '<h3$1>')
-    .replace(/<\/h4>/g, '</h3>');
+    .replaceAll('</h4>', '</h3>');
 
   // Then promote h3 to h2
   result = result
     .replace(/<h3(\b[^>]*)>/g, '<h2$1>')
-    .replace(/<\/h3>/g, '</h2>');
+    .replaceAll('</h3>', '</h2>');
 
   return result;
 }
@@ -53,8 +53,8 @@ export function processAbstract(html) {
  * Replaces math pipe separators with typographic dots
  */
 export function replaceMathPipes(html) {
-  return html.replace(
-    /<span class="inline-math">\|<\/span>/g,
+  return html.replaceAll(
+    '<span class="inline-math">|</span>',
     '<span class="sep">·</span>'
   );
 }
@@ -64,14 +64,14 @@ export function replaceMathPipes(html) {
  */
 export function processContactHeader(html) {
   return html.replace(
-    /<div class="environment tabular(?:\*|x)">([\s\S]*?)<\/div>(?=\s*<h2>)/,
+    /<div class="environment tabular[*x]">([\s\S]*?)<\/div>(?=\s*<h2>)/,
     (match, inner) => {
       const innerClean = replaceIconMacros(
         inner
-          .replace(/\n/g, ' ')
+          .replaceAll('\n', ' ')
           .replace(/>\s*[Xlcrp@{}]+(?=\s|<)/g, ' ')
           .replace(/<span class="vspace"[^>]*><\/span>/g, ' ')
-          .replace(/<span class="macro macro-uline"><\/span>/g, '')
+          .replaceAll('<span class="macro macro-uline"></span>', '')
           .replace(/\s{2,}/g, ' ')
           .trim()
       );
@@ -96,7 +96,7 @@ export function processContactHeader(html) {
       let primaryClean = cleanText(primary);
       // Wrap mobile icon and phone number together
       primaryClean = primaryClean.replace(
-        /(<i class="fas fa-(?:mobile|mobile-alt|phone)"><\/i>)\s*([+\d\s\-]+)/g,
+        /(<i class="fas fa-(?:mobile|mobile-alt|phone)"><\/i>)\s*([-+\d\s]+)/g,
         '<span class="contact-mobile">$1 $2</span>'
       );
 
@@ -163,12 +163,9 @@ export function processQuadDetails(html, quadDetailsMatches) {
 
       const [, url, dateText, roleText] = parsed;
 
-      const cleanDateText = dateText
-        .replace(/\s*--\s*/g, ' – ')
-        .replace(/\s+/g, ' ')
-        .trim();
+      const cleanDateText = normalizeDateText(dateText);
 
-      const cleanRoleText = roleText.replace(/\s+/g, ' ').trim();
+      const cleanRoleText = normalizeWhitespace(roleText);
       const anchorHtml = hrefToAnchor(url, true);
 
       return `
@@ -184,12 +181,34 @@ export function processQuadDetails(html, quadDetailsMatches) {
  * Merges split date ranges in quad-details blocks
  */
 export function mergeDateRanges(html) {
-  // Case A: "Oct 2023 –" + left em starting with "Present ..."
-  return html.replace(
-    /(<div class="quad-details">[\s\S]*?<span class="date">)\s*([^<]*?–)\s*(<\/span>[\s\S]*?<div class="left"><em>)\s*Present\s+([^<]*?)(<\/em>)/g,
-    (m, pre, startDash, mid, roleRest, end) =>
-      `${pre}${startDash} Present${mid}${roleRest}${end}`
-  );
+  return html
+    .split('<div class="quad-details">')
+    .map((block, index) => {
+      if (index === 0) return block;
+
+      const dateStart = block.indexOf('<span class="date">');
+      const dateEnd = block.indexOf('</span>', dateStart);
+      const roleStart = block.indexOf('<div class="left"><em>');
+      const presentStart = block.indexOf('Present', roleStart);
+
+      if (
+        dateStart === -1 ||
+        dateEnd === -1 ||
+        roleStart === -1 ||
+        presentStart === -1
+      ) {
+        return block;
+      }
+
+      const dateTag = '<span class="date">';
+      const date = block.slice(dateStart + dateTag.length, dateEnd).trim();
+      if (!date.endsWith('–')) return block;
+
+      const updatedDate = `${block.slice(0, dateStart + dateTag.length)}${date} Present${block.slice(dateEnd)}`;
+      const presentOffset = presentStart + (updatedDate.length - block.length);
+      return `${updatedDate.slice(0, presentOffset)}${updatedDate.slice(presentOffset + 7).trimStart()}`;
+    })
+    .join('<div class="quad-details">');
 }
 
 /**
@@ -198,7 +217,7 @@ export function mergeDateRanges(html) {
 export function processTechnicalSkills(html, sectionTypeMatches) {
   const rows = sectionTypeMatches
     .map((s) => {
-      const label = s[1].trim().replace(/\\&/g, '&');
+      const label = s[1].trim().replaceAll(String.raw`\&`, '&');
       const sep = s[2].trim();
       const content = s[3].trim();
 
@@ -236,10 +255,7 @@ export function processQuadHeadings(html, quadHeadingMatches) {
       const uni = parsed[1].trim();
       const loc = parsed[2].trim();
       const degree = parsed[3].trim();
-      const dateRange = parsed[4]
-        .replace(/\s*--\s*/g, ' – ')
-        .replace(/\s+/g, ' ')
-        .trim();
+      const dateRange = normalizeDateText(parsed[4]);
 
       return `
 <div class="quad">
@@ -270,7 +286,7 @@ export function processListMacros(html) {
 
     const parts = inner.split(LIST_MARKERS.item).map((s) => s.trim());
     const items = parts
-      .filter((part) => part)
+      .filter(Boolean)
       .map((part) => `<li>${part}</li>`)
       .join('');
 
@@ -287,12 +303,12 @@ export function processListMacros(html) {
  */
 export function processHeadingListMacros(html) {
   return html
-    .replace(
-      /<span class="macro macro-resumeHeadingListStart"><\/span>/g,
+    .replaceAll(
+      '<span class="macro macro-resumeHeadingListStart"></span>',
       '<div class="resume-heading-list">'
     )
-    .replace(
-      /<span class="macro macro-resumeHeadingListEnd"><\/span>/g,
+    .replaceAll(
+      '<span class="macro macro-resumeHeadingListEnd"></span>',
       '</div>'
     );
 }
@@ -301,7 +317,8 @@ export function processHeadingListMacros(html) {
  * Cleans up paragraph wrappers around block elements
  */
 export function cleanupParagraphWrappers(html) {
-  return html
+  return removeDuplicateRoleText(
+    html
     .replace(/<p>\s*(?=<div class="(?:resume-heading-list|contact|trio|quad|quad-details)">)/g, '')
     .replace(/<\/p>\s*(?=<div class="(?:resume-heading-list|contact|trio|quad|quad-details)">)/g, '')
     .replace(/<p>\s*(<ul class="resume-items">)/g, '$1')
@@ -318,48 +335,100 @@ export function cleanupParagraphWrappers(html) {
       /(<\/div>\s*<\/div>\s*)<div class="trio-tech">[\s\S]*?<\/div>\s*<div class="trio-link">[\s\S]*?<\/div>/,
       '$1'
     )
-    .replace(
-      /<p><small>([^<]*)<\/small><\/p>\s*([^<]*?)\s*(?=<ul class="resume-items">)/g,
-      (match, role, duplicate) =>
-        role.trim() === duplicate.trim()
-          ? `<p><small>${role}</small></p>`
-          : match
-    )
-    .replace(/<p>\s*<\/div>/g, '</div>');
+    .replace(/<p>\s*<\/div>/g, '</div>'),
+    '<p><small>',
+    '</small></p>'
+  );
 }
 
 /**
  * Applies final HTML cleanup and fixes
  */
 export function applyFinalCleanups(html) {
-  return (
-    html
-      // Fix missing spaces after percent symbols
-      .replace(/(\d+)%([a-zA-Z])/g, '$1% $2')
+  const cleaned = addSpacesAfterPercent(html
       // Clean up leftover macro artifacts
-      .replace(/<span class="macro macro-uline"><\/span>Source Code<\/a>/g, '')
+      .replaceAll(
+        '<span class="macro macro-uline"></span>Source Code</a>',
+        ''
+      )
       // Remove stray class="href" attributes
-      .replace(/class="href"/g, '')
+      .replaceAll('class="href"', '')
       // Fix double spaces in href attributes
-      .replace(/<a  href=/g, '<a href=')
+      .replaceAll('<a  href=', '<a href=')
       // Remove the plain-text role emitted after project role paragraphs
-      .replace(
-        /(<p><small>([^<]+)<\/small><\/p>)\s*\2\s*(?=<ul class="resume-items">)/g,
-        '$1'
-      )
-      .replace(
-        /(<div class="role"><em>([^<]+)<\/em><\/div>)\s*\2\s*(?=<ul class="resume-items">)/g,
-        '$1'
-      )
       // Add target="_blank" to external links
       .replace(
         /<a href="(https?:\/\/[^"]+)"/g,
         '<a href="$1" target="_blank" rel="noopener noreferrer"'
       )
       // Clean up duplicate target="_blank" attributes
-      .replace(
-        /target="_blank" rel="noopener noreferrer" target="_blank" rel="noopener noreferrer"/g,
+      .replaceAll(
+        'target="_blank" rel="noopener noreferrer" target="_blank" rel="noopener noreferrer"',
         'target="_blank" rel="noopener noreferrer"'
       )
   );
+
+  return removeDuplicateRoleText(
+    removeDuplicateRoleText(
+      cleaned,
+      '<p><small>',
+      '</small></p>'
+    ),
+    '<div class="role"><em>',
+    '</em></div>'
+  );
+}
+
+function addSpacesAfterPercent(html) {
+  let result = '';
+
+  for (let index = 0; index < html.length; index++) {
+    const char = html[index];
+    const previous = html[index - 1];
+    const next = html[index + 1];
+    result += char;
+
+    if (char === '%' && /\d/.test(previous) && /[a-zA-Z]/.test(next)) {
+      result += ' ';
+    }
+  }
+
+  return result;
+}
+
+function removeDuplicateRoleText(html, roleStart, roleEnd) {
+  const listStart = '<ul class="resume-items">';
+
+  return html
+    .split(listStart)
+    .map((segment, index) => {
+      if (index === 0) return segment;
+
+      const roleEndIndex = segment.lastIndexOf(roleEnd);
+      if (roleEndIndex === -1) return segment;
+
+      const roleStartIndex = segment.lastIndexOf(roleStart, roleEndIndex);
+      if (roleStartIndex === -1) return segment;
+
+      const roleBlockEnd = roleEndIndex + roleEnd.length;
+      const duplicate = segment
+        .slice(roleBlockEnd)
+        .trimStart()
+        .split('<')[0]
+        .trim();
+      const role = segment.slice(roleStartIndex + roleStart.length, roleEndIndex);
+
+      return role === duplicate
+        ? `${segment.slice(0, roleBlockEnd)}\n`
+        : segment;
+    })
+    .join(listStart);
+}
+
+function normalizeWhitespace(text) {
+  return text.split(/\s+/).filter(Boolean).join(' ');
+}
+
+function normalizeDateText(text) {
+  return normalizeWhitespace(text.replaceAll('--', ' – '));
 }

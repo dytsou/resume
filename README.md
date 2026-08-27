@@ -18,7 +18,12 @@ resume/
 ├── latex/                  # Store your LaTeX resume files here
 │   └── resume.tex          # Main LaTeX resume document
 ├── scripts/
-│   └── convert-latex.mjs   # LaTeX to HTML conversion script
+│   ├── commands/
+│   │   └── convert-latex.mjs # LaTeX conversion command
+│   ├── modules/
+│   │   ├── html/             # HTML rendering and transformation logic
+│   │   └── latex/            # LaTeX parsing and conversion logic
+│   └── shared/               # Shared configuration and file utilities
 ├── src/
 │   ├── App.tsx             # Main application
 │   ├── main.tsx           # React entry point
@@ -123,6 +128,7 @@ The Supabase database stores:
 
 - `pnpm run dev` - Start development server
 - `pnpm run convert` - Convert LaTeX files to HTML
+- `pnpm run convert:latex` - Run the LaTeX conversion module directly
 - `pnpm run build` - Convert LaTeX + build production bundle
 - `pnpm run preview` - Preview production build locally
 - `pnpm run lint` - Run ESLint
@@ -139,7 +145,7 @@ base: process.env.GITHUB_PAGES === 'true' ? '/your-repo-name/' : '/',
 
 ### Styling
 
-Modify the CSS in `scripts/convert-latex.mjs` to customize the HTML output appearance.
+Modify the CSS in `scripts/modules/html/template.mjs` to customize the HTML output appearance.
 
 ### Document Metadata
 

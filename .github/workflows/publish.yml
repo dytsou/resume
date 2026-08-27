@@ -7,6 +7,9 @@ on:
     paths:
       - "package.json"
       - "scripts/convert-latex.mjs"
+      - "scripts/commands/**"
+      - "scripts/modules/**"
+      - "scripts/shared/**"
       - "index.html"
   release:
     types: [created]

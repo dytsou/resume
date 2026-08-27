@@ -9,7 +9,7 @@ on:
     branches: [main]
     paths:
       - "LICENSE"
-      - "scripts/html-template.mjs"
+      - "scripts/modules/html/template.mjs"
 
 permissions:
   contents: write
