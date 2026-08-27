@@ -9,6 +9,7 @@
     "convert": "pnpm run convert:latex",
     "convert:latex": "node scripts/modules/latex/convert.mjs",
     "lint": "eslint .",
+    "test": "node --test",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "preview": "pnpm run build && wrangler dev",

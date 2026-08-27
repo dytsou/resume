@@ -6,11 +6,11 @@ import {
 
 interface DownloadFromDriveButtonProps {
   /** Google Drive share link */
-  driveLink: string;
+  readonly driveLink: string;
   /** Optional filename for the downloaded file */
-  filename?: string;
+  readonly filename?: string;
   /** Optional custom button text */
-  buttonText?: string;
+  readonly buttonText?: string;
 }
 
 export function DownloadFromDriveButton({
@@ -55,6 +55,7 @@ export function DownloadFromDriveButton({
   return (
     <div className="download-drive-button-container">
       <button
+        type="button"
         onClick={handleDownload}
         disabled={isLoading || !driveLink}
         className="download-drive-button"

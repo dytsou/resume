@@ -15,20 +15,21 @@ export function extractGoogleDriveFileId(link: string): string | null {
   if (!link) return null;
 
   // Try to extract from /file/d/{FILE_ID}/ format
-  const fileIdMatch = link.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  const fileIdMatch = /\/file\/d\/([a-zA-Z0-9_-]+)/.exec(link);
   if (fileIdMatch) {
     return fileIdMatch[1];
   }
 
   // Try to extract from ?id={FILE_ID} format
-  const idParamMatch = link.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  const idParamMatch = /[?&]id=([a-zA-Z0-9_-]+)/.exec(link);
   if (idParamMatch) {
     return idParamMatch[1];
   }
 
   // If it's already just a file ID (no URL structure)
-  if (/^[a-zA-Z0-9_-]+$/.test(link.trim())) {
-    return link.trim();
+  const trimmedLink = link.trim();
+  if (/^[a-zA-Z0-9_-]+$/.exec(trimmedLink)) {
+    return trimmedLink;
   }
 
   return null;
@@ -60,5 +61,5 @@ export function downloadFile(url: string, filename?: string): void {
   link.target = '_blank';
   document.body.appendChild(link);
   link.click();
-  document.body.removeChild(link);
+  link.remove();
 }
