@@ -3,8 +3,8 @@
  * Processes all LaTeX files and generates HTML
  */
 
-import { readFileSync, writeFileSync, readdirSync, existsSync } from 'fs';
-import { join, basename, extname } from 'path';
+import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
+import { join, basename, extname } from 'node:path';
 
 import { CONFIG } from '../shared/config.mjs';
 import { ensureDirectoryExists } from '../shared/utils.mjs';
