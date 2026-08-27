@@ -16,53 +16,21 @@ export function parseLatexMacro(content, macroName, argCount) {
     const startPos = match.index;
     let pos = match.index + match[0].length - 1;
     const args = [];
-    let currentArg = '';
-    let braceCount = 1;
-    let parsedArgs = 0;
 
-    while (parsedArgs < argCount && pos < content.length) {
-      pos++;
-      const char = content[pos];
+    for (let parsedArgs = 0; parsedArgs < argCount; parsedArgs++) {
+      const argument = readBraceArgument(content, pos);
+      if (!argument) {
+        break;
+      }
 
-      if (char === '{') {
-        braceCount++;
-        currentArg += char;
-      } else if (char === '}') {
-        braceCount--;
-        if (braceCount === 0) {
-          args.push(currentArg.trim());
-          parsedArgs++;
-          currentArg = '';
-          // Look for next argument, skipping whitespace, newlines, and comments
-          while (pos < content.length) {
-            pos++;
-            const nextChar = content[pos];
-            // Skip whitespace and newlines
-            if (nextChar === ' ' || nextChar === '\t' || nextChar === '\n' || nextChar === '\r') {
-              continue;
-            }
-            // Skip LaTeX comments (lines starting with %)
-            if (nextChar === '%') {
-              while (pos < content.length && content[pos] !== '\n' && content[pos] !== '\r') {
-                pos++;
-              }
-              continue;
-            }
-            // Found the opening brace for next argument
-            if (nextChar === '{') {
-              braceCount = 1;
-              break;
-            }
-            // If we hit something else before finding {, we might be done
-            if (nextChar && nextChar.match(/[a-zA-Z\\]/)) {
-              break;
-            }
-          }
-        } else {
-          currentArg += char;
+      args.push(argument.value);
+      pos = argument.end;
+
+      if (parsedArgs < argCount - 1) {
+        pos = findNextArgumentStart(content, pos);
+        if (pos === -1) {
+          break;
         }
-      } else {
-        currentArg += char;
       }
     }
 
@@ -73,6 +41,65 @@ export function parseLatexMacro(content, macroName, argCount) {
   }
 
   return matches;
+}
+
+function readBraceArgument(content, openingBrace) {
+  let braceCount = 1;
+  let currentArg = '';
+
+  for (let pos = openingBrace + 1; pos < content.length; pos++) {
+    const char = content[pos];
+
+    if (char === '{') {
+      braceCount++;
+      currentArg += char;
+    } else if (char === '}') {
+      braceCount--;
+      if (braceCount === 0) {
+        return { value: currentArg.trim(), end: pos };
+      }
+      currentArg += char;
+    } else {
+      currentArg += char;
+    }
+  }
+
+  return null;
+}
+
+function findNextArgumentStart(content, closingBrace) {
+  for (let pos = closingBrace + 1; pos < content.length; pos++) {
+    const char = content[pos];
+
+    if (isWhitespace(char)) {
+      continue;
+    }
+
+    if (char === '%') {
+      while (pos < content.length && !isLineBreak(content[pos])) {
+        pos++;
+      }
+      continue;
+    }
+
+    if (char === '{') {
+      return pos;
+    }
+
+    if (/[a-zA-Z\\]/.test(char)) {
+      return -1;
+    }
+  }
+
+  return -1;
+}
+
+function isWhitespace(char) {
+  return char === ' ' || char === '\t' || char === '\n' || char === '\r';
+}
+
+function isLineBreak(char) {
+  return char === '\n' || char === '\r';
 }
 
 /**
