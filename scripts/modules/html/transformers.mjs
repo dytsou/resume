@@ -317,7 +317,8 @@ export function processHeadingListMacros(html) {
  * Cleans up paragraph wrappers around block elements
  */
 export function cleanupParagraphWrappers(html) {
-  return html
+  return removeDuplicateRoleText(
+    html
     .replace(/<p>\s*(?=<div class="(?:resume-heading-list|contact|trio|quad|quad-details)">)/g, '')
     .replace(/<\/p>\s*(?=<div class="(?:resume-heading-list|contact|trio|quad|quad-details)">)/g, '')
     .replace(/<p>\s*(<ul class="resume-items">)/g, '$1')
@@ -334,24 +335,17 @@ export function cleanupParagraphWrappers(html) {
       /(<\/div>\s*<\/div>\s*)<div class="trio-tech">[\s\S]*?<\/div>\s*<div class="trio-link">[\s\S]*?<\/div>/,
       '$1'
     )
-    .replace(
-      /<p><small>([^<]*)<\/small><\/p>\s*([^<]*)\s*<ul class="resume-items">/g,
-      (match, role, duplicate) =>
-        role.trim() === duplicate.trim()
-          ? `<p><small>${role}</small></p><ul class="resume-items">`
-          : match
-    )
-    .replace(/<p>\s*<\/div>/g, '</div>');
+    .replace(/<p>\s*<\/div>/g, '</div>'),
+    '<p><small>',
+    '</small></p>'
+  );
 }
 
 /**
  * Applies final HTML cleanup and fixes
  */
 export function applyFinalCleanups(html) {
-  return (
-    html
-      // Fix missing spaces after percent symbols
-      .replace(/(\d+)%([a-zA-Z])/g, '$1% $2')
+  const cleaned = addSpacesAfterPercent(html
       // Clean up leftover macro artifacts
       .replaceAll(
         '<span class="macro macro-uline"></span>Source Code</a>',
@@ -362,20 +356,6 @@ export function applyFinalCleanups(html) {
       // Fix double spaces in href attributes
       .replaceAll('<a  href=', '<a href=')
       // Remove the plain-text role emitted after project role paragraphs
-      .replace(
-        /(<p><small>([^<]+)<\/small><\/p>)\s*([^<]+)\s*<ul class="resume-items">/g,
-        (match, roleBlock, role, duplicate) =>
-          role === duplicate
-            ? `${roleBlock}<ul class="resume-items">`
-            : match
-      )
-      .replace(
-        /(<div class="role"><em>([^<]+)<\/em><\/div>)\s*([^<]+)\s*<ul class="resume-items">/g,
-        (match, roleBlock, role, duplicate) =>
-          role === duplicate
-            ? `${roleBlock}<ul class="resume-items">`
-            : match
-      )
       // Add target="_blank" to external links
       .replace(
         /<a href="(https?:\/\/[^"]+)"/g,
@@ -387,6 +367,62 @@ export function applyFinalCleanups(html) {
         'target="_blank" rel="noopener noreferrer"'
       )
   );
+
+  return removeDuplicateRoleText(
+    removeDuplicateRoleText(
+      cleaned,
+      '<p><small>',
+      '</small></p>'
+    ),
+    '<div class="role"><em>',
+    '</em></div>'
+  );
+}
+
+function addSpacesAfterPercent(html) {
+  let result = '';
+
+  for (let index = 0; index < html.length; index++) {
+    const char = html[index];
+    const previous = html[index - 1];
+    const next = html[index + 1];
+    result += char;
+
+    if (char === '%' && /\d/.test(previous) && /[a-zA-Z]/.test(next)) {
+      result += ' ';
+    }
+  }
+
+  return result;
+}
+
+function removeDuplicateRoleText(html, roleStart, roleEnd) {
+  const listStart = '<ul class="resume-items">';
+
+  return html
+    .split(listStart)
+    .map((segment, index) => {
+      if (index === 0) return segment;
+
+      const roleEndIndex = segment.lastIndexOf(roleEnd);
+      if (roleEndIndex === -1) return segment;
+
+      const roleStartIndex = segment.lastIndexOf(roleStart, roleEndIndex);
+      if (roleStartIndex === -1) return segment;
+
+      const roleBlockEnd = roleEndIndex + roleEnd.length;
+      const duplicate = segment
+        .slice(roleBlockEnd)
+        .trimStart()
+        .split('<')[0]
+        .trim();
+      const role = segment.slice(roleStartIndex + roleStart.length, roleEndIndex);
+
+      return role === duplicate
+        ? `${segment.slice(0, roleBlockEnd)}\n`
+        : segment;
+    })
+    .join(listStart);
 }
 
 function normalizeWhitespace(text) {
