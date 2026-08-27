@@ -126,6 +126,18 @@
   }%
 }
 
+% resumeTrioHeadingTitle renders three elements in three columns with second element being italicized and first element bolded, can be used for projects with three elements
+\newcommand{\resumeTrioHeadingTitle}[4]{%
+  \item\small{%
+    \makebox[\linewidth]{%
+      \makebox[0.33\linewidth][l]{\textbf{#1} }%
+      \makebox[0.34\linewidth][c]{\textit{#2} }%
+      \makebox[0.33\linewidth][r]{#3 }%
+    }\\ %
+    \textit{\small #4}
+  }%
+}
+
 
 % resumeQuadHeading renders four elements in a two columns with the second row being italicized and first element of first row bolded, can be used for experience and projects with four elements
 \newcommand{\resumeQuadHeading}[4]{
@@ -133,6 +145,14 @@
   \begin{tabular*}{0.96\textwidth}[t]{l@{\extracolsep{\fill}}r}
     \textbf{#1} & #2 \\
     \textit{\small#3} & \textit{\small #4} \\
+  \end{tabular*}
+}
+
+% resumeDuoHeading renders four elements in a two columns, can be used for experience and projects with two elements
+\newcommand{\resumeDuoHeading}[2]{
+  \item
+  \begin{tabular*}{0.96\textwidth}[t]{l@{\extracolsep{\fill}}r}
+    \textbf{#1} & #2
   \end{tabular*}
 }
 
@@ -191,62 +211,51 @@
     {Bachelor of Science in Computer Science}{Sept. 2022 -- Present}
   \resumeHeadingListEnd{}
 %---------------------------------------------
+% -----------EXPERIENCES-----------------------
 
-%--------------SKILLS------------------------
-% Add or remove resumeSectionTypes according to your needs
-
-\section{Technical Skills}
-  \resumeHeadingListStart{}
-    \resumeSectionType{Languages}{}{ Python, C++, Go, JavaScript, TypeScript, Java, Dart, HTML, CSS, Verilog, LabVIEW}
-    \resumeSectionType{Frameworks \& Libraries}{}{React.js, Node.js, React Native (Expo), Tailwind CSS, Spring Boot, Flutter, Flask, FastAPI, OpenGL}
-    \resumeSectionType{Tools \& Technologies}{}{Git, PostgreSQL, Docker, Linux, Postman, Yaak, Playwright, Vitest, Grafana, Mermaid Chart}
-    \resumeSectionType{Specialized Skills}{}{Web Development: Full-stack development with React frontend and backend APIs}
-    \resumeSectionType{}{}{Game Development: OpenGL-based 3D graphics and LabVIEW multiplayer systems}
-    % \resumeSectionType{}{}{Bot Development: LINE bot applications with Python}
-    \resumeSectionType{}{}{Computer Vision: Real-time 3D object classification in ground (AV) and aerial (UAV) scenarios}
-  \resumeHeadingListEnd{}
-%--------------------------------------------
-
-% -----------LABORATORY EXPERIENCES-----------------------
-
-\section{Laboratory Experiences}
+\section{Experiences}
 \resumeHeadingListStart{}
-  \resumeQuadHeadingDetails{\href{https://sqlab.web.nycu.edu.tw}{Software Quality Lab}}{Sept. 2025 -- Present}
-  {Context-Aware Prompt Design for Go Codebase Testing: Harnessing Insights from Industry Needs}
+
+\resumeQuadHeadingDetails{\href{https://www.line.me/}{LINE Taiwan Limited}}{Mar. 2026 -- Present}
+  {Software Engineer Intern}
+    \resumeItemListStart{}
+      \resumeItem{Built high-performance LINE Shopping RESTful/gRPC microservices using \textbf{Spring Boot}, \textbf{Redis}, and \textbf{Kafka} to ensure service reliability.}
+      \resumeItem{Collaborated in a \textbf{20-member Scrum team} and aligned API contracts and dependencies across \textbf{multiple product squads}.}
+      \resumeItem{Selected as a LINE Graduation Sharing Session panel speaker, presenting real-world challenges to over 120 aspiring developers.}
+    \resumeItemListEnd{}
+  \resumeQuadHeadingDetails{\href{https://sqlab.web.nycu.edu.tw/}{Software Quality Lab}}{Sept. 2025 -- Jan. 2026}
+  {Undergraduate Researcher}
     \resumeItemListStart{}
       \resumeItem{Integrated \textbf{AI-assisted test generation into development workflows} to achieve measurable gains in efficiency and coverage.}
       \resumeItem{\textbf{Researched the impact of AI-generated testing} on developer productivity and software quality, with a focus on quantitative results.}
     \resumeItemListEnd{}
 
-  \resumeQuadHeadingDetails{\href{http://acm.cs.nycu.edu.tw/}{Applied Computing and Multimedia Lab}}{Sept. 2024 -- Aug. 2025}
-  {Video-based 3D Object Detection with Vision Foundation Models}
+  \resumeQuadHeadingDetails{\href{http://acm.cs.nycu.edu.tw/}{Applied Computing and Multimedia Lab}}
+  {Sept. 2024 -- Aug. 2025}{Undergraduate Researcher}
     \resumeItemListStart{}
-      \resumeItem{Built a \textbf{monocular video 3D detector with \href{https://ai.meta.com/sam2/}{SAM 2}} for temporally consistent segmentation and depth-aware boxes}
-      \resumeItem{Applied \textbf{LoRA} and \textbf{BEVDepth-style depth-context fusion} for efficient training and temporal box refinement}
+      \resumeItem{Built a \textbf{monocular video 3D detector with \href{https://ai.meta.com/sam2/}{SAM 2}} for temporally consistent segmentation and depth-aware boxes.}
+      \resumeItem{Applied \textbf{LoRA} and \textbf{BEVDepth-style depth-context fusion} for efficient training and temporal box refinement.}
     \resumeItemListEnd{}
 \resumeHeadingListEnd{}
 % ---------------------------------------------
-
 %-----------PROJECTS--------------------------
 
 
 \section{Projects}
   \resumeHeadingListStart{}
 
-    \resumeTrioHeading{SDC Core System}{Go, RESTful API, Docker, PostgerSQL}{\href{https://github.com/NYCU-SDC/core-system-backend}{\uline{Source Code}}}
+    \resumeTrioHeadingTitle{SDC Core System}{}{\href{https://github.com/NYCU-SDC/core-system-backend}{\uline{Source Code}}}{Backend Engineer}
       \resumeItemListStart{}
-        \resumeItem{Designed and implemented a robust backend infrastructure for NYCU Software Development Club, facilitating cross-unit operations and continuous service availability}
-        \resumeItem{Designed modular \textbf{RESTful APIs} and robust authentication, with \textbf{over 500 code commits}}
-        \resumeItem{Streamlined CI/CD pipeline using \textbf{Docker}, reducing deployment time}
-        \resumeItem{Integrated PostgreSQL databases and multi-environment configs for scalable, maintainable infrastructure}
+        \resumeItem{Designed and implemented a robust backend infrastructure for NYCU Software Development Club, facilitating cross-unit operations and continuous service availability.}
+        \resumeItem{Designed modular \textbf{RESTful APIs} and robust authentication, with \textbf{over 500 code commits}.}
+        \resumeItem{Streamlined CI/CD pipeline using Docker and integrated unit tests, integration tests, and end-to-end tests to ensure reliability.}
+        \resumeItem{Integrated PostgreSQL databases and multi-environment configs for scalable, maintainable infrastructure.}
         \resumeItemListEnd{}
 
-    \resumeTrioHeading{CAIender}{React.js, Vite, GraphQL, DynamoDB, LLM}{\href{https://github.com/orgs/MCHackathon2025/repositories}{\uline{Source Code}}}
+    \resumeTrioHeadingTitle{Koreji}{}{\href{https://github.com/kore-ji}{\uline{Source Code}}}{Project Manager / Frontend Engineer / Qualitative Researcher}
       \resumeItemListStart{}
-        \resumeItem{Independently designed and developed a prototype for an AI calendar platform based on \textbf{React} architecture}
-        \resumeItem{Integrated \textbf{GraphQL} and \textbf{DynamoDB}, leveraging LLM to enable \textbf{context-aware recommendations and AI scheduling}}
-        \resumeItem{Implemented Google Map redirection and GPS-based location search to improve user activity discovery}
-        \resumeItem{Adopted Vite for build optimization, resulting in faster frontend compilation and enhanced modular scalability}
+        \resumeItem{Independently designed and developed a prototype for an AI scheduler App based on \textbf{Expo} architecture.}
+        \resumeItem{Integrated \textbf{FastAPI} and \textbf{PostgreSQL}, leveraging LLM to enable \textbf{context-aware recommendations and AI scheduling}.}
       \resumeItemListEnd{}
 
   \resumeHeadingListEnd{}
@@ -256,7 +265,7 @@
 
 \section{Extracurricular Experiences}
   \resumeHeadingListStart{}
-    \resumeQuadHeadingDetails{\href{https://sdc.nycu.club}{NYCU Software Development Club}}{Oct. 2023 -- Present}
+    \resumeQuadHeadingDetails{\href{https://sdc.nycu.club}{NYCU Software Development Club}}{Oct. 2023 -- Jul. 2026}
   {Vice President}
     \resumeItemListStart{}
             \resumeItem{Coordinated 18 programs across two semesters, \textbf{supporting a community of 163 members from 42 academic departments} and enhancing event quality.}
@@ -269,5 +278,14 @@
       \resumeItemListEnd{}
   \resumeHeadingListEnd{}
 %--------------------------------------------
+%--------------SKILLS------------------------
+% Add or remove resumeSectionTypes according to your needs
 
+\section{Technical Skills}
+  \resumeHeadingListStart{}
+    \resumeSectionType{Languages}{}{ Python, C++, Go, JavaScript, TypeScript, Java, Dart, HTML, CSS, Verilog, LabVIEW, Swift}
+    \resumeSectionType{Frameworks \& Libraries}{}{React.js, Vue.js, React Native (Expo), Armeria, Tailwind CSS, Spring Boot, Flutter, OpenGL}
+    \resumeSectionType{Tools \& Technologies}{}{Git, PostgreSQL, MySQL, MongoDB, Docker, Redis, Kafka, Flagr, Harbor, Jenkins, Grafana, Figma}
+  \resumeHeadingListEnd{}
+%--------------------------------------------
 \end{document}
