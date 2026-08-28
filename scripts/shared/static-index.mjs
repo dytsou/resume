@@ -15,7 +15,7 @@ function extractHeadAssets(source) {
   const head = extractSection(source, 'head');
   return [
     ...head.matchAll(/<link\b[^>]*>/gi),
-    ...head.matchAll(/<script\b[^>]*>[\s\S]*?<\/script>/gi),
+    ...head.matchAll(/<script\b[^>]*>[\s\S]*?<\/script(?:\s[^>]*)?>/gi),
   ]
     .map((match) => match[0])
     .join('\n');

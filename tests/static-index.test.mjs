@@ -15,3 +15,12 @@ test('injects generated resume content and styles into the static page', () => {
   assert.match(result, /<article>Resume<\/article>/);
   assert.match(result, /download="resume\.pdf"/);
 });
+
+test('preserves script assets with attributes on the closing tag', () => {
+  const result = createStaticIndex(
+    '<html><head><!-- RESUME_ASSETS --></head><body></body></html>',
+    '<html><head><script src="/mathjax.js"></script ></head><body></body></html>'
+  );
+
+  assert.match(result, /<script src="\/mathjax\.js"><\/script >/);
+});
