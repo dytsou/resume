@@ -17,7 +17,7 @@
     "release": "pnpm run convert && pnpm run build && pnpm run publish",
     "publish:npmjs": "pnpm publish --access public --registry https://registry.npmjs.org",
     "prepare": "command -v husky >/dev/null 2>&1 && husky || true",
-    "deploy": "pnpm run build && wrangler deploy --config wrangler.worker.jsonc --env=\"\""
+    "deploy": "pnpm run build && wrangler deploy --config wrangler.worker.toml --env=\"\""
   },
   "dependencies": {
     "@unified-latex/unified-latex-to-hast": "^1.8.4",
@@ -25,24 +25,24 @@
     "hast-util-to-html": "^9.0.5",
     "mathjax-full": "^3.2.2",
     "rehype-parse": "^9.0.1",
-    "rehype-remark": "^9.0.0",
+    "rehype-remark": "^10.0.1",
     "rehype-stringify": "^10.0.1",
     "remark-stringify": "^11.0.0",
     "unified": "^11.0.5"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.53.1",
+    "@cloudflare/vite-plugin": "^1.54.0",
     "@eslint/js": "^10.0.1",
     "@typescript/native": "npm:typescript@^7.0.2",
-    "eslint": "^10.9.0",
+    "eslint": "^10.9.1",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.11.0",
     "husky": "^9.1.7",
     "prettier": "^3.9.6",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
-    "typescript-eslint": "^8.67.0",
+    "typescript-eslint": "^8.68.0",
     "vite": "^8.2.2",
-    "wrangler": "^4.125.0"
+    "wrangler": "^4.126.0"
   },
   "engines": {
     "node": ">=24.0.0"
