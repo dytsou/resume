@@ -67,11 +67,12 @@ jobs:
       - name: Check if version exists on GitHub Packages
         id: check-github
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION=${{ steps.package-version.outputs.version }}
           PACKAGE_NAME=${{ steps.package-name.outputs.name }}
           npm config set @dytsou:registry https://npm.pkg.github.com
+          npm config set //npm.pkg.github.com/:_authToken "${GITHUB_TOKEN}"
           if npm view $PACKAGE_NAME@$VERSION version --registry=https://npm.pkg.github.com >/dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
             echo "Version $VERSION already exists on GitHub Packages, will skip GitHub Packages publish"
@@ -90,8 +91,12 @@ jobs:
       - name: Publish to npmjs
         if: steps.check-npmjs.outputs.exists == 'false'
         id: publish-npmjs
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
+          npm config set @dytsou:registry https://registry.npmjs.org
           npm config set registry https://registry.npmjs.org
+          npm config set //registry.npmjs.org/:_authToken "${NPM_TOKEN}"
           npm publish --access public || {
             PACKAGE_NAME=${{ steps.package-name.outputs.name }}
             VERSION=${{ steps.package-version.outputs.version }}
@@ -103,17 +108,18 @@ jobs:
               exit 1
             fi
           }
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         continue-on-error: true
 
       # 2) Publish to GitHub Packages
       - name: Publish to GitHub Packages
         if: steps.check-github.outputs.exists == 'false'
         id: publish-github
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npm config set registry https://npm.pkg.github.com
           npm config set @dytsou:registry https://npm.pkg.github.com
+          npm config set registry https://npm.pkg.github.com
+          npm config set //npm.pkg.github.com/:_authToken "${GITHUB_TOKEN}"
           npm publish || {
             PACKAGE_NAME=${{ steps.package-name.outputs.name }}
             VERSION=${{ steps.package-version.outputs.version }}
@@ -125,8 +131,6 @@ jobs:
               exit 1
             fi
           }
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
 
       - name: Check if release should be created
