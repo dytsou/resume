@@ -1,203 +1,140 @@
-# LaTeX to HTML Converter with Automated Deployment
+# LaTeX Resume Converter
 
-A specialized web application that converts LaTeX resume documents to clean, professional HTML and deploys them to GitHub Pages. The system automatically processes your LaTeX resume and creates a beautiful, responsive web version with proper styling and typography.
+This project converts LaTeX documents into styled, responsive HTML and serves the generated resume through a React/Vite application. The production site is deployed to Cloudflare Pages and is available at [dy.tsou.me/resume](https://dy.tsou.me/resume/).
 
 ## Features
 
-- **Automated LaTeX Resume Conversion**: Converts `.tex` resume files to professional HTML with proper formatting
-- **Resume-Specific Styling**: Clean, professional presentation optimized for resume content
-- **CI/CD Pipeline**: GitHub Actions workflow that validates and deploys automatically
-- **Fail-Safe Deployment**: Blocks deployment if any LaTeX file fails to convert
-- **Document Browser**: Browse all converted documents in a clean, responsive interface
-- **MathJax Integration**: Proper rendering of mathematical formulas
+- Converts every `.tex` file in `latex/` to a standalone HTML document
+- Preserves resume-specific macros for headings, skills, lists, contacts, links, and icons
+- Renders math in the generated documents with MathJax
+- Displays `resume.html` in the React application
+- Optionally provides a Google Drive PDF download button
+- Fails the build when any LaTeX document cannot be converted
+- Deploys through GitHub Actions after CI succeeds
 
-## Project Structure
+## Requirements
 
-```
-resume/
-├── latex/                  # Store your LaTeX resume files here
-│   └── resume.tex          # Main LaTeX resume document
-├── scripts/
-│   ├── commands/
-│   │   └── convert-latex.mjs # LaTeX conversion command
-│   ├── modules/
-│   │   ├── html/             # HTML rendering and transformation logic
-│   │   └── latex/            # LaTeX parsing and conversion logic
-│   └── shared/               # Shared configuration and file utilities
-├── src/
-│   ├── App.tsx             # Main application
-│   ├── main.tsx           # React entry point
-│   └── index.css          # Global styles
-├── public/
-│   ├── converted-docs/     # Generated HTML files (created during build)
-│   └── documents-manifest.json  # Document metadata (created during build)
-├── dist/                   # Production build output
-└── .github/
-    └── workflows/
-        └── deploy.yml      # CI/CD pipeline configuration
-```
-
-## Getting Started
-
-### Prerequisites
-
-- **Node.js** >= 24.0.0 (Active LTS; required by Vite 8 and `@cloudflare/vite-plugin`)
-- **pnpm** 11.x (enabled via Corepack: `corepack enable`)
-
-### 1. Add Your LaTeX Documents
-
-Place your `.tex` files in the `latex/` directory. The converter will automatically process all files with a `.tex` extension.
-
-Example structure:
-
-```
-latex/
-├── my-research-paper.tex
-├── math-notes.tex
-└── thesis.tex
-```
-
-### 2. Test Locally
-
-Convert and build the project:
+- Node.js 24 or newer
+- pnpm 11 (enabled with Corepack)
 
 ```bash
+corepack enable
 pnpm install
-pnpm run convert  # Convert LaTeX files only
-pnpm run build    # Convert + build entire project
 ```
 
-### 3. Set Up GitHub Pages
+## Adding or Updating a Resume
 
-1. Go to your GitHub repository settings
-2. Navigate to **Pages** section
-3. Under **Source**, select "GitHub Actions"
+Put source documents in `latex/`. The default document is `latex/resume.tex`; the converter also processes any other files with a `.tex` extension.
 
-### 4. Configure Environment Variables
-
-Add your credentials as repository variables for GitHub Actions:
-
-1. Go to **Settings** > **Variables** > **Variables** tab
-2. Click **New repository variable**
-3. Add the following variables:
-   - `VITE_GOOGLE_DRIVE_RESUME_LINK`: Your Google Drive share link for the resume (optional)
-
-### 5. Push to Deploy
-
-```bash
-git add .
-git commit -m "Add LaTeX documents"
-git push origin main
+```text
+latex/
+└── resume.tex
 ```
 
-The GitHub Actions workflow will:
+The converter extracts `\title{...}`, `\author{...}`, and `\date{...}` metadata. Missing values fall back to `Untitled Document`, `Unknown Author`, and the current date.
 
-1. Install dependencies
-2. Convert all LaTeX files
-3. Validate conversion success
-4. Build the React application
-5. Deploy to GitHub Pages (only if all conversions succeed)
+## Development
 
-## How It Works
-
-### Conversion Process
-
-1. **LaTeX Parsing**: Uses `@unified-latex` to parse LaTeX source
-2. **HTML Generation**: Converts LaTeX AST to HTML with proper structure
-3. **MathJax Integration**: Mathematical formulas are rendered client-side
-4. **Styling**: Applies arXiv-inspired CSS for clean academic presentation
-5. **Manifest Creation**: Generates a JSON file with document metadata
-
-### CI/CD Pipeline
-
-The GitHub Actions workflow (`.github/workflows/deploy.yml`) ensures:
-
-- All LaTeX files convert successfully before deployment
-- Build fails if any conversion errors occur
-- Only successfully built sites are deployed to GitHub Pages
-- Environment variables are properly injected during build
-
-### Database Tracking
-
-The Supabase database stores:
-
-- **Documents Table**: Metadata about each LaTeX file (title, author, date)
-- **Conversion Logs**: History of conversion attempts and errors
-
-## Available Scripts
-
-- `pnpm run dev` - Start development server
-- `pnpm run convert` - Convert LaTeX files to HTML
-- `pnpm run convert:latex` - Run the LaTeX conversion module directly
-- `pnpm run build` - Convert LaTeX + build production bundle
-- `pnpm run preview` - Preview production build locally
-- `pnpm run lint` - Run ESLint
-
-## Customization
-
-### Changing Base Path
-
-If your repository name is different, update `vite.config.ts`:
-
-```typescript
-base: process.env.GITHUB_PAGES === 'true' ? '/your-repo-name/' : '/',
-```
-
-### Styling
-
-Modify the CSS in `scripts/modules/html/template.mjs` to customize the HTML output appearance.
-
-### Document Metadata
-
-The converter extracts metadata from LaTeX commands:
-
-- `\title{...}` - Document title
-- `\author{...}` - Author names
-- `\date{...}` - Publication date
-
-## Deployment
-
-Your site will be available at:
-
-```
-https://<username>.github.io/<repository-name>/
-```
-
-## Troubleshooting
-
-### Conversion Fails
-
-Check the GitHub Actions logs to see which LaTeX file failed and why. Common issues:
-
-- Unsupported LaTeX packages
-- Syntax errors in LaTeX source
-- Missing closing braces
-
-### Deployment Blocked
-
-If deployment is blocked, the CI/CD pipeline detected conversion failures. Fix the LaTeX files and push again.
-
-### Local Testing
-
-Requires Node.js >= 24.0.0. Run the conversion locally to debug issues:
+Convert the LaTeX sources without building the application:
 
 ```bash
 pnpm run convert
 ```
 
-Check the generated files in `public/converted-docs/` and review `public/documents-manifest.json`.
+Start the Vite development server:
 
-## Technologies Used
+```bash
+pnpm run dev
+```
 
-- **React + TypeScript**: Frontend framework
-- **Vite 8**: Build tool and dev server
-- **@unified-latex**: LaTeX parsing and conversion
-- **MathJax**: Mathematical notation rendering
-- **Supabase**: Database for tracking conversions
-- **GitHub Actions**: CI/CD automation
-- **GitHub Pages**: Static site hosting
-- **Source Sans Pro**: Typography
+Build the application (conversion runs automatically first), then preview the production output with Wrangler:
+
+```bash
+pnpm run build
+pnpm run preview
+```
+
+Generated HTML files are written to `public/converted-docs/` and the conversion manifest to `public/documents-manifest.json`. These generated files, along with `dist/`, are ignored by Git.
+
+## Configuration
+
+`VITE_GOOGLE_DRIVE_RESUME_LINK` is optional. When set, the application displays a download button and accepts a Google Drive sharing URL or file ID.
+
+For local development, create a `.env` file based on `.env.example`:
+
+```dotenv
+VITE_GOOGLE_DRIVE_RESUME_LINK=https://drive.google.com/file/d/YOUR_FILE_ID
+```
+
+`BASE_PATH` controls the URL prefix used by Vite. The production front-door route uses `/resume/`; local development and the standalone Cloudflare Pages preview use `/`. Set `WORKER_SUBPATH=true` when building assets into `dist/resume/` for a Worker mounted under `/resume`.
+
+## Commands
+
+| Command                  | Description                                        |
+| ------------------------ | -------------------------------------------------- |
+| `pnpm run dev`           | Start the Vite development server                  |
+| `pnpm run convert`       | Convert all LaTeX files                            |
+| `pnpm run convert:latex` | Run the LaTeX conversion module directly           |
+| `pnpm run build`         | Convert LaTeX files and build the Vite application |
+| `pnpm run preview`       | Build and serve locally with Wrangler              |
+| `pnpm run lint`          | Run ESLint                                         |
+| `pnpm run typecheck`     | Run the TypeScript checker                         |
+| `pnpm test`              | Run Node.js tests                                  |
+| `pnpm run format`        | Format supported source files with Prettier        |
+| `pnpm run format:check`  | Check Prettier formatting                          |
+| `pnpm run deploy`        | Build and deploy with Wrangler                     |
+
+## CI and Deployment
+
+`.github/workflows/ci.yml` runs linting, tests, type checking, and a production build on pushes and pull requests. The main-branch build verifies `dist/index.html`, checks the `/resume/` asset prefix, and validates `deploy-contract.json`.
+
+`.github/workflows/deploy.yml` runs after successful CI on `main` (or manually). It builds with `BASE_PATH=/resume/`, uploads the `dist/` artifact, and deploys it to the `dy-tsou-resume` Cloudflare Pages project. The deployment action also registers the `/resume/` front-door route in the `dytsou/site` manifest.
+
+The configured deployment URLs are:
+
+- Canonical: `https://dy.tsou.me/resume/`
+- Cloudflare Pages preview: `https://resume.tsou.me`
+
+To deploy locally with Wrangler:
+
+```bash
+pnpm run deploy
+```
+
+The GitHub Actions deployment requires `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, and `MANIFEST_REPO_TOKEN` secrets. The optional `VITE_GOOGLE_DRIVE_RESUME_LINK` is configured as a repository variable.
+
+The publish workflow publishes the `@dytsou/resume-converter` package to npmjs and GitHub Packages when its package or converter sources change.
+
+## Project Structure
+
+```text
+resume/
+├── latex/                         # LaTeX source documents
+├── scripts/
+│   ├── commands/                  # CLI entry points
+│   ├── modules/latex/             # LaTeX parsing and conversion
+│   ├── modules/html/              # HTML transformations and template
+│   └── shared/                    # Shared configuration and utilities
+├── src/
+│   ├── App.tsx                    # Resume iframe and optional download button
+│   ├── components/                # React UI components
+│   └── utils/                     # Resume and Google Drive helpers
+├── public/                        # Static assets and generated conversion output
+├── tests/                         # Node.js unit tests
+├── vite.config.ts                 # Vite and deployment path configuration
+├── wrangler.jsonc                 # Cloudflare configuration
+└── deploy-contract.json           # Deployment invariants checked in CI
+```
+
+## Technologies
+
+- React 19 and TypeScript
+- Vite 8 with `@cloudflare/vite-plugin`
+- Cloudflare Pages and Wrangler
+- `@unified-latex` and `unified`
+- MathJax
+- GitHub Actions
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
