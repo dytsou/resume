@@ -1,5 +1,8 @@
 function extractSection(source, tagName) {
-  const match = new RegExp(`<${tagName}[^>]*>([\\s\\S]*?)</${tagName}>`, 'i').exec(
+  const match = new RegExp(
+    String.raw`<${tagName}[^>]*>([\s\S]*?)</${tagName}>`,
+    'i'
+  ).exec(
     source
   );
   return match?.[1]?.trim() ?? '';
