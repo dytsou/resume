@@ -1,0 +1,14 @@
+/
+  Link: </.well-known/api-catalog>; rel="api-catalog"
+  Link: </sitemap.xml>; rel="describedby"
+
+/*.html
+  Link: </.well-known/api-catalog>; rel="api-catalog"
+
+/resume/
+  Link: </.well-known/api-catalog>; rel="api-catalog"
+  Link: </sitemap.xml>; rel="describedby"
+
+/.well-known/api-catalog
+  Content-Type: application/linkset+json
+  X-Content-Type-Options: nosniff

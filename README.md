@@ -1,13 +1,13 @@
 # LaTeX Resume Converter
 
-This project converts LaTeX documents into styled, responsive HTML and serves the generated resume through a React/Vite application. The production site is deployed to Cloudflare Pages and is available at [dy.tsou.me/resume](https://dy.tsou.me/resume/).
+This project converts LaTeX documents into styled, responsive HTML and serves the generated resume as a static HTML page with a small Vanilla JS enhancement. The production site is deployed to Cloudflare Pages and is available at [dy.tsou.me/resume](https://dy.tsou.me/resume/).
 
 ## Features
 
 - Converts every `.tex` file in `latex/` to a standalone HTML document
 - Preserves resume-specific macros for headings, skills, lists, contacts, links, and icons
 - Renders math in the generated documents with MathJax
-- Displays `resume.html` in the React application
+- Embeds the generated resume content directly in the static page for SEO
 - Optionally provides a Google Drive PDF download button
 - Fails the build when any LaTeX document cannot be converted
 - Deploys through GitHub Actions after CI succeeds
@@ -116,9 +116,7 @@ resume/
 │   ├── modules/html/              # HTML transformations and template
 │   └── shared/                    # Shared configuration and utilities
 ├── src/
-│   ├── App.tsx                    # Resume iframe and optional download button
-│   ├── components/                # React UI components
-│   └── utils/                     # Resume and Google Drive helpers
+│   └── main.js                    # Small Vanilla JS enhancements
 ├── public/                        # Static assets and generated conversion output
 ├── tests/                         # Node.js unit tests
 ├── vite.config.ts                 # Vite and deployment path configuration
@@ -128,7 +126,7 @@ resume/
 
 ## Technologies
 
-- React 19 and TypeScript
+- Static HTML with Vanilla JS
 - Vite 8 with `@cloudflare/vite-plugin`
 - Cloudflare Pages and Wrangler
 - `@unified-latex` and `unified`

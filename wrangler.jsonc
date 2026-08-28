@@ -4,7 +4,19 @@
   "account_id": "c457ded6af8937c1aa9032b5396f2f05",
   "compatibility_date": "2026-06-25",
   "observability": {
-    "enabled": true
+    "enabled": true,
+    "head_sampling_rate": 1,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "persist": true,
+      "invocation_logs": true
+    },
+    "traces": {
+      "enabled": true,
+      "persist": true,
+      "head_sampling_rate": 1
+    }
   },
   "assets": {
     "directory": "./dist",
