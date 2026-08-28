@@ -15,14 +15,14 @@ export function estimateTokens(text) {
 function contentOf(tag) {
   const match = /content=["']([^"']*)["']/i.exec(tag);
   const value = match?.[1]?.trim();
-  return value ? value : undefined;
+  return value || undefined;
 }
 
 function metaByName(html, name) {
   const tag = new RegExp(`<meta[^>]+name=["']${name}["'][^>]*>`, 'i').exec(
     html
   )?.[0];
-  return tag ? contentOf(tag) : undefined;
+  return tag && contentOf(tag);
 }
 
 function metaByProperty(html, property) {
@@ -30,7 +30,7 @@ function metaByProperty(html, property) {
     `<meta[^>]+property=["']${property}["'][^>]*>`,
     'i'
   ).exec(html)?.[0];
-  return tag ? contentOf(tag) : undefined;
+  return tag && contentOf(tag);
 }
 
 export function extractMeta(html) {

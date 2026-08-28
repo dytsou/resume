@@ -14,8 +14,9 @@ const PRESERVED_HEADERS = [
 ];
 
 function wantsMarkdown(request) {
-  const accept = request.headers.get('accept');
-  return Boolean(accept && accept.toLowerCase().includes('text/markdown'));
+  return Boolean(
+    request.headers.get('accept')?.toLowerCase().includes('text/markdown')
+  );
 }
 
 function isHtml(response) {
