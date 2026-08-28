@@ -48,6 +48,10 @@
     "node": ">=24.0.0"
   },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dytsou/resume.git"
+  },
   "files": [
     "dist",
     "scripts",
