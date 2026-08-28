@@ -120,7 +120,7 @@ resume/
 ├── public/                        # Static assets and generated conversion output
 ├── tests/                         # Node.js unit tests
 ├── vite.config.ts                 # Vite and deployment path configuration
-├── wrangler.jsonc                 # Cloudflare configuration
+├── wrangler.toml                  # Cloudflare configuration (Pages/assets build)
 └── deploy-contract.json           # Deployment invariants checked in CI
 ```
 
