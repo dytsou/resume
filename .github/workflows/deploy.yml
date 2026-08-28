@@ -99,3 +99,35 @@ jobs:
           cloudflare-api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           cloudflare-account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           manifest-repo-token: ${{ secrets.MANIFEST_REPO_TOKEN }}
+
+      - name: Enable Markdown for Agents on dy.tsou.me
+        # The primary URL (https://dy.tsou.me/resume/) is served by the front
+        # door, not the Worker. Cloudflare's native "Markdown for Agents"
+        # (content_converter) lets agents request text/markdown via Accept
+        # negotiation with zero application code.
+        # https://developers.cloudflare.com/fundamentals/reference/markdown-for-agents/
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          # Fetch to a file and verify before parsing; never pipe a remote
+          # payload straight into an interpreter.
+          curl -s -f -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/zones?name=dy.tsou.me" -o zones.json
+          if [ "$(jq -r '.success' zones.json)" != "true" ]; then
+            echo "::warning::Cloudflare API error resolving dy.tsou.me; skipping Markdown for Agents enablement."
+            jq -r '.errors' zones.json || true
+            exit 0
+          fi
+          ZONE_ID="$(jq -r '.result[0].id // empty' zones.json)"
+          if [ -z "${ZONE_ID}" ]; then
+            echo "::warning::Could not resolve dy.tsou.me zone id; skipping Markdown for Agents enablement."
+            exit 0
+          fi
+          curl -s -f -X PATCH \
+            "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/settings/content_converter" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data '{"value":"on"}' -o enable.json
+          echo "Markdown for Agents enablement response:"; jq -r '.' enable.json
