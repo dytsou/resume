@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "resume",
+  "name": "resume-worker",
+  "main": "./worker/index.mjs",
   "account_id": "c457ded6af8937c1aa9032b5396f2f05",
   "compatibility_date": "2026-06-25",
   "observability": {
