@@ -4,9 +4,11 @@
 
 import { readFileSync, existsSync } from 'node:fs';
 import { load } from 'js-yaml';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 function loadConfig() {
-  const configPath = new URL('../../config.yml', import.meta.url);
+  const configPath = resolve(dirname(fileURLToPath(import.meta.url)), '../../config.yml');
   if (existsSync(configPath)) {
     const config = load(readFileSync(configPath, 'utf8'));
     return {
