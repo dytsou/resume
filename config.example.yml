@@ -1,0 +1,8 @@
+seo:
+  name: Your Name
+  nameZh: 你的中文名
+  id: your-github-id
+  description: Resume of You, including software engineering experience, research, and selected projects.
+  url: https://yourdomain.com/resume/
+  canonicalUrl: https://yourdomain.com/resume/
+driveLink: https://drive.google.com/file/d/YOUR_FILE_ID/view?usp=sharing

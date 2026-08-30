@@ -24,3 +24,39 @@ test('preserves script assets with attributes on the closing tag', () => {
 
   assert.match(result, /<script src="\/mathjax\.js"><\/script >/);
 });
+
+test('injects SEO meta tags from seo object', () => {
+  const result = createStaticIndex(
+    '<html><head><!-- SEO_TITLE --><!-- SEO_DESCRIPTION --><!-- SEO_CANONICAL --><!-- SEO_OG_TITLE --><!-- SEO_OG_DESCRIPTION --><!-- SEO_OG_TYPE --><!-- SEO_OG_URL --></head><body></body></html>',
+    '<html><head></head><body></body></html>',
+    '',
+    {
+      title: 'John Doe — Resume',
+      description: 'Resume of John Doe',
+      canonicalUrl: 'https://example.com/resume/',
+      ogTitle: 'John Doe — Resume',
+      ogDescription: 'Resume of John Doe',
+      ogType: 'profile',
+      ogUrl: 'https://example.com/resume/',
+    }
+  );
+
+  assert.match(result, /<title>John Doe — Resume<\/title>/);
+  assert.match(result, /<meta name="description" content="Resume of John Doe" \/>/);
+  assert.match(result, /<link rel="canonical" href="https:\/\/example\.com\/resume\/" \/>/);
+  assert.match(result, /<meta property="og:title" content="John Doe — Resume" \/>/);
+  assert.match(result, /<meta property="og:type" content="profile" \/>/);
+  assert.match(result, /<meta property="og:url" content="https:\/\/example\.com\/resume\/" \/>/);
+});
+
+test('omits canonical tag when canonicalUrl is empty', () => {
+  const result = createStaticIndex(
+    '<html><head><!-- SEO_CANONICAL --></head><body></body></html>',
+    '<html><head></head><body></body></html>',
+    '',
+    { canonicalUrl: '' }
+  );
+
+  assert.match(result, /^<html>.*<\/html>$/);
+  assert.ok(!result.includes('<link rel="canonical"'));
+});

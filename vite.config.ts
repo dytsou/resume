@@ -2,6 +2,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { defineConfig } from 'vite';
 import { cloudflare } from '@cloudflare/vite-plugin';
 import { createStaticIndex } from './scripts/shared/static-index.mjs';
+import { SEO, DRIVE_LINK } from './scripts/shared/config.mjs';
 
 const deployBase =
   process.env.BASE_PATH ??
@@ -9,10 +10,8 @@ const deployBase =
     ? '/resume/'
     : '/');
 
-// Cloudflare Worker subpath routes (dy.tsou.me/resume*) serve files under dist/resume/.
 const workerSubpath = process.env.WORKER_SUBPATH === 'true';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     {
@@ -22,11 +21,17 @@ export default defineConfig({
         const source = existsSync(resumePath)
           ? readFileSync(resumePath, 'utf8')
           : '';
-        return createStaticIndex(
-          html,
-          source,
-          process.env.VITE_GOOGLE_DRIVE_RESUME_LINK
-        );
+        return createStaticIndex(html, source, DRIVE_LINK, {
+          title: `${SEO.name} — Resume`,
+          name: SEO.name,
+          description: SEO.description,
+          canonicalUrl: SEO.canonicalUrl,
+          ogTitle: `${SEO.name} — Resume`,
+          ogDescription: SEO.description,
+          ogType: 'profile',
+          ogUrl: SEO.url,
+          url: SEO.url,
+        });
       },
     },
     cloudflare(),

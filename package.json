@@ -17,7 +17,9 @@
     "release": "pnpm run convert && pnpm run build && pnpm run publish",
     "publish:npmjs": "pnpm publish --access public --registry https://registry.npmjs.org",
     "prepare": "command -v husky >/dev/null 2>&1 && husky || true",
-    "deploy": "pnpm run build && wrangler deploy --config wrangler.worker.toml --env=\"\""
+    "deploy": "pnpm run build && wrangler deploy --config wrangler.worker.toml --env=\"\"",
+    "secrets:encode": "node scripts/encode-secrets.mjs",
+    "secrets:set": "node scripts/set-gh-secrets.mjs && node scripts/set-cf-secrets.mjs"
   },
   "dependencies": {
     "@unified-latex/unified-latex-to-hast": "^1.8.4",
@@ -38,6 +40,7 @@
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.11.0",
     "husky": "^9.1.7",
+    "js-yaml": "^4.1.0",
     "prettier": "^3.9.6",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "typescript-eslint": "^8.68.0",
@@ -61,7 +64,8 @@
     "tsconfig.json",
     "tsconfig.app.json",
     "tsconfig.node.json",
-    "README.md"
+    "README.md",
+    "config.example.yml"
   ],
   "publishConfig": {
     "access": "public"
