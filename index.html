@@ -16,10 +16,22 @@
   <title>Dong-You Tsou — Resume</title>
   <!-- RESUME_ASSETS -->
   <!-- RESUME_STYLES -->
+  <script id="theme-bootstrap">
+    try {
+      if (window.localStorage.getItem('resume-theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    } catch {
+      // Keep the light baseline when storage is unavailable.
+    }
+  </script>
 
 <body>
   <div id="resume-content">
     <!-- RESUME_CONTENT -->
+  </div>
+  <div class="theme-control">
+    <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Toggle dark mode">Dark mode</button>
   </div>
   <!-- DOWNLOAD_BUTTON -->
   <script type="module" src="/src/main.js"></script>
