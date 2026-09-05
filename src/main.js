@@ -24,8 +24,7 @@ if (themeToggle) {
   syncThemeToggle();
   themeToggle.addEventListener('click', () => {
     const currentTheme = getThemeFromRoot(root);
-    const nextTheme =
-      currentTheme === THEMES.DARK ? THEMES.LIGHT : THEMES.DARK;
+    const nextTheme = currentTheme === THEMES.DARK ? THEMES.LIGHT : THEMES.DARK;
 
     setTheme(root, storage, nextTheme);
     syncThemeToggle();
