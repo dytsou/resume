@@ -10,18 +10,6 @@ function normalizeTheme(theme) {
   return theme === THEMES.DARK ? THEMES.DARK : THEMES.LIGHT;
 }
 
-export function readStoredTheme(storage) {
-  if (!storage) {
-    return THEMES.LIGHT;
-  }
-
-  try {
-    return normalizeTheme(storage.getItem(THEME_STORAGE_KEY));
-  } catch {
-    return THEMES.LIGHT;
-  }
-}
-
 export function persistTheme(storage, theme) {
   if (!storage) {
     return false;

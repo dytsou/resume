@@ -33,6 +33,13 @@
   <div class="theme-control">
     <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Toggle dark mode">Dark mode</button>
   </div>
+  <script>
+    const themeToggle = document.querySelector('.theme-toggle');
+    const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
+
+    themeToggle.setAttribute('aria-pressed', String(isDarkTheme));
+    themeToggle.textContent = isDarkTheme ? 'Light mode' : 'Dark mode';
+  </script>
   <!-- DOWNLOAD_BUTTON -->
   <script type="module" src="/src/main.js"></script>
 </body>

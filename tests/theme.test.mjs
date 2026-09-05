@@ -6,7 +6,6 @@ import {
   getBrowserStorage,
   getThemeFromRoot,
   persistTheme,
-  readStoredTheme,
   setTheme,
   THEME_ATTRIBUTE,
   THEME_STORAGE_KEY,
@@ -29,29 +28,14 @@ function createRoot() {
   };
 }
 
-function createStorage(initialValue = null) {
-  let value = initialValue;
-
+function createStorage() {
   return {
-    getItem(key) {
-      assert.equal(key, THEME_STORAGE_KEY);
-      return value;
-    },
     setItem(key, nextValue) {
       assert.equal(key, THEME_STORAGE_KEY);
-      value = nextValue;
+      this.value = nextValue;
     },
   };
 }
-
-test('resolves missing and invalid stored values to light', () => {
-  assert.equal(readStoredTheme(createStorage()), THEMES.LIGHT);
-  assert.equal(readStoredTheme(createStorage('sepia')), THEMES.LIGHT);
-});
-
-test('restores a valid dark stored value', () => {
-  assert.equal(readStoredTheme(createStorage(THEMES.DARK)), THEMES.DARK);
-});
 
 test('applies light and dark state to the document root', () => {
   const root = createRoot();
@@ -69,9 +53,9 @@ test('persists both explicit choices', () => {
   const storage = createStorage();
 
   assert.equal(persistTheme(storage, THEMES.DARK), true);
-  assert.equal(readStoredTheme(storage), THEMES.DARK);
+  assert.equal(storage.value, THEMES.DARK);
   assert.equal(persistTheme(storage, THEMES.LIGHT), true);
-  assert.equal(readStoredTheme(storage), THEMES.LIGHT);
+  assert.equal(storage.value, THEMES.LIGHT);
 });
 
 test('a write failure keeps the newly applied root state usable', () => {
@@ -86,17 +70,6 @@ test('a write failure keeps the newly applied root state usable', () => {
 
   assert.deepEqual(result, { persisted: false, theme: THEMES.DARK });
   assert.equal(getThemeFromRoot(root), THEMES.DARK);
-});
-
-test('storage read failures fall back to light without throwing', () => {
-  const storage = {
-    getItem() {
-      throw new Error('storage unavailable');
-    },
-  };
-
-  assert.doesNotThrow(() => readStoredTheme(storage));
-  assert.equal(readStoredTheme(storage), THEMES.LIGHT);
 });
 
 test('browser storage access is defensive', () => {
