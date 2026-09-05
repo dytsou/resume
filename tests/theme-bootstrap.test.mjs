@@ -10,10 +10,7 @@ const bootstrapMatch = indexTemplate.match(
 
 function runBootstrap(storedValue, shouldThrow = false) {
   const root = {
-    attributes: new Map(),
-    setAttribute(name, value) {
-      this.attributes.set(name, value);
-    },
+    dataset: {},
   };
   const localStorage = {
     getItem() {
@@ -29,7 +26,7 @@ function runBootstrap(storedValue, shouldThrow = false) {
     window: { localStorage },
   });
 
-  return root.attributes;
+  return root.dataset;
 }
 
 test('restores only a saved dark preference before the client module', () => {
@@ -44,15 +41,16 @@ test('restores only a saved dark preference before the client module', () => {
   assert.match(bootstrapMatch[1], /resume-theme/);
   assert.match(bootstrapMatch[1], /===\s*['"]dark['"]/);
   assert.doesNotMatch(bootstrapMatch[1], /matchMedia|prefers-color-scheme/);
+  assert.doesNotMatch(indexTemplate, /document\.documentElement\.(?:getAttribute|setAttribute)/);
 
-  assert.equal(runBootstrap('dark').get('data-theme'), 'dark');
-  assert.equal(runBootstrap('light').has('data-theme'), false);
-  assert.equal(runBootstrap('sepia').has('data-theme'), false);
+  assert.equal(runBootstrap('dark').theme, 'dark');
+  assert.equal(runBootstrap('light').theme, undefined);
+  assert.equal(runBootstrap('sepia').theme, undefined);
 });
 
 test('continues with the light baseline when storage access throws', () => {
   assert.doesNotThrow(() => runBootstrap(null, true));
-  assert.equal(runBootstrap(null, true).has('data-theme'), false);
+  assert.equal(runBootstrap(null, true).theme, undefined);
 });
 
 test('synchronizes the injected appearance control before the client module', () => {

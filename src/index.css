@@ -12,10 +12,11 @@ body {
     sans-serif;
 }
 
-/* Keep the download control fixed while the appearance control stays in the footer. */
+/* Download button wrapper - positioned bottom-right */
 .download-button-wrapper {
   position: fixed;
-  right: 20px;
+  right: var(--download-control-offset, 20px);
+  bottom: var(--download-control-offset, 20px);
   z-index: 1000;
 }
 
@@ -40,53 +41,18 @@ body {
   transition: color 0.2s ease;
 }
 
-.download-drive-button {
-  background: var(--control-bg);
-  color: var(--control-text);
-  border: 1px solid var(--control-border);
-  cursor: pointer;
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease,
-    background 0.3s ease;
-  box-shadow: var(--control-shadow);
-  text-decoration: none;
-}
-
 .theme-toggle:hover {
   color: var(--link);
-}
-
-.download-drive-button:hover:not(:disabled) {
-  background: var(--control-bg-hover);
-  border-color: var(--control-border-hover);
-  box-shadow: var(--control-shadow-hover);
 }
 
 .theme-toggle:active {
   color: var(--link);
 }
 
-.download-drive-button:active:not(:disabled) {
-  background: var(--control-bg-active);
-  box-shadow: var(--control-shadow-active);
-  transform: translateY(0);
-}
-
 .theme-toggle:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
   border-radius: 2px;
-}
-
-.download-drive-button:focus-visible {
-  outline: 3px solid var(--focus-ring);
-  outline-offset: 3px;
-}
-
-/* Download button wrapper - positioned bottom-right */
-.download-button-wrapper {
-  bottom: 20px;
 }
 
 /* Download from Drive button styles */
@@ -98,6 +64,16 @@ body {
 }
 
 .download-drive-button {
+  background: var(--control-bg);
+  color: var(--control-text);
+  border: 1px solid var(--control-border);
+  cursor: pointer;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    background 0.3s ease;
+  box-shadow: var(--control-shadow);
+  text-decoration: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -114,11 +90,21 @@ body {
 }
 
 .download-drive-button:hover:not(:disabled) {
+  background: var(--control-bg-hover);
+  border-color: var(--control-border-hover);
+  box-shadow: var(--control-shadow-hover);
   transform: translateY(-2px) scale(1.05);
 }
 
 .download-drive-button:active:not(:disabled) {
+  background: var(--control-bg-active);
+  box-shadow: var(--control-shadow-active);
   transform: translateY(0) scale(1);
+}
+
+.download-drive-button:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
 }
 
 .download-drive-button:disabled {
@@ -168,12 +154,8 @@ body {
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .download-button-wrapper {
-    right: 16px;
-  }
-
-  .download-button-wrapper {
-    bottom: 16px;
+  html {
+    --download-control-offset: 16px;
   }
 
   .download-drive-button {
