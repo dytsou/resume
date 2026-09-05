@@ -44,9 +44,7 @@ export function getBrowserStorage(globalObject = globalThis) {
 }
 
 export function getThemeFromRoot(root) {
-  return root?.getAttribute(THEME_ATTRIBUTE) === THEMES.DARK
-    ? THEMES.DARK
-    : THEMES.LIGHT;
+  return normalizeTheme(root?.getAttribute(THEME_ATTRIBUTE));
 }
 
 export function applyTheme(root, theme) {

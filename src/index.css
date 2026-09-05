@@ -12,40 +12,54 @@ body {
     sans-serif;
 }
 
-/* Appearance control - positioned top-right */
-.theme-control {
+/* Fixed controls share their viewport positioning. */
+.theme-control,
+.download-button-wrapper {
   position: fixed;
-  top: 20px;
   right: 20px;
   z-index: 1000;
 }
 
+.theme-control {
+  top: 20px;
+}
+
+/* Appearance control */
 .theme-toggle {
   min-height: 44px;
   padding: 0.65rem 0.9rem;
+  border-radius: 999px;
+  font: inherit;
+}
+
+.theme-toggle,
+.download-drive-button {
   background: var(--control-bg);
   color: var(--control-text);
   border: 1px solid var(--control-border);
-  border-radius: 999px;
   cursor: pointer;
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease,
     background 0.3s ease;
   box-shadow: var(--control-shadow);
-  font: inherit;
   text-decoration: none;
 }
 
-.theme-toggle:hover {
+.theme-toggle:hover,
+.download-drive-button:hover:not(:disabled) {
   background: var(--control-bg-hover);
   border-color: var(--control-border-hover);
   box-shadow: var(--control-shadow-hover);
+}
+
+.theme-toggle:hover {
   transform: translateY(-2px);
 }
 
 .theme-toggle:active,
-.theme-toggle[aria-pressed='true'] {
+.theme-toggle[aria-pressed='true'],
+.download-drive-button:active:not(:disabled) {
   background: var(--control-bg-active);
   box-shadow: var(--control-shadow-active);
   transform: translateY(0);
@@ -59,10 +73,7 @@ body {
 
 /* Download button wrapper - positioned bottom-right */
 .download-button-wrapper {
-  position: fixed;
   bottom: 20px;
-  right: 20px;
-  z-index: 1000;
 }
 
 /* Download from Drive button styles */
@@ -80,36 +91,21 @@ body {
   width: 56px;
   height: 56px;
   padding: 0;
-  background: var(--control-bg);
   backdrop-filter: blur(14px) saturate(160%);
   -webkit-backdrop-filter: blur(14px) saturate(160%);
-  color: var(--control-text);
-  border: 1px solid var(--control-border);
   border-radius: 50%;
-  cursor: pointer;
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease,
-    background 0.3s ease;
-  box-shadow: var(--control-shadow);
   font-family:
     system-ui,
     -apple-system,
     sans-serif;
-  text-decoration: none;
 }
 
 .download-drive-button:hover:not(:disabled) {
-  background: var(--control-bg-hover);
-  border-color: var(--control-border-hover);
-  box-shadow: var(--control-shadow-hover);
   transform: translateY(-2px) scale(1.05);
 }
 
 .download-drive-button:active:not(:disabled) {
   transform: translateY(0) scale(1);
-  background: var(--control-bg-active);
-  box-shadow: var(--control-shadow-active);
 }
 
 .download-drive-button:disabled {
@@ -159,14 +155,17 @@ body {
 
 /* Responsive design */
 @media (max-width: 768px) {
+  .theme-control,
+  .download-button-wrapper {
+    right: 16px;
+  }
+
   .download-button-wrapper {
     bottom: 16px;
-    right: 16px;
   }
 
   .theme-control {
     top: 16px;
-    right: 16px;
   }
 
   .download-drive-button {

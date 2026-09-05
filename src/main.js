@@ -13,8 +13,7 @@ const themeToggle = document.querySelector('.theme-toggle');
 if (themeToggle) {
   const storage = getBrowserStorage();
 
-  const syncThemeToggle = () => {
-    const theme = getThemeFromRoot(root);
+  const syncThemeToggle = (theme = getThemeFromRoot(root)) => {
     const isDark = theme === THEMES.DARK;
 
     themeToggle.setAttribute('aria-pressed', String(isDark));
@@ -26,8 +25,8 @@ if (themeToggle) {
     const currentTheme = getThemeFromRoot(root);
     const nextTheme = currentTheme === THEMES.DARK ? THEMES.LIGHT : THEMES.DARK;
 
-    setTheme(root, storage, nextTheme);
-    syncThemeToggle();
+    const { theme } = setTheme(root, storage, nextTheme);
+    syncThemeToggle(theme);
   });
 }
 
