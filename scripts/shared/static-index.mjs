@@ -34,8 +34,28 @@ function toDirectDownloadLink(link) {
   return fileId ? `https://drive.google.com/uc?export=download&id=${fileId}` : null;
 }
 
+const themeToggle = `<div class="theme-control">
+            <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Switch to dark mode">Switch to dark mode</button>
+        </div>`;
+
+function injectThemeToggle(body) {
+  const footerPattern =
+    /(<div\b[^>]*class=["'][^"']*\bconverter-footer\b[^"']*["'][^>]*>)([\s\S]*?)(<\/div>)/i;
+  const footerMatch = footerPattern.exec(body);
+
+  if (!footerMatch || body.includes('class="theme-toggle"')) {
+    return body;
+  }
+
+  return body.replace(
+    footerPattern,
+    (_, openingTag, footerContent, closingTag) =>
+      `${openingTag}\n        ${themeToggle}${footerContent}${closingTag}`,
+  );
+}
+
 export function createStaticIndex(template, resumeHtml, driveLink = '') {
-  const body = extractSection(resumeHtml, 'body');
+  const body = injectThemeToggle(extractSection(resumeHtml, 'body'));
   const assets = extractHeadAssets(resumeHtml);
   const styles = extractStyles(resumeHtml);
   const directDownloadLink = toDirectDownloadLink(driveLink);

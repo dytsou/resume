@@ -16,11 +16,31 @@
   <title>Dong-You Tsou — Resume</title>
   <!-- RESUME_ASSETS -->
   <!-- RESUME_STYLES -->
+  <script id="theme-bootstrap">
+    try {
+      if (window.localStorage.getItem('resume-theme') === 'dark') {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    } catch {
+      // Keep the light baseline when storage is unavailable.
+    }
+  </script>
 
 <body>
   <div id="resume-content">
     <!-- RESUME_CONTENT -->
   </div>
+  <script>
+    const themeToggle = document.querySelector('.theme-toggle');
+    if (themeToggle) {
+      const isDarkTheme = document.documentElement.dataset.theme === 'dark';
+      const nextThemeLabel = isDarkTheme ? 'light' : 'dark';
+
+      themeToggle.setAttribute('aria-pressed', String(isDarkTheme));
+      themeToggle.setAttribute('aria-label', `Switch to ${nextThemeLabel} mode`);
+      themeToggle.textContent = `Switch to ${nextThemeLabel} mode`;
+    }
+  </script>
   <!-- DOWNLOAD_BUTTON -->
   <script type="module" src="/src/main.js"></script>
 </body>

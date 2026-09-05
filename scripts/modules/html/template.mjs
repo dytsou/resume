@@ -11,8 +11,68 @@ export function getStyles() {
       size: A4 portrait;
       margin: 0;
     }
+    :root {
+      color-scheme: light;
+      --page-bg: #faf8f2;
+      --surface-bg: #fff;
+      --text-primary: #000;
+      --text-muted: #374151;
+      --text-subtle: #6b7280;
+      --heading: #0000ff;
+      --heading-border: #222;
+      --border: #d1d5db;
+      --shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+      --code-bg: #f5f5f5;
+      --accent-border: #333;
+      --link: #000;
+      --icon: #000;
+      --separator: #666;
+      --control-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.15));
+      --control-bg-hover: linear-gradient(135deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.25));
+      --control-bg-active: linear-gradient(135deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.12));
+      --control-text: #1f2937;
+      --control-border: rgba(255, 255, 255, 0.6);
+      --control-border-hover: rgba(255, 255, 255, 0.8);
+      --control-shadow: 0 8px 28px rgba(0, 0, 0, 0.22), inset 0 1px 2px rgba(255, 255, 255, 0.85), inset 0 -2px 6px rgba(0, 0, 0, 0.08);
+      --control-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.22), inset 0 1px 2px rgba(255, 255, 255, 0.9), inset 0 -2px 6px rgba(0, 0, 0, 0.08);
+      --control-shadow-active: 0 4px 16px rgba(0, 0, 0, 0.18), inset 0 1px 2px rgba(255, 255, 255, 0.7), inset 0 -2px 6px rgba(0, 0, 0, 0.1);
+      --focus-ring: #2563eb;
+      --error-bg: #fee;
+      --error-text: #c33;
+      --error-border: #fcc;
+    }
+    :root[data-theme='dark'] {
+      color-scheme: dark;
+      --page-bg: #111827;
+      --surface-bg: #1f2937;
+      --text-primary: #f9fafb;
+      --text-muted: #d1d5db;
+      --text-subtle: #d1d5db;
+      --heading: #93c5fd;
+      --heading-border: #9ca3af;
+      --border: #4b5563;
+      --shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+      --code-bg: #374151;
+      --accent-border: #9ca3af;
+      --link: #bfdbfe;
+      --icon: #e5e7eb;
+      --separator: #9ca3af;
+      --control-bg: linear-gradient(135deg, rgba(55, 65, 81, 0.96), rgba(17, 24, 39, 0.9));
+      --control-bg-hover: linear-gradient(135deg, rgba(75, 85, 99, 0.98), rgba(31, 41, 55, 0.95));
+      --control-bg-active: linear-gradient(135deg, rgba(31, 41, 55, 0.98), rgba(17, 24, 39, 0.95));
+      --control-text: #f9fafb;
+      --control-border: rgba(156, 163, 175, 0.8);
+      --control-border-hover: #d1d5db;
+      --control-shadow: 0 8px 28px rgba(0, 0, 0, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.12), inset 0 -2px 6px rgba(0, 0, 0, 0.25);
+      --control-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.16), inset 0 -2px 6px rgba(0, 0, 0, 0.25);
+      --control-shadow-active: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.1), inset 0 -2px 6px rgba(0, 0, 0, 0.3);
+      --focus-ring: #93c5fd;
+      --error-bg: #451a1a;
+      --error-text: #fecaca;
+      --error-border: #f87171;
+    }
     html, body {
-      background: #faf8f2;
+      background: var(--page-bg);
       margin: 0;
       padding: 0;
     }
@@ -25,11 +85,11 @@ export function getStyles() {
       font-size: 13px;
       line-height: 1.2;
       letter-spacing: -0.015em;
-      color: #000;
-      background: #fff;
+      color: var(--text-primary);
+      background: var(--surface-bg);
       box-sizing: border-box;
-      border: 1px solid #d1d5db;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
     }
     * { box-sizing: border-box; }
     h1, h2, h3, h4, h5, h6 {
@@ -43,8 +103,8 @@ export function getStyles() {
       line-height: 1.2;
       font-variant: small-caps;
       font-family: "Public Sans", "Source Sans Pro", system-ui, sans-serif;
-      color: #0000ff;
-      border-bottom: 1px solid #222;
+      color: var(--heading);
+      border-bottom: 1px solid var(--heading-border);
       padding-bottom: 0.2rem;
       margin-top: 1rem;
       margin-bottom: 0.4rem;
@@ -58,18 +118,25 @@ export function getStyles() {
       font-style: italic;
       margin: 1em 0;
       padding: 0.5em;
-      border-left: 3px solid #333;
+      border-left: 3px solid var(--accent-border);
     }
     .proof { margin: 1em 0 1em 2em; }
     code, pre {
       font-family: "Courier New", monospace;
-      background: #f5f5f5;
+      background: var(--code-bg);
       padding: 0.2em 0.4em;
     }
     pre { padding: 1em; overflow-x: auto; }
     .equation { margin: 1em 0; overflow-x: auto; }
-    a { color: #000; text-decoration: none; cursor: pointer; }
-    a:hover, a:visited { color: #000; }
+    a { color: var(--link); text-decoration: none; cursor: pointer; }
+    a:hover, a:visited { color: var(--link); }
+    :root[data-theme='dark'] a,
+    :root[data-theme='dark'] a:hover,
+    :root[data-theme='dark'] a:visited {
+      color: var(--text-primary);
+    }
+    /* Keep linked resume titles aligned with the surrounding title text. */
+    .row .left > a, .trio-title > a { color: var(--text-primary); }
     .resume-items { margin: 0.2rem 0 0.4rem 1rem; padding-left: 0.5rem; }
     .resume-items li { margin: 0.1rem 0; padding-left: 0.05rem; }
     .resume-heading-list { margin: 0.15rem 0 0.35rem 0.95rem; }
@@ -78,11 +145,11 @@ export function getStyles() {
     .contact.centered .contact-name { justify-self: center; }
     .contact.centered .contact-links { justify-self: center; }
     .contact-name { font-size: 2rem; line-height: 1.1; font-weight: 700; }
-    .contact-links { color: #111; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; align-items: center; margin-top: 0.65rem; }
+    .contact-links { color: var(--text-primary); display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; align-items: center; margin-top: 0.65rem; }
     .contact-links a { display: inline-flex; align-items: center; gap: 0.25rem; }
     .contact-links a, .trio-link a { text-decoration: underline; }
     .contact-links i {
-      color: #000;
+      color: var(--icon);
       font-style: normal; 
       font-variant: normal; 
       text-rendering: auto; 
@@ -93,20 +160,20 @@ export function getStyles() {
     }
     .contact-links i.fab { font-family: "Font Awesome 6 Brands"; font-weight: 400; }
     .contact-links > i { display: inline-flex; align-items: center; gap: 0.25rem; }
-    .contact-sep { color: #666; margin: 0 0.25rem; }
+    .contact-sep { color: var(--separator); margin: 0 0.25rem; }
     .contact-mobile { display: inline-flex; align-items: center; gap: 0.25rem; }
     .contact-right { text-align: right; white-space: nowrap; }
-    .sep { margin: 0 0.35rem; color: #666; }
+    .sep { margin: 0 0.35rem; color: var(--separator); }
     .trio { display: grid; grid-template-columns: 1fr auto auto; gap: 0.5rem; align-items: baseline; margin: 0.25rem 0; position: relative; }
     .trio-title { justify-self: start; white-space: nowrap; }
-    .trio-tech { position: absolute; left: 50%; transform: translateX(-50%); color: #374151; white-space: nowrap; }
+    .trio-tech { position: absolute; left: 50%; transform: translateX(-50%); color: var(--text-muted); white-space: nowrap; }
     .trio-link { justify-self: end; white-space: nowrap; }
     .role { font-size: 0.85rem; line-height: 1.25; white-space: nowrap; }
     .role em { font-style: italic; }
     .quad, .quad-details { margin: 0.25rem 0; }
     .row { display: grid; grid-template-columns: 1fr auto; align-items: baseline; }
     .row .left, .row .right { white-space: nowrap; }
-    .row .right { text-align: right; color: #000; }
+    .row .right { text-align: right; color: var(--text-primary); }
     .skill-row { display: grid; grid-template-columns: 180px 1fr; align-items: start; gap: 0.5rem; }
     .skill-label { font-weight: 700; white-space: nowrap; }
     .skill-content { white-space: normal; overflow-wrap: normal; word-break: normal; }
@@ -121,13 +188,13 @@ export function getStyles() {
       font-size: 0.75rem;
       line-height: 1.35;
       font-family: "Source Sans Pro", system-ui, sans-serif;
-      color: #6b7280;
+      color: var(--text-subtle);
     }
-    .converter-footer a { color: #6b7280; text-decoration: underline; }
+    .converter-footer a { color: var(--text-subtle); text-decoration: underline; }
     .converter-footer a:hover { text-decoration: underline; }
 
     @media (max-width: 768px) {
-      html, body { background: #faf8f2; }
+      html, body { background: var(--page-bg); }
       .resume-page {
         border: 0;
         box-shadow: none;
