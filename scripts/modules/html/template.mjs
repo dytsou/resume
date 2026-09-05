@@ -130,6 +130,13 @@ export function getStyles() {
     .equation { margin: 1em 0; overflow-x: auto; }
     a { color: var(--link); text-decoration: none; cursor: pointer; }
     a:hover, a:visited { color: var(--link); }
+    :root[data-theme='dark'] a,
+    :root[data-theme='dark'] a:hover,
+    :root[data-theme='dark'] a:visited {
+      color: var(--text-primary);
+    }
+    /* Keep linked resume titles aligned with the surrounding title text. */
+    .row .left > a, .trio-title > a { color: var(--text-primary); }
     .resume-items { margin: 0.2rem 0 0.4rem 1rem; padding-left: 0.5rem; }
     .resume-items li { margin: 0.1rem 0; padding-left: 0.05rem; }
     .resume-heading-list { margin: 0.15rem 0 0.35rem 0.95rem; }
