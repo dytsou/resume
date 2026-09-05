@@ -30,15 +30,16 @@
   <div id="resume-content">
     <!-- RESUME_CONTENT -->
   </div>
-  <div class="theme-control">
-    <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Toggle dark mode">Dark mode</button>
-  </div>
   <script>
     const themeToggle = document.querySelector('.theme-toggle');
-    const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (themeToggle) {
+      const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextThemeLabel = isDarkTheme ? 'light' : 'dark';
 
-    themeToggle.setAttribute('aria-pressed', String(isDarkTheme));
-    themeToggle.textContent = isDarkTheme ? 'Light mode' : 'Dark mode';
+      themeToggle.setAttribute('aria-pressed', String(isDarkTheme));
+      themeToggle.setAttribute('aria-label', `Switch to ${nextThemeLabel} mode`);
+      themeToggle.textContent = `Switch to ${nextThemeLabel} mode`;
+    }
   </script>
   <!-- DOWNLOAD_BUTTON -->
   <script type="module" src="/src/main.js"></script>

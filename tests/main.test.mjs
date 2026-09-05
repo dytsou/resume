@@ -73,9 +73,12 @@ async function loadMain({ initialTheme, storage }) {
 }
 
 function assertToggleState({ root, toggle }, theme) {
+  const nextThemeLabel = theme === 'dark' ? 'light' : 'dark';
+
   assert.equal(root.getAttribute('data-theme'), theme === 'dark' ? 'dark' : null);
   assert.equal(toggle.getAttribute('aria-pressed'), String(theme === 'dark'));
-  assert.equal(toggle.textContent, theme === 'dark' ? 'Light mode' : 'Dark mode');
+  assert.equal(toggle.getAttribute('aria-label'), `Switch to ${nextThemeLabel} mode`);
+  assert.equal(toggle.textContent, `Switch to ${nextThemeLabel} mode`);
 }
 
 function createStorage({ throwsOnWrite = false } = {}) {

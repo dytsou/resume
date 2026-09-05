@@ -12,8 +12,7 @@ body {
     sans-serif;
 }
 
-/* Fixed controls share their viewport positioning. */
-.theme-control,
+/* Keep the download control fixed while the appearance control stays in the footer. */
 .download-button-wrapper {
   position: fixed;
   right: 20px;
@@ -21,18 +20,26 @@ body {
 }
 
 .theme-control {
-  top: 20px;
+  display: flex;
+  justify-content: center;
+  margin-top: 0.45rem;
 }
 
 /* Appearance control */
 .theme-toggle {
-  min-height: 44px;
-  padding: 0.65rem 0.9rem;
-  border-radius: 999px;
+  appearance: none;
+  border: 0;
+  padding: 0.2rem 0.35rem;
+  background: transparent;
+  color: var(--text-subtle);
   font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+  transition: color 0.2s ease;
 }
 
-.theme-toggle,
 .download-drive-button {
   background: var(--control-bg);
   color: var(--control-text);
@@ -46,26 +53,32 @@ body {
   text-decoration: none;
 }
 
-.theme-toggle:hover,
+.theme-toggle:hover {
+  color: var(--link);
+}
+
 .download-drive-button:hover:not(:disabled) {
   background: var(--control-bg-hover);
   border-color: var(--control-border-hover);
   box-shadow: var(--control-shadow-hover);
 }
 
-.theme-toggle:hover {
-  transform: translateY(-2px);
+.theme-toggle:active {
+  color: var(--link);
 }
 
-.theme-toggle:active,
-.theme-toggle[aria-pressed='true'],
 .download-drive-button:active:not(:disabled) {
   background: var(--control-bg-active);
   box-shadow: var(--control-shadow-active);
   transform: translateY(0);
 }
 
-.theme-toggle:focus-visible,
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
 .download-drive-button:focus-visible {
   outline: 3px solid var(--focus-ring);
   outline-offset: 3px;
@@ -155,17 +168,12 @@ body {
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .theme-control,
   .download-button-wrapper {
     right: 16px;
   }
 
   .download-button-wrapper {
     bottom: 16px;
-  }
-
-  .theme-control {
-    top: 16px;
   }
 
   .download-drive-button {

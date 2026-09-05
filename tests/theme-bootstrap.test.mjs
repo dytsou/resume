@@ -55,13 +55,12 @@ test('continues with the light baseline when storage access throws', () => {
   assert.equal(runBootstrap(null, true).has('data-theme'), false);
 });
 
-test('keeps an accessible appearance button outside optional download markup', () => {
-  const buttonStart = indexTemplate.indexOf('class="theme-toggle"');
-  const downloadMarker = indexTemplate.indexOf('<!-- DOWNLOAD_BUTTON -->');
+test('synchronizes the injected appearance control before the client module', () => {
+  const syncStart = indexTemplate.indexOf('const themeToggle = document.querySelector');
+  const mainStart = indexTemplate.indexOf('<script type="module" src="/src/main.js">');
 
-  assert.ok(buttonStart >= 0 && buttonStart < downloadMarker);
-  assert.match(
-    indexTemplate,
-    /<button type="button" class="theme-toggle" aria-pressed="false" aria-label="Toggle dark mode">Dark mode<\/button>/,
-  );
+  assert.ok(syncStart >= 0 && syncStart < mainStart);
+  assert.match(indexTemplate, /if\s*\(themeToggle\)/);
+  assert.match(indexTemplate, /aria-pressed/);
+  assert.match(indexTemplate, /Switch to \$\{nextThemeLabel\} mode/);
 });
