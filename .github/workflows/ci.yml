@@ -3,8 +3,63 @@ name: CI Checks
 on:
   push: # Runs on push to any branch
   pull_request: # Also runs on PRs to any branch
+  workflow_dispatch:
 
 jobs:
+  format-writeback:
+    name: Format and update PR
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: write
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.head_ref }}
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Format with Biome
+        id: format
+        run: |
+          pnpm run format
+          if git diff --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and push formatting changes
+        if: steps.format.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -u
+          git commit -m "style: format with Biome"
+          gh auth setup-git
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
+          if ! gh workflow run .github/workflows/ci.yml \
+            --ref "${GITHUB_HEAD_REF}" \
+            --repo "${GITHUB_REPOSITORY}"; then
+            echo "::warning::Could not dispatch CI for the formatted commit."
+          fi
+
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -26,8 +81,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --ignore-scripts
 
-      - name: Format with Biome
-        run: pnpm run format
+      - name: Check formatting with Biome
+        run: pnpm run format:check
 
       - name: Lint with Biome
         run: pnpm run lint
