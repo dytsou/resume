@@ -77,16 +77,17 @@ VITE_GOOGLE_DRIVE_RESUME_LINK=https://drive.google.com/file/d/YOUR_FILE_ID
 | `pnpm run convert:latex` | Run the LaTeX conversion module directly           |
 | `pnpm run build`         | Convert LaTeX files and build the Vite application |
 | `pnpm run preview`       | Build and serve locally with Wrangler              |
-| `pnpm run lint`          | Run ESLint                                         |
+| `pnpm run lint`          | Run the Biome linter                               |
+| `pnpm run check`         | Check formatting and lint rules with Biome          |
 | `pnpm run typecheck`     | Run the TypeScript checker                         |
 | `pnpm test`              | Run Node.js tests                                  |
-| `pnpm run format`        | Format supported source files with Prettier        |
-| `pnpm run format:check`  | Check Prettier formatting                          |
+| `pnpm run format`        | Format supported source files with Biome           |
+| `pnpm run format:check`  | Check Biome formatting                             |
 | `pnpm run deploy`        | Build and deploy with Wrangler                     |
 
 ## CI and Deployment
 
-`.github/workflows/ci.yml` runs linting, tests, type checking, and a production build on pushes and pull requests. The main-branch build verifies `dist/index.html`, checks the `/resume/` asset prefix, and validates `deploy-contract.json`.
+`.github/workflows/ci.yml` runs Biome formatting and lint checks, tests, type checking, and a production build on pushes and pull requests. The main-branch build verifies `dist/index.html`, checks the `/resume/` asset prefix, and validates `deploy-contract.json`.
 
 `.github/workflows/deploy.yml` runs after successful CI on `main` (or manually). It builds with `BASE_PATH=/resume/`, uploads the `dist/` artifact, and deploys it to the `dy-tsou-resume` Cloudflare Pages project. The deployment action also registers the `/resume/` front-door route in the `dytsou/site` manifest.
 
