@@ -26,8 +26,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --ignore-scripts
 
-      - name: Run ESLint
-        run: pnpm run lint
+      - name: Run Biome checks
+        run: pnpm run check
 
   test:
     name: Test
