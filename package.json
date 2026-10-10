@@ -2,7 +2,7 @@
   "name": "@dytsou/resume-converter",
   "version": "3.2.2",
   "type": "module",
-  "packageManager": "pnpm@11.9.0",
+  "packageManager": "pnpm@12.10.1",
   "scripts": {
     "dev": "vite",
     "build": "pnpm run convert && vite build",
