@@ -4,6 +4,7 @@ latexmk
 lwarp
 make4ht
 tex4ht
+luaxml
 fontawesome5
 sourcesans
 latex-fonts

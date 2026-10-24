@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import test from 'node:test';
 
 import { injectLwarpPreamble } from '../scripts/compile/lwarp.mjs';
+import { compileWithMake4ht } from '../scripts/compile/make4ht.mjs';
 import { compileCertifiedResume } from '../scripts/compile/tex-engine.mjs';
 import { detectTexTools, texSpawnEnv } from '../scripts/compile/tex-tools.mjs';
 
@@ -15,6 +16,27 @@ test('texSpawnEnv prepends absolute binary dir to PATH', () => {
   assert.match(env.PATH, /^\/home\/runner\/texlive\/bin\/x86_64-linux/);
   assert.match(env.PATH, /\/usr\/bin$/);
   assert.equal(texSpawnEnv('make4ht', { PATH: '/usr/bin' }).PATH, '/usr/bin');
+});
+
+test('make4ht uses -x flag without a xelatex positional input', () => {
+  const { dir, path } = writeTempSource();
+  const work = mkdtempSync(join(tmpdir(), 'resume-m4h-'));
+  const calls = [];
+  try {
+    compileWithMake4ht({
+      workDir: work,
+      sourcePath: path,
+      run: (bin, args) => {
+        calls.push({ bin, args });
+        return { status: 1, stdout: '', stderr: 'boom' };
+      },
+    });
+    assert.equal(calls.length, 1);
+    assert.deepEqual(calls[0].args, ['-x', 'resume.tex']);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+    rmSync(work, { recursive: true, force: true });
+  }
 });
 
 const sampleTex = String.raw`\documentclass{article}

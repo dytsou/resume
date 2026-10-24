@@ -41,7 +41,8 @@ export function compileWithMake4ht(options) {
     }
   }
 
-  const htmlResult = run(make4htBin, ['-x', 'xelatex', `${base}.tex`], {
+  // -x selects XeLaTeX; do not pass "xelatex" as a positional (make4ht treats it as the input file).
+  const htmlResult = run(make4htBin, ['-x', `${base}.tex`], {
     cwd: workDir,
     encoding: 'utf8',
     maxBuffer: 10 * 1024 * 1024,
