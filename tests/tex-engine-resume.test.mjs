@@ -6,7 +6,16 @@ import test from 'node:test';
 
 import { injectLwarpPreamble } from '../scripts/compile/lwarp.mjs';
 import { compileCertifiedResume } from '../scripts/compile/tex-engine.mjs';
-import { detectTexTools } from '../scripts/compile/tex-tools.mjs';
+import { detectTexTools, texSpawnEnv } from '../scripts/compile/tex-tools.mjs';
+
+test('texSpawnEnv prepends absolute binary dir to PATH', () => {
+  const env = texSpawnEnv('/home/runner/texlive/bin/x86_64-linux/make4ht', {
+    PATH: '/usr/bin',
+  });
+  assert.match(env.PATH, /^\/home\/runner\/texlive\/bin\/x86_64-linux/);
+  assert.match(env.PATH, /\/usr\/bin$/);
+  assert.equal(texSpawnEnv('make4ht', { PATH: '/usr/bin' }).PATH, '/usr/bin');
+});
 
 const sampleTex = String.raw`\documentclass{article}
 \usepackage{titlesec}

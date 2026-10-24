@@ -128,6 +128,9 @@ function tryCertifiedResume({
   messages.push(`Certified convert failed for ${file}: ${certified.error}`);
   if (requireCertified) {
     messages.push(certified.diagnosticsJson);
+    if (certified.log) {
+      messages.push(`Certified compile log (tail):\n${certified.log.slice(-4000)}`);
+    }
     return { status: 'error' };
   }
   return { status: 'fallback' };

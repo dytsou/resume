@@ -160,7 +160,7 @@ jobs:
         uses: zauguin/install-texlive@f5e7d0b117035fff797d4392ea94131747e03d60 # v4
         with:
           package_file: scripts/tex/tl_packages
-          cache_version: convert-fidelity-v2
+          cache_version: convert-fidelity-v3
 
       - name: Build project
         run: pnpm run build

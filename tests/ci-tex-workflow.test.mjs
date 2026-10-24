@@ -13,4 +13,7 @@ test('CI build job installs TeX before build and requires certified convert', ()
   const installIdx = workflow.indexOf('Install TeX Live');
   const buildIdx = workflow.indexOf('Build project');
   assert.ok(installIdx > 0 && buildIdx > installIdx);
+  const packages = readFileSync('scripts/tex/tl_packages', 'utf8');
+  assert.match(packages, /^preprint$/m);
+  assert.match(packages, /^sourcesans$/m);
 });

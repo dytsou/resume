@@ -4,7 +4,7 @@
 
 import { accessSync, constants } from 'node:fs';
 import { homedir } from 'node:os';
-import { join } from 'node:path';
+import { delimiter, dirname, join } from 'node:path';
 
 /** Fixed install locations — CI TeX Live, Homebrew, and system bins. */
 const BIN_DIRS = [
@@ -33,6 +33,20 @@ export function resolveBinary(binary) {
     }
   }
   return null;
+}
+
+/**
+ * Ensure TeX siblings (texlua, xelatex) remain resolvable when spawning via absolute path.
+ * @param {string | null | undefined} binaryPath
+ * @param {NodeJS.ProcessEnv} [baseEnv]
+ * @returns {NodeJS.ProcessEnv}
+ */
+export function texSpawnEnv(binaryPath, baseEnv = process.env) {
+  const env = { ...baseEnv };
+  if (typeof binaryPath === 'string' && /[/\\]/.test(binaryPath)) {
+    env.PATH = `${dirname(binaryPath)}${delimiter}${env.PATH ?? ''}`;
+  }
+  return env;
 }
 
 /**

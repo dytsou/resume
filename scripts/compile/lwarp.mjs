@@ -6,6 +6,12 @@ import { spawnSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join } from 'node:path';
 
+import { texSpawnEnv } from './tex-tools.mjs';
+
+function spawnLog(result) {
+  return [result.error?.message, result.stdout, result.stderr].filter(Boolean).join('\n');
+}
+
 /**
  * Inject lwarp package after \documentclass for a worktree copy.
  * @param {string} latex
@@ -54,8 +60,9 @@ export function compileWithLwarp(options) {
     cwd: workDir,
     encoding: 'utf8',
     maxBuffer: 10 * 1024 * 1024,
+    env: texSpawnEnv(lwarpmk),
   });
-  const log = `${htmlResult.stdout ?? ''}\n${htmlResult.stderr ?? ''}`;
+  const log = spawnLog(htmlResult);
   if (htmlResult.status !== 0) {
     return {
       success: false,
@@ -74,8 +81,9 @@ export function compileWithLwarp(options) {
     cwd: workDir,
     encoding: 'utf8',
     maxBuffer: 10 * 1024 * 1024,
+    env: texSpawnEnv(lwarpmk),
   });
-  const printLog = `${log}\n${printResult.stdout ?? ''}\n${printResult.stderr ?? ''}`;
+  const printLog = `${log}\n${spawnLog(printResult)}`;
   const candidatePdf = join(workDir, `${base}.pdf`);
   if (printResult.status === 0 && existsSync(candidatePdf)) {
     pdfPath = candidatePdf;

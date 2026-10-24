@@ -6,6 +6,12 @@ import { spawnSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join } from 'node:path';
 
+import { texSpawnEnv } from './tex-tools.mjs';
+
+function spawnLog(result) {
+  return [result.error?.message, result.stdout, result.stderr].filter(Boolean).join('\n');
+}
+
 /**
  * @param {{
  *   workDir: string,
@@ -39,8 +45,9 @@ export function compileWithMake4ht(options) {
     cwd: workDir,
     encoding: 'utf8',
     maxBuffer: 10 * 1024 * 1024,
+    env: texSpawnEnv(make4htBin),
   });
-  let log = `${htmlResult.stdout ?? ''}\n${htmlResult.stderr ?? ''}`;
+  let log = spawnLog(htmlResult);
   if (htmlResult.status !== 0) {
     return {
       success: false,
@@ -58,8 +65,9 @@ export function compileWithMake4ht(options) {
     cwd: workDir,
     encoding: 'utf8',
     maxBuffer: 10 * 1024 * 1024,
+    env: texSpawnEnv(latexmkBin),
   });
-  log = `${log}\n${pdfResult.stdout ?? ''}\n${pdfResult.stderr ?? ''}`;
+  log = `${log}\n${spawnLog(pdfResult)}`;
   const pdfPath = join(workDir, `${base}.pdf`);
   if (pdfResult.status !== 0 || !existsSync(pdfPath)) {
     return {
