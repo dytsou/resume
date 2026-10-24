@@ -125,7 +125,10 @@ function tryCertifiedResume({
     };
   }
 
-  messages.push(`Certified convert failed for ${file}: ${certified.error}`);
+  messages.push(
+    `Certified convert failed for ${file}: ${certified.error}` +
+      (certified.tool ? ` (tool=${certified.tool})` : '')
+  );
   if (requireCertified) {
     messages.push(certified.diagnosticsJson);
     if (certified.log) {
@@ -315,7 +318,11 @@ export function convertAll(options = {}) {
  */
 export function main() {
   console.log('Starting LaTeX conversion (certified preferred, fuzzy fallback)...');
-  const result = convertAll();
+  const tools = detectTexTools();
+  console.log(
+    `TeX tools: lwarp=${Boolean(tools.paths?.lwarpmk)} make4ht=${Boolean(tools.paths?.make4ht)} latexmk=${Boolean(tools.paths?.latexmk)} xelatex=${Boolean(tools.paths?.xelatex)}`
+  );
+  const result = convertAll({ tools });
   for (const message of result.messages ?? []) {
     console.log(message);
   }
