@@ -19,9 +19,9 @@ test('defines light and dark semantic tokens for the complete resume surface', (
   const styles = getStyles();
 
   assert.match(styles, /:root\s*\{[\s\S]*color-scheme:\s*light/);
-  assert.match(styles, /--page-bg:\s*#faf8f2/);
   assert.match(styles, /--surface-bg:\s*#fff/);
-  assert.match(styles, /:root\[data-theme='dark'\]\s*\{[\s\S]*color-scheme:\s*dark/);
+  assert.match(styles, /--page-bg:\s*#faf8f2/);
+  assert.match(styles, /:root\[data-theme=["']dark["']\]\s*\{[\s\S]*color-scheme:\s*dark/);
   assert.match(styles, /--page-bg:\s*#111827/);
   assert.match(styles, /--surface-bg:\s*#1f2937/);
   assert.match(styles, /\.resume-page\s*\{[\s\S]*color:\s*var\(--text-primary\)/);
@@ -30,11 +30,11 @@ test('defines light and dark semantic tokens for the complete resume surface', (
   assert.match(styles, /a\s*\{\s*color:\s*var\(--link\)/);
   assert.match(
     styles,
-    /:root\[data-theme='dark'\]\s+a,\s*:root\[data-theme='dark'\]\s+a:hover,\s*:root\[data-theme='dark'\]\s+a:visited\s*\{\s*color:\s*var\(--text-primary\)/,
+    /:root\[data-theme=["']dark["']\]\s+a,\s*:root\[data-theme=["']dark["']\]\s+a:hover,\s*:root\[data-theme=["']dark["']\]\s+a:visited\s*\{\s*color:\s*var\(--text-primary\)/,
   );
   assert.match(
     styles,
-    /\.row \.left > a, \.trio-title > a\s*\{\s*color:\s*var\(--text-primary\)/,
+    /\.row \.left > a,\s*\.trio-title > a\s*\{\s*color:\s*var\(--text-primary\)/,
   );
   assert.match(styles, /\.converter-footer\s*\{[\s\S]*color:\s*var\(--text-subtle\)/);
 });

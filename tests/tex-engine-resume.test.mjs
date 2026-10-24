@@ -1,0 +1,196 @@
+import assert from 'node:assert/strict';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import test from 'node:test';
+
+import { compileWithMake4ht } from '../scripts/compile/make4ht.mjs';
+import { compileCertifiedResume } from '../scripts/compile/tex-engine.mjs';
+import { detectTexTools, texSpawnEnv } from '../scripts/compile/tex-tools.mjs';
+
+test('texSpawnEnv prepends absolute binary dir to PATH', () => {
+  const env = texSpawnEnv('/home/runner/texlive/bin/x86_64-linux/make4ht', {
+    PATH: '/usr/bin',
+  });
+  assert.match(env.PATH, /^\/home\/runner\/texlive\/bin\/x86_64-linux/);
+  assert.match(env.PATH, /\/usr\/bin$/);
+  assert.equal(texSpawnEnv('make4ht', { PATH: '/usr/bin' }).PATH, '/usr/bin');
+});
+
+test('make4ht uses -x flag without a xelatex positional input', () => {
+  const { dir, path } = writeTempSource();
+  const work = mkdtempSync(join(tmpdir(), 'resume-m4h-'));
+  const calls = [];
+  try {
+    compileWithMake4ht({
+      workDir: work,
+      sourcePath: path,
+      run: (bin, args) => {
+        calls.push({ bin, args });
+        return { status: 1, stdout: '', stderr: 'boom' };
+      },
+    });
+    assert.equal(calls.length, 1);
+    assert.deepEqual(calls[0].args, ['-x', 'resume.tex']);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+    rmSync(work, { recursive: true, force: true });
+  }
+});
+
+const sampleTex = String.raw`\documentclass{article}
+\usepackage{titlesec}
+\begin{document}
+\title{Resume}
+\section{Experience}
+Hello
+\end{document}
+`;
+
+function writeTempSource(content = sampleTex) {
+  const dir = mkdtempSync(join(tmpdir(), 'resume-src-'));
+  const path = join(dir, 'resume.tex');
+  writeFileSync(path, content);
+  return { dir, path };
+}
+
+const make4htTools = {
+  texAvailable: true,
+  make4ht: true,
+  latexmk: true,
+  xelatex: true,
+};
+
+test('out-of-budget package fails before shelling out', () => {
+  const { dir, path } = writeTempSource(
+    String.raw`\documentclass{article}
+\usepackage{totallyunknown}
+\begin{document}\end{document}`
+  );
+  const out = mkdtempSync(join(tmpdir(), 'resume-out-'));
+  try {
+    const result = compileCertifiedResume({
+      sourcePath: path,
+      outputDir: out,
+      tools: make4htTools,
+      compileMake4ht: () => {
+        throw new Error('should not run');
+      },
+    });
+    assert.equal(result.success, false);
+    assert.equal(result.diagnostics[0].package, 'totallyunknown');
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+    rmSync(out, { recursive: true, force: true });
+  }
+});
+
+test('fatal TeX error returns structured failure without certified claim', () => {
+  const { dir, path } = writeTempSource();
+  const out = mkdtempSync(join(tmpdir(), 'resume-out-'));
+  try {
+    const result = compileCertifiedResume({
+      sourcePath: path,
+      outputDir: out,
+      tools: make4htTools,
+      compileMake4ht: () => ({
+        success: false,
+        log: 'fatal error',
+        error: 'make4ht exited 1',
+      }),
+    });
+    assert.equal(result.success, false);
+    assert.equal(result.lane, 'certified');
+    assert.equal(result.htmlPath, null);
+    assert.match(result.diagnosticsJson, /tex_compile_failed/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+    rmSync(out, { recursive: true, force: true });
+  }
+});
+
+test('adapter refuses success when PDF is zero bytes', () => {
+  const { dir, path } = writeTempSource();
+  const work = mkdtempSync(join(tmpdir(), 'resume-work-'));
+  const out = mkdtempSync(join(tmpdir(), 'resume-out-'));
+  const htmlPath = join(work, 'resume.html');
+  const pdfPath = join(work, 'resume.pdf');
+  writeFileSync(
+    htmlPath,
+    '<html><head><title>Resume</title></head><body><h1>Experience</h1></body></html>'
+  );
+  writeFileSync(pdfPath, '');
+  try {
+    const result = compileCertifiedResume({
+      sourcePath: path,
+      outputDir: out,
+      tools: make4htTools,
+      compileMake4ht: () => ({
+        success: true,
+        htmlPath,
+        pdfPath,
+        log: 'ok',
+      }),
+    });
+    assert.equal(result.success, false);
+    assert.match(result.diagnosticsJson, /pdf_empty|pdf_not_pdf_header/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+    rmSync(work, { recursive: true, force: true });
+    rmSync(out, { recursive: true, force: true });
+  }
+});
+
+test('happy path mock writes HTML and PDF under outputDir', () => {
+  const { dir, path } = writeTempSource();
+  const work = mkdtempSync(join(tmpdir(), 'resume-work-'));
+  const out = mkdtempSync(join(tmpdir(), 'resume-out-'));
+  mkdirSync(work, { recursive: true });
+  const htmlPath = join(work, 'resume.html');
+  const pdfPath = join(work, 'resume.pdf');
+  writeFileSync(
+    htmlPath,
+    '<html><head><title>Resume</title></head><body><h1>Experience</h1></body></html>'
+  );
+  writeFileSync(pdfPath, '%PDF-1.5\n%%EOF\n');
+  try {
+    const result = compileCertifiedResume({
+      sourcePath: path,
+      outputDir: out,
+      tools: make4htTools,
+      compileMake4ht: () => ({
+        success: true,
+        htmlPath,
+        pdfPath,
+        log: 'ok',
+      }),
+    });
+    assert.equal(result.success, true);
+    assert.equal(result.tool, 'make4ht');
+    assert.equal(result.lane, 'certified');
+    assert.equal(result.htmlPath, null);
+    assert.ok(readFileSync(result.pdfPath).length > 0);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+    rmSync(work, { recursive: true, force: true });
+    rmSync(out, { recursive: true, force: true });
+  }
+});
+
+test('live TeX resume convert when tools are installed', {
+  skip: !detectTexTools().make4ht,
+}, () => {
+  const out = mkdtempSync(join(tmpdir(), 'resume-live-'));
+  try {
+    const result = compileCertifiedResume({
+      sourcePath: join('latex', 'resume.tex'),
+      outputDir: out,
+    });
+    assert.equal(result.success, true, result.error ?? result.log);
+    assert.equal(result.htmlPath, null);
+    assert.ok(result.pdfPath);
+    assert.ok(readFileSync(result.pdfPath).length > 0);
+  } finally {
+    rmSync(out, { recursive: true, force: true });
+  }
+});

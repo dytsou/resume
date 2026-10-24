@@ -2,9 +2,7 @@ function extractSection(source, tagName) {
   const match = new RegExp(
     String.raw`<${tagName}[^>]*>([\s\S]*?)</${tagName}>`,
     'i'
-  ).exec(
-    source
-  );
+  ).exec(source);
   return match?.[1]?.trim() ?? '';
 }
 
@@ -22,16 +20,6 @@ function extractHeadAssets(source) {
   ]
     .map((match) => match[0])
     .join('\n');
-}
-
-function toDirectDownloadLink(link) {
-  const trimmedLink = link.trim();
-  const fileId =
-    /\/file\/d\/([a-zA-Z0-9_-]+)/.exec(trimmedLink)?.[1] ??
-    /[?&]id=([a-zA-Z0-9_-]+)/.exec(trimmedLink)?.[1] ??
-    (/^[a-zA-Z0-9_-]+$/.test(trimmedLink) ? trimmedLink : null);
-
-  return fileId ? `https://drive.google.com/uc?export=download&id=${fileId}` : null;
 }
 
 const themeToggle = `<div class="theme-control">
@@ -54,14 +42,22 @@ function injectThemeToggle(body) {
   );
 }
 
-export function createStaticIndex(template, resumeHtml, driveLink = '') {
+/**
+ * Build the static index HTML.
+ * Download button uses the certified in-tree PDF when `pdfHref` is set.
+ *
+ * @param {string} template
+ * @param {string} resumeHtml
+ * @param {string} [pdfHref] site-relative or absolute href to resume PDF
+ */
+export function createStaticIndex(template, resumeHtml, pdfHref = '') {
   const body = injectThemeToggle(extractSection(resumeHtml, 'body'));
   const assets = extractHeadAssets(resumeHtml);
   const styles = extractStyles(resumeHtml);
-  const directDownloadLink = toDirectDownloadLink(driveLink);
+  const href = pdfHref.trim();
   const downloadIcon = `<span class="button-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>`;
-  const downloadButton = directDownloadLink
-    ? `<div class="download-button-wrapper"><a class="download-drive-button" href="${directDownloadLink.replaceAll('&', '&amp;').replaceAll('"', '&quot;')}" download="resume.pdf" aria-label="Download Resume">${downloadIcon}</a></div>`
+  const downloadButton = href
+    ? `<div class="download-button-wrapper"><a class="download-resume-button" href="${href.replaceAll('&', '&amp;').replaceAll('"', '&quot;')}" download="resume.pdf" aria-label="Download Resume">${downloadIcon}</a></div>`
     : '';
 
   return template

@@ -32,7 +32,7 @@ if (themeToggle) {
   });
 }
 
-const downloadButton = document.querySelector('.download-drive-button');
+const downloadButton = document.querySelector('.download-resume-button');
 
 if (downloadButton) {
   downloadButton.addEventListener('click', () => {

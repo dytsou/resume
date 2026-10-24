@@ -19,14 +19,14 @@ export default defineConfig({
       name: 'static-resume-index',
       transformIndexHtml(html: string) {
         const resumePath = 'public/converted-docs/resume.html';
+        const resumePdfPath = 'public/converted-docs/resume.pdf';
         const source = existsSync(resumePath)
           ? readFileSync(resumePath, 'utf8')
           : '';
-        return createStaticIndex(
-          html,
-          source,
-          process.env.VITE_GOOGLE_DRIVE_RESUME_LINK
-        );
+        const pdfHref = existsSync(resumePdfPath)
+          ? `${deployBase}converted-docs/resume.pdf`.replace(/\/{2,}/g, '/')
+          : '';
+        return createStaticIndex(html, source, pdfHref);
       },
     },
     cloudflare(),

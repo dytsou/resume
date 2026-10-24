@@ -34,8 +34,11 @@
 \usepackage[english]{babel} % provides culturally determined typographical rules for wide range of languages
 %-----------------------------------------
 
-\input glyphtounicode % converts glyph names to unicode
-\pdfgentounicode=1 % ensures pdfs generated are ats readable
+% pdfTeX-only ATS glyph mapping; skip under XeLaTeX (certified make4ht lane)
+\ifdefined\pdfglyphtounicode
+  \input glyphtounicode
+  \pdfgentounicode=1
+\fi
 
 %----------FONT OPTIONS-------------------
 \usepackage[default]{sourcesanspro} % uses the font source sans pro
