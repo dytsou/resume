@@ -1,5 +1,3 @@
-# Minimal TeX Live packages for certified resume convert (CI / local).
-# One package or collection per line. Comments start with #.
 scheme-basic
 collection-xetex
 latexmk
@@ -15,18 +13,17 @@ hyperref
 ulem
 marvosym
 latexsym
-booktabs
-tools
-graphics
 etoolbox
 xkeyval
-oberdiek
+iftex
+babel-english
 lm
 amsfonts
-babel-english
 microtype
+oberdiek
+tools
+graphics
 pdftexcmds
 infwarerr
 kvoptions
 ltxcmds
-iftex

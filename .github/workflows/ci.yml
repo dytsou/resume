@@ -156,12 +156,37 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --ignore-scripts
 
+      - name: Install TeX Live
+        uses: zauguin/install-texlive@v4
+        with:
+          package_file: scripts/tex/tl_packages
+          cache_version: convert-fidelity-v1
+
       - name: Build project
         run: pnpm run build
         env:
           # Served under the front door at dy.tsou.me/resume/, so assets must be prefixed.
           BASE_PATH: /resume/
           VITE_GOOGLE_DRIVE_RESUME_LINK: ${{ vars.VITE_GOOGLE_DRIVE_RESUME_LINK }}
+          # Fail closed when certified convert cannot produce resume HTML+PDF (R12).
+          CONVERT_REQUIRE_CERTIFIED: '1'
+
+      - name: Verify certified convert artifacts
+        run: |
+          test -f public/converted-docs/resume.html
+          test -f public/converted-docs/resume.pdf
+          test -s public/converted-docs/resume.pdf
+          node --input-type=module -e "
+            import { readFileSync } from 'node:fs';
+            const manifest = JSON.parse(readFileSync('public/documents-manifest.json', 'utf8'));
+            const resume = manifest.find((e) => e.id === 'resume');
+            if (!resume) throw new Error('missing resume manifest entry');
+            if (resume.lane !== 'certified') throw new Error('expected certified lane');
+            if (!resume.sourceHash) throw new Error('missing sourceHash');
+            if (!resume.pdfPath) throw new Error('missing pdfPath');
+            console.log('certified-convert: ok', resume.converter ?? '');
+          "
+          test -f dist/converted-docs/resume.pdf || test -f dist/resume/converted-docs/resume.pdf
 
       - name: Verify build output
         if: github.ref == 'refs/heads/main'

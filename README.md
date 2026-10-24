@@ -5,17 +5,21 @@ This project converts LaTeX documents into styled, responsive HTML and serves th
 ## Features
 
 - Converts every `.tex` file in `latex/` to a standalone HTML document
+- **Dual-lane convert for `resume.tex`:** certified TeX-running lane (lwarp, with make4ht fallback) when TeX is available; fuzzy `@unified-latex` Lane A otherwise
+- Certified lane also writes `public/converted-docs/resume.pdf` and records `lane` / `sourceHash` in the manifest
+- TeX-less builds may reuse hash-matched certified prebuilts without fuzzy overwrite
 - Preserves resume-specific macros for headings, skills, lists, contacts, links, and icons
 - Renders math in the generated documents with MathJax
 - Embeds the generated resume content directly in the static page for SEO
-- Optionally provides a Google Drive PDF download button
-- Fails the build when any LaTeX document cannot be converted
+- PDF download prefers the certified in-tree PDF when present; otherwise optional Google Drive link
+- Fails the build when any LaTeX document cannot be converted (CI sets `CONVERT_REQUIRE_CERTIFIED=1`)
 - Deploys through GitHub Actions after CI succeeds
 
 ## Requirements
 
 - Node.js 24 or newer
 - pnpm 11 (enabled with Corepack)
+- Optional for certified convert: TeX Live with XeLaTeX, `lwarpmk` (preferred) or `make4ht` — see `scripts/tex/tl_packages`
 
 ```bash
 corepack enable
@@ -54,11 +58,11 @@ pnpm run build
 pnpm run preview
 ```
 
-Generated HTML files are written to `public/converted-docs/` and the conversion manifest to `public/documents-manifest.json`. These generated files, along with `dist/`, are ignored by Git.
+Generated HTML (and certified PDF) files are written to `public/converted-docs/` and the conversion manifest to `public/documents-manifest.json`. These generated files, along with `dist/`, are ignored by Git. Fidelity budget allowlists live under `scripts/tex/`.
 
 ## Configuration
 
-`VITE_GOOGLE_DRIVE_RESUME_LINK` is optional. When set, the application displays a download button and accepts a Google Drive sharing URL or file ID.
+`VITE_GOOGLE_DRIVE_RESUME_LINK` is optional. When a certified `converted-docs/resume.pdf` is present it wins for the download button; Drive is used only when that PDF is absent. The env var accepts a Google Drive sharing URL or file ID.
 
 For local development, create a `.env` file based on `.env.example`:
 
