@@ -288,11 +288,12 @@ a:visited {
   -webkit-font-smoothing: antialiased;
   display: inline-block;
   font-family:
-    "Font Awesome 6 Free", "Font Awesome 6 Brands", "Font Awesome 6 Pro";
+    "Font Awesome 6 Free", "Font Awesome 6 Brands", "Font Awesome 6 Pro",
+    sans-serif;
   font-weight: 900;
 }
 .contact-links i.fab {
-  font-family: "Font Awesome 6 Brands";
+  font-family: "Font Awesome 6 Brands", sans-serif;
   font-weight: 400;
 }
 .contact-links > i {
@@ -382,8 +383,6 @@ a:visited {
 }
 .skill-sep {
   display: none;
-}
-.skill-sep {
   text-align: center;
 }
 .macro {
@@ -469,16 +468,8 @@ a:visited {
   .skill-label {
     margin-bottom: 0.25rem;
   }
-  .skill-sep {
-    display: none;
-  }
   .skill-content {
     margin-left: 0;
-  }
-  .skill-content {
-    white-space: normal;
-    overflow-wrap: normal;
-    word-break: normal;
   }
   .contact {
     grid-template-columns: 1fr;

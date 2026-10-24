@@ -53,15 +53,8 @@ body {
   border-radius: 2px;
 }
 
-/* Download from Drive button styles */
-.download-drive-button-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-}
-
-.download-drive-button {
+/* Resume PDF download button */
+.download-resume-button {
   background: var(--control-bg);
   color: var(--control-text);
   border: 1px solid var(--control-border);
@@ -84,25 +77,25 @@ body {
   font-family: system-ui, -apple-system, sans-serif;
 }
 
-.download-drive-button:hover:not(:disabled) {
+.download-resume-button:hover:not(:disabled) {
   background: var(--control-bg-hover);
   border-color: var(--control-border-hover);
   box-shadow: var(--control-shadow-hover);
   transform: translateY(-2px) scale(1.05);
 }
 
-.download-drive-button:active:not(:disabled) {
+.download-resume-button:active:not(:disabled) {
   background: var(--control-bg-active);
   box-shadow: var(--control-shadow-active);
   transform: translateY(0) scale(1);
 }
 
-.download-drive-button:focus-visible {
+.download-resume-button:focus-visible {
   outline: 3px solid var(--focus-ring);
   outline-offset: 3px;
 }
 
-.download-drive-button:disabled {
+.download-resume-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -153,7 +146,7 @@ body {
     --download-control-offset: 16px;
   }
 
-  .download-drive-button {
+  .download-resume-button {
     width: 48px;
     height: 48px;
   }

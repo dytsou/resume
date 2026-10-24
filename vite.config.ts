@@ -23,15 +23,10 @@ export default defineConfig({
         const source = existsSync(resumePath)
           ? readFileSync(resumePath, 'utf8')
           : '';
-        const certifiedPdfHref = existsSync(resumePdfPath)
+        const pdfHref = existsSync(resumePdfPath)
           ? `${deployBase}converted-docs/resume.pdf`.replace(/\/{2,}/g, '/')
           : '';
-        return createStaticIndex(
-          html,
-          source,
-          process.env.VITE_GOOGLE_DRIVE_RESUME_LINK,
-          certifiedPdfHref
-        );
+        return createStaticIndex(html, source, pdfHref);
       },
     },
     cloudflare(),

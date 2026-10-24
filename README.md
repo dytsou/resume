@@ -11,7 +11,7 @@ This project converts LaTeX documents into styled, responsive HTML and serves th
 - Preserves resume-specific macros for headings, skills, lists, contacts, links, and icons
 - Renders math in the generated documents with MathJax
 - Embeds the generated resume content directly in the static page for SEO
-- PDF download prefers the certified in-tree PDF when present; otherwise optional Google Drive link
+- PDF download uses the certified in-tree `converted-docs/resume.pdf` when present
 - Fails the build when any LaTeX document cannot be converted (CI sets `CONVERT_REQUIRE_CERTIFIED=1`)
 - Deploys through GitHub Actions after CI succeeds
 
@@ -62,15 +62,9 @@ Generated HTML (and certified PDF) files are written to `public/converted-docs/`
 
 ## Configuration
 
-`VITE_GOOGLE_DRIVE_RESUME_LINK` is optional. When a certified `converted-docs/resume.pdf` is present it wins for the download button; Drive is used only when that PDF is absent. The env var accepts a Google Drive sharing URL or file ID.
-
-For local development, create a `.env` file based on `.env.example`:
-
-```dotenv
-VITE_GOOGLE_DRIVE_RESUME_LINK=https://drive.google.com/file/d/YOUR_FILE_ID
-```
-
 `BASE_PATH` controls the URL prefix used by Vite. The production front-door route uses `/resume/`; local development and the standalone Cloudflare Pages preview use `/`. Set `WORKER_SUBPATH=true` when building assets into `dist/resume/` for a Worker mounted under `/resume`.
+
+When `public/converted-docs/resume.pdf` exists after convert, the download button links to that file under the site base path.
 
 ## Commands
 
@@ -106,7 +100,7 @@ To deploy locally with Wrangler:
 pnpm run deploy
 ```
 
-The GitHub Actions deployment requires `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, and `MANIFEST_REPO_TOKEN` secrets. The optional `VITE_GOOGLE_DRIVE_RESUME_LINK` is configured as a repository variable.
+The GitHub Actions deployment requires `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, and `MANIFEST_REPO_TOKEN` secrets.
 
 The publish workflow publishes the `@dytsou/resume-converter` package to npmjs and GitHub Packages when its package or converter sources change.
 

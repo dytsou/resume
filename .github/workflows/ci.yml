@@ -167,7 +167,6 @@ jobs:
         env:
           # Served under the front door at dy.tsou.me/resume/, so assets must be prefixed.
           BASE_PATH: /resume/
-          VITE_GOOGLE_DRIVE_RESUME_LINK: ${{ vars.VITE_GOOGLE_DRIVE_RESUME_LINK }}
           # Fail closed when certified convert cannot produce resume HTML+PDF.
           CONVERT_REQUIRE_CERTIFIED: '1'
 
