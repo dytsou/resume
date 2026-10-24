@@ -21,6 +21,40 @@ test('injects generated resume content and styles into the static page', () => {
   );
 });
 
+test('certified PDF path wins over Drive env for download href', () => {
+  const result = createStaticIndex(
+    '<html><body><!-- DOWNLOAD_BUTTON --></body></html>',
+    '<html><body><div class="converter-footer">Footer</div></body></html>',
+    'https://drive.google.com/file/d/resume/view',
+    '/resume/converted-docs/resume.pdf'
+  );
+
+  assert.match(result, /href="\/resume\/converted-docs\/resume\.pdf"/);
+  assert.doesNotMatch(result, /drive\.google\.com/);
+});
+
+test('Drive download remains when certified PDF href is absent', () => {
+  const result = createStaticIndex(
+    '<html><body><!-- DOWNLOAD_BUTTON --></body></html>',
+    '<html><body></body></html>',
+    'https://drive.google.com/file/d/resume/view',
+    ''
+  );
+
+  assert.match(result, /drive\.google\.com\/uc\?export=download&amp;id=resume/);
+});
+
+test('omits download button when neither certified PDF nor Drive is set', () => {
+  const result = createStaticIndex(
+    '<html><body><!-- DOWNLOAD_BUTTON --></body></html>',
+    '<html><body></body></html>',
+    '',
+    ''
+  );
+
+  assert.doesNotMatch(result, /download-drive-button/);
+});
+
 test('preserves generated theme tokens when injecting resume styles', () => {
   const result = createStaticIndex(
     '<html><head><!-- RESUME_STYLES --></head><body></body></html>',

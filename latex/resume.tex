@@ -35,7 +35,10 @@
 %-----------------------------------------
 
 \input glyphtounicode % converts glyph names to unicode
-\pdfgentounicode=1 % ensures pdfs generated are ats readable
+% pdfTeX-only; no-op under XeLaTeX/LuaLaTeX (certified lane uses XeLaTeX)
+\ifdefined\pdfgentounicode
+  \pdfgentounicode=1
+\fi
 
 %----------FONT OPTIONS-------------------
 \usepackage[default]{sourcesanspro} % uses the font source sans pro
