@@ -22,11 +22,17 @@ export function injectLwarpPreamble(latex) {
 }
 
 /**
- * @param {{ workDir: string, sourcePath: string, run?: typeof spawnSync }} options
+ * @param {{
+ *   workDir: string,
+ *   sourcePath: string,
+ *   run?: typeof spawnSync,
+ *   lwarpmkPath?: string,
+ * }} options
  * @returns {{ success: boolean, htmlPath?: string, pdfPath?: string, log: string, error?: string }}
  */
 export function compileWithLwarp(options) {
   const run = options.run ?? spawnSync;
+  const lwarpmk = options.lwarpmkPath ?? 'lwarpmk';
   const { workDir, sourcePath } = options;
   mkdirSync(workDir, { recursive: true });
 
@@ -44,7 +50,7 @@ export function compileWithLwarp(options) {
     }
   }
 
-  const htmlResult = run('lwarpmk', ['html'], {
+  const htmlResult = run(lwarpmk, ['html'], {
     cwd: workDir,
     encoding: 'utf8',
     maxBuffer: 10 * 1024 * 1024,
@@ -64,7 +70,7 @@ export function compileWithLwarp(options) {
   }
 
   let pdfPath;
-  const printResult = run('lwarpmk', ['print'], {
+  const printResult = run(lwarpmk, ['print'], {
     cwd: workDir,
     encoding: 'utf8',
     maxBuffer: 10 * 1024 * 1024,

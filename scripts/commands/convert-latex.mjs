@@ -57,6 +57,150 @@ export function shouldPreserveCertifiedArtifacts(
   return existsSync(join(outputDir, `${fileBasename}.pdf`));
 }
 
+function loadExistingManifest(manifestFile) {
+  if (!existsSync(manifestFile)) {
+    return [];
+  }
+  try {
+    const parsed = JSON.parse(readFileSync(manifestFile, 'utf8'));
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function certifiedReuseEntry(file, fileBasename, sourceHash, prior) {
+  return {
+    id: fileBasename,
+    filename: file,
+    title: prior.title,
+    author: prior.author,
+    date: prior.date,
+    htmlPath: `converted-docs/${fileBasename}.html`,
+    pdfPath: `converted-docs/${fileBasename}.pdf`,
+    lane: 'certified',
+    sourceHash,
+    converter: prior.converter,
+    lastConverted: prior.lastConverted ?? new Date().toISOString(),
+  };
+}
+
+function tryCertifiedResume({
+  file,
+  filePath,
+  fileBasename,
+  latexContent,
+  sourceHash,
+  outputDir,
+  tools,
+  compileCertified,
+  convertFuzzy,
+  requireCertified,
+  messages,
+}) {
+  const certified = compileCertified({
+    sourcePath: filePath,
+    outputDir,
+    basename: fileBasename,
+    tools,
+  });
+  if (certified.success) {
+    const meta = convertFuzzy(latexContent, fileBasename);
+    messages.push(`Certified convert OK for ${file} via ${certified.tool}`);
+    return {
+      status: 'ok',
+      entry: {
+        id: fileBasename,
+        filename: file,
+        title: meta.metadata?.title ?? 'Untitled Document',
+        author: meta.metadata?.author ?? 'Unknown Author',
+        date: meta.metadata?.date ?? new Date().toISOString().split('T')[0],
+        htmlPath: `converted-docs/${fileBasename}.html`,
+        pdfPath: `converted-docs/${fileBasename}.pdf`,
+        lane: 'certified',
+        sourceHash,
+        converter: certified.tool,
+        lastConverted: new Date().toISOString(),
+      },
+    };
+  }
+
+  messages.push(`Certified convert failed for ${file}: ${certified.error}`);
+  if (requireCertified) {
+    messages.push(certified.diagnosticsJson);
+    return { status: 'error' };
+  }
+  return { status: 'fallback' };
+}
+
+function fuzzyOrPreserve({
+  file,
+  fileBasename,
+  latexContent,
+  sourceHash,
+  outputDir,
+  prior,
+  convertFuzzy,
+  messages,
+}) {
+  const result = convertFuzzy(latexContent, fileBasename);
+  if (!result.success) {
+    messages.push(`Fuzzy convert failed for ${file}: ${result.error}`);
+    return { status: 'error' };
+  }
+
+  const htmlOut = join(outputDir, `${fileBasename}.html`);
+  const pdfOut = join(outputDir, `${fileBasename}.pdf`);
+  const preserve = shouldPreserveCertifiedArtifacts(
+    outputDir,
+    fileBasename,
+    sourceHash,
+    prior
+  );
+
+  if (preserve) {
+    if (!existsSync(htmlOut)) {
+      writeFileSync(htmlOut, result.html);
+    }
+    messages.push(
+      `Preserved certified PDF for ${file}; refused fuzzy overwrite of ${pdfOut}`
+    );
+    return {
+      status: 'ok',
+      entry: {
+        id: fileBasename,
+        filename: file,
+        title: prior.title ?? result.metadata.title,
+        author: prior.author ?? result.metadata.author,
+        date: prior.date ?? result.metadata.date,
+        htmlPath: `converted-docs/${fileBasename}.html`,
+        pdfPath: `converted-docs/${fileBasename}.pdf`,
+        lane: 'certified',
+        sourceHash,
+        converter: prior.converter,
+        lastConverted: prior.lastConverted ?? new Date().toISOString(),
+      },
+    };
+  }
+
+  writeFileSync(htmlOut, result.html);
+  messages.push(`Fuzzy convert OK for ${file}`);
+  return {
+    status: 'ok',
+    entry: {
+      id: fileBasename,
+      filename: file,
+      title: result.metadata.title,
+      author: result.metadata.author,
+      date: result.metadata.date,
+      htmlPath: `converted-docs/${fileBasename}.html`,
+      lane: 'fuzzy',
+      sourceHash,
+      lastConverted: new Date().toISOString(),
+    },
+  };
+}
+
 /**
  * @param {{
  *   latexDir?: string,
@@ -96,16 +240,7 @@ export function convertAll(options = {}) {
     return { ok: true, manifest: [], messages: ['No LaTeX files found'] };
   }
 
-  let existingManifest = [];
-  if (existsSync(manifestFile)) {
-    try {
-      const parsed = JSON.parse(readFileSync(manifestFile, 'utf8'));
-      existingManifest = Array.isArray(parsed) ? parsed : [];
-    } catch {
-      existingManifest = [];
-    }
-  }
-
+  const existingManifest = loadExistingManifest(manifestFile);
   const manifest = [];
   const messages = [];
   let hasErrors = false;
@@ -122,111 +257,50 @@ export function convertAll(options = {}) {
       isResume &&
       canReuseCertifiedArtifacts(outputDir, fileBasename, sourceHash, prior)
     ) {
-      manifest.push({
-        id: fileBasename,
-        filename: file,
-        title: prior.title,
-        author: prior.author,
-        date: prior.date,
-        htmlPath: `converted-docs/${fileBasename}.html`,
-        pdfPath: `converted-docs/${fileBasename}.pdf`,
-        lane: 'certified',
-        sourceHash,
-        converter: prior.converter,
-        lastConverted: prior.lastConverted ?? new Date().toISOString(),
-      });
+      manifest.push(certifiedReuseEntry(file, fileBasename, sourceHash, prior));
       messages.push(`Reused certified artifacts for ${file} (sourceHash match)`);
       continue;
     }
 
     if (isResume && tools.texAvailable) {
-      const certified = compileCertified({
-        sourcePath: filePath,
-        outputDir,
-        basename: fileBasename,
-        tools,
-      });
-      if (certified.success) {
-        const meta = convertFuzzy(latexContent, fileBasename);
-        manifest.push({
-          id: fileBasename,
-          filename: file,
-          title: meta.metadata?.title ?? 'Untitled Document',
-          author: meta.metadata?.author ?? 'Unknown Author',
-          date: meta.metadata?.date ?? new Date().toISOString().split('T')[0],
-          htmlPath: `converted-docs/${fileBasename}.html`,
-          pdfPath: `converted-docs/${fileBasename}.pdf`,
-          lane: 'certified',
-          sourceHash,
-          converter: certified.tool,
-          lastConverted: new Date().toISOString(),
-        });
-        messages.push(`Certified convert OK for ${file} via ${certified.tool}`);
-        continue;
-      }
-
-      messages.push(`Certified convert failed for ${file}: ${certified.error}`);
-      if (requireCertified) {
-        hasErrors = true;
-        messages.push(certified.diagnosticsJson);
-        continue;
-      }
-    }
-
-    const preserveCertified = shouldPreserveCertifiedArtifacts(
-      outputDir,
-      fileBasename,
-      sourceHash,
-      prior
-    );
-
-    const result = convertFuzzy(latexContent, fileBasename);
-    if (!result.success) {
-      hasErrors = true;
-      messages.push(`Fuzzy convert failed for ${file}: ${result.error}`);
-      continue;
-    }
-
-    const htmlOut = join(outputDir, `${fileBasename}.html`);
-    const pdfOut = join(outputDir, `${fileBasename}.pdf`);
-
-    if (preserveCertified) {
-      // Restore missing HTML via fuzzy if needed, but never replace matching certified PDF.
-      if (!existsSync(htmlOut)) {
-        writeFileSync(htmlOut, result.html);
-      }
-      manifest.push({
-        id: fileBasename,
-        filename: file,
-        title: prior.title ?? result.metadata.title,
-        author: prior.author ?? result.metadata.author,
-        date: prior.date ?? result.metadata.date,
-        htmlPath: `converted-docs/${fileBasename}.html`,
-        pdfPath: `converted-docs/${fileBasename}.pdf`,
-        lane: 'certified',
+      const certifiedAttempt = tryCertifiedResume({
+        file,
+        filePath,
+        fileBasename,
+        latexContent,
         sourceHash,
-        converter: prior.converter,
-        lastConverted: prior.lastConverted ?? new Date().toISOString(),
+        outputDir,
+        tools,
+        compileCertified,
+        convertFuzzy,
+        requireCertified,
+        messages,
       });
-      messages.push(
-        `Preserved certified PDF for ${file}; refused fuzzy overwrite of ${pdfOut}`
-      );
-      continue;
+      if (certifiedAttempt.status === 'ok') {
+        manifest.push(certifiedAttempt.entry);
+        continue;
+      }
+      if (certifiedAttempt.status === 'error') {
+        hasErrors = true;
+        continue;
+      }
     }
 
-    writeFileSync(htmlOut, result.html);
-    manifest.push({
-      id: fileBasename,
-      filename: file,
-      title: result.metadata.title,
-      author: result.metadata.author,
-      date: result.metadata.date,
-      htmlPath: `converted-docs/${fileBasename}.html`,
-      lane: 'fuzzy',
+    const fuzzyAttempt = fuzzyOrPreserve({
+      file,
+      fileBasename,
+      latexContent,
       sourceHash,
-      lastConverted: new Date().toISOString(),
+      outputDir,
+      prior,
+      convertFuzzy,
+      messages,
     });
-    messages.push(`Fuzzy convert OK for ${file}`);
+    if (fuzzyAttempt.status === 'error') {
+      hasErrors = true;
+      continue;
+    }
+    manifest.push(fuzzyAttempt.entry);
   }
 
   writeFileSync(manifestFile, JSON.stringify(manifest, null, 2));

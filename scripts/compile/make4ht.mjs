@@ -7,11 +7,19 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from
 import { basename, dirname, join } from 'node:path';
 
 /**
- * @param {{ workDir: string, sourcePath: string, run?: typeof spawnSync }} options
+ * @param {{
+ *   workDir: string,
+ *   sourcePath: string,
+ *   run?: typeof spawnSync,
+ *   make4htPath?: string,
+ *   latexmkPath?: string,
+ * }} options
  * @returns {{ success: boolean, htmlPath?: string, pdfPath?: string, log: string, error?: string }}
  */
 export function compileWithMake4ht(options) {
   const run = options.run ?? spawnSync;
+  const make4htBin = options.make4htPath ?? 'make4ht';
+  const latexmkBin = options.latexmkPath ?? 'latexmk';
   const { workDir, sourcePath } = options;
   mkdirSync(workDir, { recursive: true });
 
@@ -27,7 +35,7 @@ export function compileWithMake4ht(options) {
     }
   }
 
-  const htmlResult = run('make4ht', ['-x', 'xelatex', `${base}.tex`], {
+  const htmlResult = run(make4htBin, ['-x', 'xelatex', `${base}.tex`], {
     cwd: workDir,
     encoding: 'utf8',
     maxBuffer: 10 * 1024 * 1024,
@@ -46,7 +54,7 @@ export function compileWithMake4ht(options) {
     return { success: false, log, error: 'make4ht html output missing' };
   }
 
-  const pdfResult = run('latexmk', ['-xelatex', '-interaction=nonstopmode', `${base}.tex`], {
+  const pdfResult = run(latexmkBin, ['-xelatex', '-interaction=nonstopmode', `${base}.tex`], {
     cwd: workDir,
     encoding: 'utf8',
     maxBuffer: 10 * 1024 * 1024,

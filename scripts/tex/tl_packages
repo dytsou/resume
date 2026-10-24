@@ -5,14 +5,14 @@ lwarp
 make4ht
 tex4ht
 fontawesome5
-sourcesanspro
+sourcesans
+latex-fonts
 titlesec
 fancyhdr
 enumitem
 hyperref
 ulem
 marvosym
-latexsym
 etoolbox
 xkeyval
 iftex

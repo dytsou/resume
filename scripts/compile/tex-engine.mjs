@@ -76,15 +76,30 @@ export function compileCertifiedResume(options) {
     let result = null;
     let tool = null;
 
+    const paths = tools.paths ?? {};
     if (tools.lwarp) {
-      result = compileLwarp({ workDir: join(workDir, 'lwarp'), sourcePath });
+      result = compileLwarp({
+        workDir: join(workDir, 'lwarp'),
+        sourcePath,
+        lwarpmkPath: paths.lwarpmk ?? undefined,
+      });
       tool = 'lwarp';
       if (!result.success && tools.make4ht) {
-        result = compileMake4ht({ workDir: join(workDir, 'make4ht'), sourcePath });
+        result = compileMake4ht({
+          workDir: join(workDir, 'make4ht'),
+          sourcePath,
+          make4htPath: paths.make4ht ?? undefined,
+          latexmkPath: paths.latexmk ?? undefined,
+        });
         tool = 'make4ht';
       }
     } else if (tools.make4ht) {
-      result = compileMake4ht({ workDir: join(workDir, 'make4ht'), sourcePath });
+      result = compileMake4ht({
+        workDir: join(workDir, 'make4ht'),
+        sourcePath,
+        make4htPath: paths.make4ht ?? undefined,
+        latexmkPath: paths.latexmk ?? undefined,
+      });
       tool = 'make4ht';
     } else {
       // PDF-only tools present without HTML converter — still not certified HTML.
