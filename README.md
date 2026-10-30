@@ -76,7 +76,7 @@ When `public/converted-docs/resume.pdf` exists after convert, the download butto
 | `pnpm run build`         | Convert LaTeX files and build the Vite application |
 | `pnpm run preview`       | Build and serve locally with Wrangler              |
 | `pnpm run lint`          | Run the Biome linter                               |
-| `pnpm run check`         | Check formatting and lint rules with Biome          |
+| `pnpm run check`         | Check formatting and lint rules with Biome         |
 | `pnpm run typecheck`     | Run the TypeScript checker                         |
 | `pnpm test`              | Run Node.js tests                                  |
 | `pnpm run format`        | Format supported source files with Biome           |
