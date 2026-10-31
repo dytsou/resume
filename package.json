@@ -32,13 +32,13 @@
     "unified": "^11.0.5"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.15",
-    "@cloudflare/vite-plugin": "^1.64.0",
+    "@biomejs/biome": "2.6.3",
+    "@cloudflare/vite-plugin": "^1.65.0",
     "@typescript/native": "npm:typescript@^7.0.2",
     "husky": "^9.1.7",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
-    "vite": "^8.3.4",
-    "wrangler": "^4.151.3"
+    "vite": "^8.3.5",
+    "wrangler": "^4.153.0"
   },
   "engines": {
     "node": ">=24.0.0"
